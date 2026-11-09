@@ -1,16 +1,29 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
 import ChatBot from "../components/chatbot"
+import "./Pages.css"
 
 const Chat = () => {
     const navigate = useNavigate()
 
-    return(
-        <div>
-            <h1>CHATBOT</h1>
-            <button onClick={() =>navigate("/")}>Volver al inicio</button>
+    return (
+        <div className="page-container">
+            {/* Barra de navegación superior */}
+            <header className="page-nav">
+                <div className="nav-brand" onClick={() => navigate("/")}>
+                    <span>🎮 RecoGames AI</span>
+                </div>
+                <div className="nav-actions">
+                    <button className="btn-secondary" onClick={() => navigate("/")}>
+                        ← Volver al Inicio
+                    </button>
+                </div>
+            </header>
 
-            <ChatBot />
+            {/* Contenedor central del Chat */}
+            <main className="chat-page-content">
+                <ChatBot />
+            </main>
         </div>
     )
 }

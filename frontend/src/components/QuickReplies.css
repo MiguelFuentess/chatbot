@@ -1,0 +1,32 @@
+.quick-replies-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 4px 0;
+}
+
+.quick-reply-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.quick-reply-pill:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+}
+
+.quick-reply-pill:active {
+  transform: translateY(0);
+}

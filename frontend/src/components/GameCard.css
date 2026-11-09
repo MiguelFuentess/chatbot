@@ -1,0 +1,146 @@
+.game-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: #1a202c;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.game-card-image-container {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background-color: #2d3748;
+  overflow: hidden;
+}
+
+.game-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-card-image {
+  transform: scale(1.03);
+}
+
+.game-card-score-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(16, 185, 129, 0.95);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.game-card-price-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+.game-card-content {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.game-card-description {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.game-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.game-badge {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.badge-genre {
+  background-color: #ede9fe;
+  color: #6d28d9;
+}
+
+.badge-duration {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-mode {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-difficulty {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.game-card-explanation {
+  background: #f8fafc;
+  border-left: 3px solid #3b82f6;
+  padding: 10px 12px;
+  border-radius: 0 8px 8px 0;
+  margin-top: 4px;
+}
+
+.explanation-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.explanation-text {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.4;
+  margin: 0;
+}
