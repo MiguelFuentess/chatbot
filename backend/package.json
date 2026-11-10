@@ -9,7 +9,9 @@
     "seed": "node data/seedRunner.js",
     "test:recs": "node test/testRecommendations.js",
     "test:nlp": "node test/testNLPAndChat.js",
-    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js"
+    "test:dialogue": "node test/testAdaptiveDialogue.js",
+    "test:phase4": "node test/testPhase4AdvancedChat.js",
+    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js"
   },
   "keywords": [
     "chatbot",

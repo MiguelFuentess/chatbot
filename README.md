@@ -34,9 +34,9 @@ El asistente **no diagnostica estados psicológicos ni emplea cámaras, micrófo
 El sistema implementa una arquitectura **MERN en capas modulares**:
 
 ```
-[ Usuario (Jugador de PC) ]
-            │
-            ▼
+               [ Usuario (Jugador de PC) ]
+                           │
+                           ▼
 ┌────────────────────────────────────────────────────────┐
 │                   FRONTEND (React 19)                  │
 │  - Home Landing: Presentación y dimensiones del sistema│
@@ -44,17 +44,19 @@ El sistema implementa una arquitectura **MERN en capas modulares**:
 │  - GameCard: Tarjetas con afinidad, badges y porqués   │
 │  - QuickReplies: Botones contextuales de respuesta     │
 └────────────────────────────────────────────────────────┘
-            │  HTTP REST (Axios)
-            ▼
+                  HTTP REST (Axios)
+                           │  
+                           ▼
 ┌────────────────────────────────────────────────────────┐
 │              BACKEND API (Node.js + Express)           │
 │  - NLP Service: Extracción de entidades e intenciones  │
 │  - Recommender Engine: Puntuación multicriterio MCDA   │
-│  - Explanation Service: Justificaciones transparentes │
+│  - Explanation Service: Justificaciones transparentes  │
 │  - Controllers & Routes: /api/recommendations & /games │
 └────────────────────────────────────────────────────────┘
-            │  Mongoose ODM
-            ▼
+                     Mongoose ODM
+                           │  
+                           ▼
 ┌────────────────────────────────────────────────────────┐
 │                   BASE DE DATOS (MongoDB)              │
 │  - Colección 'games': 27 títulos verificados para PC   │

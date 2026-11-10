@@ -6,25 +6,36 @@ import "./ChatBot.css"
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api"
 
+const WELCOME_TEXT = `¡Hola! Bienvenido. Soy tu asistente de videojuegos. Estoy aquí para ayudarte a encontrar un juego que se adapte a lo que buscas hoy.
+
+Para empezar, ¿qué tipo de experiencia te gustaría tener?`
+
 const INITIAL_QUICK_REPLIES = [
-    "Quiero relajarme y desconectar",
-    "Busco acción y desafío",
-    "Jugar en cooperativo con amigos",
-    "Algo parecido a Minecraft",
-    "Tengo solo 30 minutos"
+    "Quiero relajarme",
+    "Busco algo emocionante",
+    "Quiero un desafío",
+    "Me gustaría explorar una buena historia",
+    "Quiero construir o crear algo",
+    "No estoy seguro, sorpréndeme"
 ]
 
 const ChatBot = () => {
     const [messages, setMessages] = useState([
         {
             role: "bot",
-            text: "¡Hola! Soy tu asistente inteligente para la recomendación personalizada de videojuegos de PC. Cuéntame: ¿cómo te sientes hoy o qué tipo de experiencia estás buscando?",
+            isWelcome: true,
+            text: WELCOME_TEXT,
             suggestedReplies: INITIAL_QUICK_REPLIES
         }
     ])
     const [input, setInput] = useState("")
     const [loading, setLoading] = useState(false)
     const [accumulatedCriteria, setAccumulatedCriteria] = useState({})
+    const [dialogueState, setDialogueState] = useState({
+        stage: "experience",
+        questionsAsked: ["experience"],
+        turnCount: 0
+    })
 
     const messagesEndRef = useRef(null)
 
@@ -40,7 +51,7 @@ const ChatBot = () => {
         const query = (textToSend || input).trim()
         if (!query || loading) return
 
-        // 1. Agregar mensaje del usuario a la lista
+        // 1. Agregar mensaje del usuario al chat
         setMessages((prev) => [
             ...prev,
             {
@@ -52,20 +63,30 @@ const ChatBot = () => {
         setLoading(true)
 
         try {
-            // 2. Enviar mensaje y criterios acumulados al endpoint de recomendación
+            // 2. Enviar mensaje, criterios acumulados y estado del diálogo al backend
             const res = await axios.post(`${API_BASE}/recommendations/chat`, {
                 message: query,
-                accumulatedCriteria
+                accumulatedCriteria,
+                dialogueState
             })
 
-            const { reply, recommendations, updatedCriteria, suggestedReplies } = res.data
+            const {
+                reply,
+                recommendations,
+                updatedCriteria,
+                dialogueState: newDialogueState,
+                suggestedReplies
+            } = res.data
 
-            // 3. Actualizar memoria de criterios acumulados
+            // 3. Actualizar memoria de criterios acumulados y estado de diálogo
             if (updatedCriteria) {
                 setAccumulatedCriteria(updatedCriteria)
             }
+            if (newDialogueState) {
+                setDialogueState(newDialogueState)
+            }
 
-            // 4. Agregar respuesta del bot con tarjetas de recomendaciones si existen
+            // 4. Agregar respuesta del bot con tarjetas o preguntas de seguimiento
             setMessages((prev) => [
                 ...prev,
                 {
@@ -81,7 +102,7 @@ const ChatBot = () => {
                 ...prev,
                 {
                     role: "bot",
-                    text: "Hubo un inconveniente al conectar con el motor de recomendación. Por favor, verifica que el servidor backend esté activo e inténtalo nuevamente.",
+                    text: "Hubo un inconveniente al conectar con el asistente. Por favor, verifica que el servidor backend esté activo e inténtalo nuevamente.",
                     recommendations: []
                 }
             ])
@@ -99,10 +120,16 @@ const ChatBot = () => {
 
     const handleReset = () => {
         setAccumulatedCriteria({})
+        setDialogueState({
+            stage: "experience",
+            questionsAsked: ["experience"],
+            turnCount: 0
+        })
         setMessages([
             {
                 role: "bot",
-                text: "Se ha reiniciado la búsqueda. Cuéntame de nuevo qué tipo de videojuego estás buscando o cómo te gustaría sentirte al jugar.",
+                isWelcome: true,
+                text: WELCOME_TEXT,
                 suggestedReplies: INITIAL_QUICK_REPLIES
             }
         ])
@@ -126,39 +153,69 @@ const ChatBot = () => {
 
             {/* Listado de Mensajes */}
             <div className="chat-messages">
-                {messages.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={`message-row ${
-                            msg.role === "user" ? "message-row-user" : "message-row-bot"
-                        }`}
-                    >
+                {messages.map((msg, idx) => {
+                    const isLastMessage = idx === messages.length - 1
+
+                    return (
                         <div
-                            className={`message-bubble ${
-                                msg.role === "user" ? "user-bubble" : "bot-bubble"
+                            key={idx}
+                            className={`message-row ${
+                                msg.role === "user" ? "message-row-user" : "message-row-bot"
                             }`}
                         >
-                            <p style={{ margin: 0 }}>{msg.text}</p>
+                            <div
+                                className={`message-bubble ${
+                                    msg.role === "user"
+                                        ? "user-bubble"
+                                        : msg.isWelcome
+                                        ? "bot-bubble welcome-bubble"
+                                        : "bot-bubble"
+                                }`}
+                            >
+                                <span
+                                    className={`bubble-role-label ${
+                                        msg.role === "user" ? "user-role-label" : "bot-role-label"
+                                    }`}
+                                >
+                                    {msg.role === "user" ? "👤 Tú" : "🤖 Asistente RecoGames"}
+                                </span>
 
-                            {/* Tarjetas de videojuegos recomendados */}
-                            {msg.recommendations && msg.recommendations.length > 0 && (
-                                <div className="cards-container">
-                                    {msg.recommendations.map((rec, recIdx) => (
-                                        <GameCard key={recIdx} recommendation={rec} />
-                                    ))}
-                                </div>
-                            )}
+                                {msg.isWelcome && (
+                                    <div className="welcome-badge">
+                                        <span>🎮 Asistente de PC</span>
+                                    </div>
+                                )}
 
-                            {/* Sugerencias rápidas de respuesta */}
-                            {msg.suggestedReplies && msg.suggestedReplies.length > 0 && (
-                                <QuickReplies
-                                    replies={msg.suggestedReplies}
-                                    onSelect={(selectedText) => sendMessage(selectedText)}
-                                />
-                            )}
+                                <p style={{ margin: "4px 0 0 0", whiteSpace: "pre-line" }}>{msg.text}</p>
+
+                                {/* Tarjetas de videojuegos recomendados */}
+                                {msg.recommendations && msg.recommendations.length > 0 && (
+                                    <div className="cards-wrapper">
+                                        <div className="recommendation-batch-header">
+                                            <span>🎯 Opciones recomendadas ({msg.recommendations.length} títulos)</span>
+                                        </div>
+                                        <div className="cards-container">
+                                            {msg.recommendations.map((rec, recIdx) => (
+                                                <GameCard key={recIdx} recommendation={rec} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Sugerencias rápidas de respuesta (activas en el último mensaje) */}
+                                {msg.suggestedReplies &&
+                                    msg.suggestedReplies.length > 0 &&
+                                    isLastMessage &&
+                                    !loading && (
+                                        <QuickReplies
+                                            replies={msg.suggestedReplies}
+                                            onSelect={(selectedText) => sendMessage(selectedText)}
+                                        />
+                                    )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
 
                 {/* Indicador de escritura animado */}
                 {loading && (
@@ -178,7 +235,7 @@ const ChatBot = () => {
             <div className="chat-input-area">
                 <input
                     type="text"
-                    placeholder="Escribe tu mensaje... (ej. 'Quiero algo tranquilo para 30 minutos')"
+                    placeholder="Escribe tu mensaje... (ej. 'Quiero algo tranquilo para 20 minutos')"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}

@@ -122,10 +122,19 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
     // Obtener catálogo completo
     const allGames = await Game.find({})
     const expandedEmotions = expandEmotionalTerms(emotionalContext)
+    const excludeTitles = [
+        ...(options.excludeTitles || []),
+        ...(criteria.excludeTitles || [])
+    ].map((t) => t.toLowerCase().trim())
 
     const scoredGames = []
 
     for (const game of allGames) {
+        // --- 0. EXCLUSIÓN DE TÍTULOS ESPECÍFICOS (Rechazados o ya mostrados) ---
+        if (excludeTitles.length > 0 && excludeTitles.includes(game.title.toLowerCase().trim())) {
+            continue
+        }
+
         // --- 1. FILTRO DE EXCLUSIÓN ESTRICTO (Disliked Genres) ---
         const matchesDisliked = dislikedGenres.some((disliked) =>
             game.genres.some((g) => g.toLowerCase().includes(disliked.toLowerCase()))

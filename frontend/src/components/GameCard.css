@@ -32,6 +32,11 @@
   transition: transform 0.3s ease;
 }
 
+.game-card-image.is-fallback {
+  object-fit: contain;
+  background-color: #0f172a;
+}
+
 .game-card:hover .game-card-image {
   transform: scale(1.03);
 }

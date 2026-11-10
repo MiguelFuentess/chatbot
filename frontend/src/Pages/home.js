@@ -13,9 +13,6 @@ const Home = () => {
                     <span>🎮 RecoGames AI</span>
                 </div>
                 <div className="nav-actions">
-                    <button className="btn-secondary" onClick={() => navigate("/add")}>
-                        Administrar Preguntas
-                    </button>
                     <button className="btn-primary" onClick={() => navigate("/chat")}>
                         Abrir Asistente
                     </button>
@@ -29,8 +26,8 @@ const Home = () => {
                     Recomendación Inteligente y Personalizada de Videojuegos
                 </h1>
                 <p className="hero-subtitle">
-                    Descubre experiencias de juego adaptadas no solo a lo que juegas, sino a cómo te sientes,
-                    tu tiempo disponible y lo que necesitas en cada momento.
+                    Conversa de manera natural con nuestro asistente inteligente. A través de preguntas progresivas,
+                    comprende la experiencia que buscas hoy y te recomienda videojuegos de PC a tu medida con explicaciones claras.
                 </p>
 
                 <div className="hero-buttons">
@@ -53,15 +50,15 @@ const Home = () => {
                         <div className="feature-icon">⏱️</div>
                         <h4>Tiempo de Sesión</h4>
                         <p>
-                            Encuentra partidas adaptadas a tu disponibilidad, desde partidas cortas de 20-30 min hasta experiencias inmersivas.
+                            Encuentra partidas adaptadas al tiempo que tienes hoy, desde sesiones cortas de 20-30 min hasta experiencias inmersivas.
                         </p>
                     </div>
 
                     <div className="feature-card">
                         <div className="feature-icon">👥</div>
-                        <h4>Modalidad y Estilo</h4>
+                        <h4>Modalidad y Preferencias</h4>
                         <p>
-                            Filtra juegos para disfrutar en solitario o títulos cooperativos ideales para coordinar con amigos.
+                            Filtra si jugarás en solitario o en cooperativo con amigos, indicando tus géneros favoritos o aquellos que prefieres evitar.
                         </p>
                     </div>
 
@@ -69,7 +66,7 @@ const Home = () => {
                         <div className="feature-icon">💡</div>
                         <h4>Explicabilidad Clara</h4>
                         <p>
-                            El asistente te explica con transparencia las razones concretas de por qué te recomienda cada título.
+                            El asistente te explica con transparencia y detalle las razones concretas de por qué te recomienda cada videojuego.
                         </p>
                     </div>
                 </div>

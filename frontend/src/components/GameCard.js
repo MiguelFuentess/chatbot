@@ -1,24 +1,42 @@
-import React from "react"
+import React, { useState } from "react"
 import "./GameCard.css"
 
+// Fallback neutro SVG autocontenido (evita fotos genéricas de stock de terceros)
+const FALLBACK_SVG =
+    "data:image/svg+xml;charset=utf-8," +
+    encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215">' +
+        '<defs>' +
+        '<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">' +
+        '<stop offset="0%" stop-color="#1e293b"/>' +
+        '<stop offset="100%" stop-color="#0f172a"/>' +
+        '</linearGradient>' +
+        '</defs>' +
+        '<rect width="100%" height="100%" fill="url(#bg)"/>' +
+        '<circle cx="230" cy="85" r="32" fill="#334155"/>' +
+        '<text x="230" y="94" font-size="28" text-anchor="middle">🎮</text>' +
+        '<text x="230" y="142" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">Arte oficial no disponible</text>' +
+        '</svg>'
+    )
+
 const GameCard = ({ recommendation }) => {
+    const [imageError, setImageError] = useState(false)
+
     if (!recommendation || !recommendation.game) return null
 
     const { game, score, explanation } = recommendation
-
-    const fallbackImage =
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80"
+    const displayImage = !imageError && game.imageUrl ? game.imageUrl : FALLBACK_SVG
 
     return (
         <div className="game-card">
             <div className="game-card-image-container">
                 <img
-                    src={game.imageUrl || fallbackImage}
+                    src={displayImage}
                     alt={game.title}
-                    className="game-card-image"
-                    onError={(e) => {
-                        e.target.onerror = null
-                        e.target.src = fallbackImage
+                    className={`game-card-image ${imageError ? "is-fallback" : ""}`}
+                    loading="lazy"
+                    onError={() => {
+                        setImageError(true)
                     }}
                 />
                 <div className="game-card-score-badge">

@@ -2,514 +2,1003 @@
   {
     "title": "Stardew Valley",
     "description": "Heredas la antigua granja de tu abuelo en Stardew Valley. Aprende a vivir de la tierra, cultiva, cría animales y sé parte activa de un encantador pueblo rural.",
-    "genres": ["Simulación", "RPG", "Granja", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "cooperativo"],
+    "genres": [
+      "Simulación",
+      "RPG",
+      "Granja",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "cooperativo"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["relajante", "desconexion", "tranquilo", "cero estres", "creativo"],
+    "emotionalTags": [
+      "relajante",
+      "desconexion",
+      "tranquilo",
+      "cero estres",
+      "creativo"
+    ],
     "experienceHighlights": [
       "Ritmo totalmente libre sin presiones de tiempo",
       "Música y atmósfera campestre sumamente reconfortante",
       "Posibilidad de jugar a tu propio ritmo solo o en cooperativo"
     ],
-    "similarTo": ["Animal Crossing", "Minecraft", "Slime Rancher"],
-    "imageUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Animal Crossing",
+      "Minecraft",
+      "Slime Rancher"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Dorfromantik",
     "description": "Un relajante juego de construcción mediante baldosas donde creas poco a poco idílicos paisajes de pueblos, bosques y ríos en un ambiente pacífico y sin prisas.",
-    "genres": ["Puzzle", "Estrategia", "Indie", "Casual"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Puzzle",
+      "Estrategia",
+      "Indie",
+      "Casual"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["relajante", "tranquilo", "cero estres", "desconexion", "sin presion"],
+    "emotionalTags": [
+      "relajante",
+      "tranquilo",
+      "cero estres",
+      "desconexion",
+      "sin presion"
+    ],
     "experienceHighlights": [
       "Ideal para desconectar tras un día agotador",
       "Sin cronómetros ni situaciones de estrés",
       "Sesiones de juego flexibles que puedes pausar cuando desees"
     ],
-    "similarTo": ["Townscaper", "Islanders"],
-    "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Townscaper",
+      "Islanders"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1455840/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "A Short Hike",
     "description": "Camina, planea y escala por los apacibles paisajes de Provincial Park para alcanzar la cima del Pico del Halcón y recibir una llamada telefónica.",
-    "genres": ["Aventura", "Exploración", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Aventura",
+      "Exploración",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["relajante", "tranquilo", "buena historia", "desconexion", "corto"],
+    "emotionalTags": [
+      "relajante",
+      "tranquilo",
+      "buena historia",
+      "desconexion",
+      "corto"
+    ],
     "experienceHighlights": [
       "Duración total reducida y perfecta para una o dos tardes",
       "Sensación reconfortante de libertad y amabilidad",
       "Mecánica de planeo sumamente placentera"
     ],
-    "similarTo": ["Animal Crossing", "Alba: A Wildlife Adventure"],
-    "imageUrl": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Animal Crossing",
+      "Alba: A Wildlife Adventure"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1055540/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Slime Rancher",
     "description": "Explora un colorido y lejano planeta alienígena recolectando y criando simpáticos slimes para construir y mejorar tu rancho espacial.",
-    "genres": ["Aventura", "Exploración", "Simulación", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Aventura",
+      "Exploración",
+      "Simulación",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["relajante", "colorido", "creativo", "tranquilo"],
+    "emotionalTags": [
+      "relajante",
+      "colorido",
+      "creativo",
+      "tranquilo"
+    ],
     "experienceHighlights": [
       "Estilo visual alegre y brillante que levanta el ánimo",
       "Mecánicas de exploración y recolección muy satisfactorias",
       "Baja demanda de reflejos con progresión constante"
     ],
-    "similarTo": ["Stardew Valley", "Minecraft"],
-    "imageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Stardew Valley",
+      "Minecraft"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/433340/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Gris",
     "description": "Una joven que se ha perdido en su propio mundo lidia con una experiencia dolorosa en su vida. Un viaje visual y musical inolvidable que evoca sanación y serenidad.",
-    "genres": ["Plataformas", "Aventura", "Puzzle", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Plataformas",
+      "Aventura",
+      "Puzzle",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["relajante", "artistico", "emocionante", "reflexivo", "buena historia"],
+    "emotionalTags": [
+      "relajante",
+      "artistico",
+      "emocionante",
+      "reflexivo",
+      "buena historia"
+    ],
     "experienceHighlights": [
       "Banda sonora conmovedora y arte en acuarela impecable",
       "No existe la muerte ni el fracaso frustrante",
       "Experiencia emocional y transformadora"
     ],
-    "similarTo": ["Journey", "Ori and the Blind Forest"],
-    "imageUrl": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Journey",
+      "Ori and the Blind Forest"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/683320/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Hades",
     "description": "Desafía al dios de los muertos mientras combates para escapar del Inframundo en este galardonado roguelike de acción rápida con una narrativa reactiva y profunda.",
-    "genres": ["Roguelike", "Acción", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Roguelike",
+      "Acción",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["desafiante", "estimulante", "emocionante", "adictivo", "buena historia"],
+    "emotionalTags": [
+      "desafiante",
+      "estimulante",
+      "emocionante",
+      "adictivo",
+      "buena historia"
+    ],
     "experienceHighlights": [
       "Partidas rápidas e intensas ideales para sesiones de 20 a 30 minutos",
       "Excelente progresión: cada derrota aporta historia y mejoras",
       "Combate sumamente fluido y gratificante"
     ],
-    "similarTo": ["Dead Cells", "The Binding of Isaac", "Bastion"],
-    "imageUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Dead Cells",
+      "The Binding of Isaac",
+      "Bastion"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1145360/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Dead Cells",
     "description": "Un roguelite y metroidvania en el que exploras un castillo en constante cambio mientras vences enemigos con combates en 2D vertiginosos y sin puntos de control.",
-    "genres": ["Roguelike", "Metroidvania", "Acción", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Roguelike",
+      "Metroidvania",
+      "Acción",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["desafiante", "estimulante", "emocionante", "adictivo", "rapido"],
+    "emotionalTags": [
+      "desafiante",
+      "estimulante",
+      "emocionante",
+      "adictivo",
+      "rapido"
+    ],
     "experienceHighlights": [
       "Máxima adrenalina y velocidad de reacción",
       "Centenares de combinaciones de armas y habilidades",
       "Curva de maestría muy satisfactoria"
     ],
-    "similarTo": ["Hades", "Hollow Knight", "Castlevania"],
-    "imageUrl": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Hades",
+      "Hollow Knight",
+      "Castlevania"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/588650/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Celeste",
     "description": "Ayuda a Madeline a sobrevivir a sus demonios internos en su viaje a la cima de la montaña Celeste en un juego de plataformas ajustadísimo y una historia emotiva de superación.",
-    "genres": ["Plataformas", "Indie", "Aventura"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Plataformas",
+      "Indie",
+      "Aventura"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["desafiante", "reflexivo", "emocionante", "buena historia"],
+    "emotionalTags": [
+      "desafiante",
+      "reflexivo",
+      "emocionante",
+      "buena historia"
+    ],
     "experienceHighlights": [
       "Diseño de niveles magistral de precisión milimétrica",
       "Historia sensible y honesta sobre la ansiedad y la perseverancia",
       "Reinicios instantáneos sin tiempos de carga frustrantes"
     ],
-    "similarTo": ["Super Meat Boy", "Hollow Knight"],
-    "imageUrl": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Super Meat Boy",
+      "Hollow Knight"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/504230/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Elden Ring",
     "description": "Levántate, Sinluz, y déjate guiar por la gracia para esgrimir el poder del Círculo de Elden en las Tierras Intermedias. Un colosal RPG de acción de mundo abierto.",
-    "genres": ["Acción", "RPG", "Aventura"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "multijugador", "cooperativo"],
+    "genres": [
+      "Acción",
+      "RPG",
+      "Aventura"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "multijugador",
+      "cooperativo"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["desafiante", "inmersivo", "emocionante", "adictivo"],
+    "emotionalTags": [
+      "desafiante",
+      "inmersivo",
+      "emocionante",
+      "adictivo"
+    ],
     "experienceHighlights": [
       "Inmensidad de exploración y descubrimientos constantes",
       "Combate exigente contra jefes memorables",
       "Atmósfera de fantasía oscura épica y profunda"
     ],
-    "similarTo": ["Dark Souls", "Bloodborne", "The Witcher 3"],
-    "imageUrl": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Dark Souls",
+      "Bloodborne",
+      "The Witcher 3"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Doom Eternal",
     "description": "Los ejércitos del infierno han invadido la Tierra. Conviértete en el Slayer en una épica campaña para derrotar demonios a través de dimensiones a velocidad frenética.",
-    "genres": ["Acción", "FPS", "Shooter"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "multijugador"],
+    "genres": [
+      "Acción",
+      "FPS",
+      "Shooter"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "multijugador"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["emocionante", "estimulante", "desafiante", "adrenalina"],
+    "emotionalTags": [
+      "emocionante",
+      "estimulante",
+      "desafiante",
+      "adrenalina"
+    ],
     "experienceHighlights": [
       "Acción ininterrumpida y banda sonora de metal electrizante",
       "Combate tipo 'rompecabezas agresivo' que exige movilidad total",
       "Ideal para liberar energía y buscar un reto de reflejos puro"
     ],
-    "similarTo": ["Doom (2016)", "Ultrakill", "Wolfenstein"],
-    "imageUrl": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Doom (2016)",
+      "Ultrakill",
+      "Wolfenstein"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/782330/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "The Witcher 3: Wild Hunt",
     "description": "Eres Geralt de Rivia, cazador de monstruos. En un mundo devastado por la guerra y plagado de bestias, deberás encontrar a Ciri, la niña de la profecía.",
-    "genres": ["RPG", "Aventura", "Acción"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "RPG",
+      "Aventura",
+      "Acción"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["buena historia", "inmersivo", "desconexion", "maduro"],
+    "emotionalTags": [
+      "buena historia",
+      "inmersivo",
+      "desconexion",
+      "maduro"
+    ],
     "experienceHighlights": [
       "Una de las mejores tramas y misiones secundarias de la historia del videojuego",
       "Mundo vivo, detallado y lleno de decisiones morales complejas",
       "Experiencia ideal para perderte durante horas en otro universo"
     ],
-    "similarTo": ["Skyrim", "Elden Ring", "Cyberpunk 2077"],
-    "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Skyrim",
+      "Elden Ring",
+      "Cyberpunk 2077"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Firewatch",
     "description": "El año es 1989. Eres Henry, quien ha dejado su vida caótica para trabajar como guardabosques en el desierto de Wyoming. Algo extraño te atrae fuera de tu torre de vigilancia.",
-    "genres": ["Aventura", "Narrativo", "Misterio", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Aventura",
+      "Narrativo",
+      "Misterio",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "baja",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["buena historia", "inmersivo", "reflexivo", "desconexion", "tranquilo"],
+    "emotionalTags": [
+      "buena historia",
+      "inmersivo",
+      "reflexivo",
+      "desconexion",
+      "tranquilo"
+    ],
     "experienceHighlights": [
       "Diálogos realistas y maduros por radio con Delilah",
       "Apartado visual bellísimo con atardeceres y bosques inmersivos",
       "Excelente opción para quienes buscan historia sin exigencia mecánica"
     ],
-    "similarTo": ["What Remains of Edith Finch", "The Stanley Parable", "Life is Strange"],
-    "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "What Remains of Edith Finch",
+      "The Stanley Parable",
+      "Life is Strange"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/383870/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Outer Wilds",
     "description": "Nombrado juego del año por múltiples medios, es un misterio de mundo abierto sobre un sistema solar atrapado en un bucle temporal infinito de 22 minutos.",
-    "genres": ["Aventura", "Exploración", "Misterio", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Aventura",
+      "Exploración",
+      "Misterio",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["buena historia", "inmersivo", "reflexivo", "exploracion"],
+    "emotionalTags": [
+      "buena historia",
+      "inmersivo",
+      "reflexivo",
+      "exploracion"
+    ],
     "experienceHighlights": [
       "Tu único recurso es la curiosidad y el conocimiento adquirido",
       "Fascinante simulación física y misterios arqueológicos espaciales",
       "Una de las experiencias narrativas más memorables e inteligentes"
     ],
-    "similarTo": ["Subnautica", "Return of the Obra Dinn"],
-    "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Subnautica",
+      "Return of the Obra Dinn"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Hollow Knight",
     "description": "Desciende al reino subterráneo en ruinas de Hallownest. Enfréntate a criaturas mancilladas y hazte amigo de extraños bichos en este clásico moderno.",
-    "genres": ["Metroidvania", "Acción", "Aventura", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Metroidvania",
+      "Acción",
+      "Aventura",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["desafiante", "inmersivo", "buena historia", "atmosferico"],
+    "emotionalTags": [
+      "desafiante",
+      "inmersivo",
+      "buena historia",
+      "atmosferico"
+    ],
     "experienceHighlights": [
       "Enorme mapa lleno de secretos, pasadizos y mejoras",
       "Banda sonora melancólica e ilustraciones dibujadas a mano",
       "Combate preciso con peleas memorables"
     ],
-    "similarTo": ["Ori and the Blind Forest", "Dead Cells", "Dark Souls"],
-    "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Ori and the Blind Forest",
+      "Dead Cells",
+      "Dark Souls"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Disco Elysium - The Final Cut",
     "description": "Eres un detective con un sistema de habilidades único y una manzana entera de la ciudad por la que abrirte camino. Interroga personajes memorables o acepta sobornos.",
-    "genres": ["RPG", "Narrativo", "Misterio", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "RPG",
+      "Narrativo",
+      "Misterio",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "ajustable",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["buena historia", "reflexivo", "inmersivo", "profundo"],
+    "emotionalTags": [
+      "buena historia",
+      "reflexivo",
+      "inmersivo",
+      "profundo"
+    ],
     "experienceHighlights": [
       "Sin combates tradicionales: todo se resuelve con diálogo y pensamientos",
       "Guion de calidad literaria excepcional con humor negro y filosofía",
       "Libertad total para definir la personalidad de tu protagonista"
     ],
-    "similarTo": ["Planescape: Torment", "Pentiment"],
-    "imageUrl": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Planescape: Torment",
+      "Pentiment"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632470/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Minecraft",
     "description": "Construye cualquier cosa que puedas imaginar, explora mundos generados al azar y sobrevive a peligrosas criaturas nocturnas en solitario o con amigos.",
-    "genres": ["Supervivencia", "Construcción", "Sandbox", "Aventura"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "cooperativo", "multijugador"],
+    "genres": [
+      "Supervivencia",
+      "Construcción",
+      "Sandbox",
+      "Aventura"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "cooperativo",
+      "multijugador"
+    ],
     "pacing": "relajado",
     "difficulty": "ajustable",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["creativo", "relajante", "desconexion", "cooperativo", "tranquilo"],
+    "emotionalTags": [
+      "creativo",
+      "relajante",
+      "desconexion",
+      "cooperativo",
+      "tranquilo"
+    ],
     "experienceHighlights": [
       "Libertad absoluta de construcción, minería y exploración",
       "Excelente tanto para sesiones tranquilas como para proyectos con amigos",
       "Inagotable variedad de mods y modalidades comunitarias"
     ],
-    "similarTo": ["Terraria", "Subnautica", "Vintage Story"],
-    "imageUrl": "https://images.unsplash.com/photo-1627856013091-fed6e4e30025?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Terraria",
+      "Subnautica",
+      "Vintage Story"
+    ],
+    "imageUrl": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/Vanilla_bundle_2.png",
     "priceCondition": "De pago"
   },
   {
     "title": "Terraria",
     "description": "¡Cava, lucha, explora, construye! Nada es imposible en este juego de aventuras 2D repleto de acción, cientos de jefes, minerales y tesoros subterráneos.",
-    "genres": ["Aventura", "Supervivencia", "Acción", "Sandbox", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "cooperativo", "multijugador"],
+    "genres": [
+      "Aventura",
+      "Supervivencia",
+      "Acción",
+      "Sandbox",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "cooperativo",
+      "multijugador"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["creativo", "desafiante", "adictivo", "cooperativo"],
+    "emotionalTags": [
+      "creativo",
+      "desafiante",
+      "adictivo",
+      "cooperativo"
+    ],
     "experienceHighlights": [
       "Progresión masiva de armas, armaduras y accesorios",
       "Gran enfoque en combate y batallas épicas contra jefes",
       "Enorme diversión jugando en cooperativo"
     ],
-    "similarTo": ["Minecraft", "Starbound"],
-    "imageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Minecraft",
+      "Starbound"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/105600/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Subnautica",
     "description": "Desciende a las profundidades de un mundo oceánico alienígena tras estrellar tu nave. Gestiona tu oxígeno mientras exploras arrecifes de coral y fosas abisales.",
-    "genres": ["Supervivencia", "Exploración", "Aventura"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Supervivencia",
+      "Exploración",
+      "Aventura"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["inmersivo", "desconexion", "misterio", "atmosferico"],
+    "emotionalTags": [
+      "inmersivo",
+      "desconexion",
+      "misterio",
+      "atmosferico"
+    ],
     "experienceHighlights": [
       "Inmersión ambiental marina inigualable",
       "Construcción de bases submarinas y vehículos avanzados",
       "Excelente balance entre tensión, belleza y misterio"
     ],
-    "similarTo": ["Minecraft", "Outer Wilds", "The Forest"],
-    "imageUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Minecraft",
+      "Outer Wilds",
+      "The Forest"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/264710/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Cities: Skylines",
     "description": "Una versión moderna de los simuladores urbanos clásicos. Diseña, construye y gestiona una metrópolis entera lidiando con tráfico, servicios e impuestos.",
-    "genres": ["Simulación", "Construcción", "Estrategia", "Gestión"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Simulación",
+      "Construcción",
+      "Estrategia",
+      "Gestión"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "relajado",
     "difficulty": "media",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["creativo", "relajante", "tranquilo", "desconexion"],
+    "emotionalTags": [
+      "creativo",
+      "relajante",
+      "tranquilo",
+      "desconexion"
+    ],
     "experienceHighlights": [
       "Satisfacción inmensa al ver fluir el tráfico y prosperar tu ciudad",
       "Ritmo pausado para pensar y planificar con tranquilidad",
       "Gran profundidad de gestión y soporte ilimitado de mods en PC"
     ],
-    "similarTo": ["SimCity", "Anno 1800"],
-    "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "SimCity",
+      "Anno 1800"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/255710/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Civilization VI",
     "description": "Construye un imperio que resista el paso del tiempo. Explora nuevas tierras, investiga tecnologías y compite con líderes históricos de la humanidad.",
-    "genres": ["Estrategia", "Por Turnos", "Gestión", "Histórico"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "multijugador"],
+    "genres": [
+      "Estrategia",
+      "Por Turnos",
+      "Gestión",
+      "Histórico"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "multijugador"
+    ],
     "pacing": "relajado",
     "difficulty": "ajustable",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["reflexivo", "adictivo", "desconexion", "tranquilo"],
+    "emotionalTags": [
+      "reflexivo",
+      "adictivo",
+      "desconexion",
+      "tranquilo"
+    ],
     "experienceHighlights": [
       "Estrategia por turnos: piensas cada movimiento sin prisa",
       "El legendario síndrome de 'un turno más y me voy a dormir'",
       "Múltiples caminos hacia la victoria (ciencia, cultura, diplomacia, militar)"
     ],
-    "similarTo": ["Age of Empires", "Crusader Kings III"],
-    "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Age of Empires",
+      "Crusader Kings III"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Slay the Spire",
     "description": "Hemos fusionado los juegos de cartas con los roguelikes para crear el mejor constructor de barajas en solitario. Crea un mazo único y vence a la Aguja.",
-    "genres": ["Roguelike", "Estrategia", "Cartas", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Roguelike",
+      "Estrategia",
+      "Cartas",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["adictivo", "reflexivo", "estimulante", "desafiante"],
+    "emotionalTags": [
+      "adictivo",
+      "reflexivo",
+      "estimulante",
+      "desafiante"
+    ],
     "experienceHighlights": [
       "Decisiones tácticas constantes en batallas por turnos sin tiempo límite",
       "Sesiones ágiles y directas que puedes retomar en cualquier instante",
       "Sinergias de cartas increíblemente satisfactorias"
     ],
-    "similarTo": ["Monster Train", "Inscryption", "Balatro"],
-    "imageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Monster Train",
+      "Inscryption",
+      "Balatro"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/646570/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Into the Breach",
     "description": "Controla mechas del futuro para salvar a la humanidad de una invasión alienígena subterránea en tableros de 8x8 con combate táctico por turnos perfecto.",
-    "genres": ["Estrategia", "Por Turnos", "Puzzle", "Indie"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Estrategia",
+      "Por Turnos",
+      "Puzzle",
+      "Indie"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["reflexivo", "desafiante", "estimulante"],
+    "emotionalTags": [
+      "reflexivo",
+      "desafiante",
+      "estimulante"
+    ],
     "experienceHighlights": [
       "Información 100% transparente: siempre sabes qué va a hacer el enemigo",
       "Partidas como partidas de ajedrez táctico altamente estimulantes",
       "Sesiones compactas de 15 a 25 minutos"
     ],
-    "similarTo": ["FTL: Faster Than Light", "XCOM"],
-    "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "FTL: Faster Than Light",
+      "XCOM"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/590380/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "It Takes Two",
     "description": "Embárcate en el viaje más alocado de tu vida en esta aventura de plataformas puramente cooperativa creada exclusivamente para dos jugadores.",
-    "genres": ["Aventura", "Plataformas", "Cooperativo", "Acción"],
-    "platforms": ["PC"],
-    "gameModes": ["cooperativo"],
+    "genres": [
+      "Aventura",
+      "Plataformas",
+      "Cooperativo",
+      "Acción"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "cooperativo"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["cooperativo", "amigos", "divertido", "emocionante"],
+    "emotionalTags": [
+      "cooperativo",
+      "amigos",
+      "divertido",
+      "emocionante"
+    ],
     "experienceHighlights": [
       "Ganador del Juego del Año (GOTY) con mecánicas nuevas en cada nivel",
       "Requiere coordinación constante y comunicación fluida",
       "Solo uno de los dos necesita comprar el juego (Pase de amigo incluido)"
     ],
-    "similarTo": ["A Way Out", "Portal 2", "Unravel Two"],
-    "imageUrl": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "A Way Out",
+      "Portal 2",
+      "Unravel Two"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Portal 2",
     "description": "Una aventura de ingenio y puzles en primera persona. Utiliza el cañón de portales para superar desafíos espaciales con la divertida y sarcástica IA GLaDOS.",
-    "genres": ["Puzzle", "Aventura", "Ciencia Ficción", "Cooperativo"],
-    "platforms": ["PC"],
-    "gameModes": ["individual", "cooperativo"],
+    "genres": [
+      "Puzzle",
+      "Aventura",
+      "Ciencia Ficción",
+      "Cooperativo"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual",
+      "cooperativo"
+    ],
     "pacing": "moderado",
     "difficulty": "media",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["buena historia", "divertido", "cooperativo", "amigos", "reflexivo"],
+    "emotionalTags": [
+      "buena historia",
+      "divertido",
+      "cooperativo",
+      "amigos",
+      "reflexivo"
+    ],
     "experienceHighlights": [
       "Diseño de rompecabezas brillante y lógica espacial intuitiva",
       "Campaña cooperativa dedicada increíblemente divertida para 2 jugadores",
       "Guion y diálogos con humor hilarante y personajes inolvidables"
     ],
-    "similarTo": ["Portal", "The Talos Principle", "It Takes Two"],
-    "imageUrl": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Portal",
+      "The Talos Principle",
+      "It Takes Two"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Deep Rock Galactic",
     "description": "Enanos espaciales mineros armados hasta los dientes exploran cuevas 100% destructibles en un planeta alienígena hostil en misiones cooperativas de hasta 4 jugadores.",
-    "genres": ["FPS", "Acción", "Shooter", "Cooperativo"],
-    "platforms": ["PC"],
-    "gameModes": ["cooperativo", "multijugador", "individual"],
+    "genres": [
+      "FPS",
+      "Acción",
+      "Shooter",
+      "Cooperativo"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "cooperativo",
+      "multijugador",
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "media",
     "sessionDuration": "media (30-60 min)",
-    "emotionalTags": ["cooperativo", "amigos", "emocionante", "divertido"],
+    "emotionalTags": [
+      "cooperativo",
+      "amigos",
+      "emocionante",
+      "divertido"
+    ],
     "experienceHighlights": [
       "Una de las comunidades y dinámicas cooperativas más sanas y divertidas",
       "Cuevas procedurales donde cada misión es diferente",
       "Excelente para jugar por las noches con amigos y charlar por Discord"
     ],
-    "similarTo": ["Left 4 Dead", "Helldivers 2", "Warhammer: Vermintide 2"],
-    "imageUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Left 4 Dead",
+      "Helldivers 2",
+      "Warhammer: Vermintide 2"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/548430/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Overcooked! All You Can Eat",
     "description": "Coordínate con tus compañeros para preparar, cocinar y servir deliciosos pedidos en cocinas caóticas antes de que los clientes se impacienten.",
-    "genres": ["Party", "Cooperativo", "Casual", "Gestión"],
-    "platforms": ["PC"],
-    "gameModes": ["cooperativo", "multijugador", "individual"],
+    "genres": [
+      "Party",
+      "Cooperativo",
+      "Casual",
+      "Gestión"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "cooperativo",
+      "multijugador",
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "media",
     "sessionDuration": "corta (< 30 min)",
-    "emotionalTags": ["cooperativo", "amigos", "divertido", "rapido"],
+    "emotionalTags": [
+      "cooperativo",
+      "amigos",
+      "divertido",
+      "rapido"
+    ],
     "experienceHighlights": [
       "Risas y dinamismo garantizado para grupos de amigos o parejas",
       "Partidas rápidas de 5 minutos por nivel",
       "Fácil de aprender a jugar pero desafiante para conseguir tres estrellas"
     ],
-    "similarTo": ["Moving Out", "PlateUp!"],
-    "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "Moving Out",
+      "PlateUp!"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1243830/header.jpg",
     "priceCondition": "De pago"
   },
   {
     "title": "Frostpunk",
     "description": "En un mundo totalmente congelado, los humanos desarrollan tecnología a vapor para sobrevivir al frío. Eres el líder de la última ciudad de la Tierra: gestiona recursos y calor.",
-    "genres": ["Estrategia", "Supervivencia", "Gestión", "Simulación"],
-    "platforms": ["PC"],
-    "gameModes": ["individual"],
+    "genres": [
+      "Estrategia",
+      "Supervivencia",
+      "Gestión",
+      "Simulación"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "gameModes": [
+      "individual"
+    ],
     "pacing": "intenso",
     "difficulty": "alta",
     "sessionDuration": "larga (> 1 hora)",
-    "emotionalTags": ["desafiante", "inmersivo", "maduro", "atmosferico"],
+    "emotionalTags": [
+      "desafiante",
+      "inmersivo",
+      "maduro",
+      "atmosferico"
+    ],
     "experienceHighlights": [
       "Toma de decisiones éticas y políticas duras bajo presión ambiental",
       "Atmósfera sobrecogedora y música solemne y emotiva",
       "Desafío exigente para amantes de la gestión y la supervivencia"
     ],
-    "similarTo": ["This War of Mine", "Cities: Skylines"],
-    "imageUrl": "https://images.unsplash.com/photo-1517824806704-9040b037703b?w=600&auto=format&fit=crop&q=80",
+    "similarTo": [
+      "This War of Mine",
+      "Cities: Skylines"
+    ],
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/323190/header.jpg",
     "priceCondition": "De pago"
   }
 ]

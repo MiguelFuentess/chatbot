@@ -19,12 +19,23 @@ const runSeed = async () => {
 
         console.log(`Leídos ${games.length} videojuegos del archivo seedGames.json.`)
 
-        // Limpiar colección previa para garantizar estado limpio y reproducible
-        const deleteResult = await Game.deleteMany({})
-        console.log(`Colección de videojuegos reiniciada (eliminados: ${deleteResult.deletedCount}).`)
+        // Sincronización idempotente mediante bulkWrite (upsert por título)
+        // Actualiza imageUrl y todos los campos preservando IDs y evitando duplicados
+        const operations = games.map((game) => ({
+            updateOne: {
+                filter: { title: game.title },
+                update: { $set: game },
+                upsert: true
+            }
+        }))
 
-        const inserted = await Game.insertMany(games)
-        console.log(`¡Éxito! Se insertaron ${inserted.length} videojuegos en la base de datos MongoDB.`)
+        const result = await Game.bulkWrite(operations)
+        console.log(
+            `¡Éxito en sincronización! Coincidentes: ${result.matchedCount}, Modificados: ${result.modifiedCount}, Nuevos insertados: ${result.upsertedCount}.`
+        )
+
+        const totalInDb = await Game.countDocuments()
+        console.log(`Total de videojuegos en la base de datos MongoDB: ${totalInDb}.`)
 
         await mongoose.connection.close()
         console.log("Conexión con MongoDB cerrada correctamente.")
