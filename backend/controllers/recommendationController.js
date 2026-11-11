@@ -8,13 +8,14 @@ const { processDialogueTurn } = require("../services/dialogueManager")
  */
 exports.handleChatConversation = async (req, res) => {
     try {
+        const body = req.body || {}
         const {
-            message = "",
             accumulatedCriteria = {},
             dialogueState = {}
-        } = req.body
+        } = body
+        const rawMessage = typeof body.message === "string" ? body.message : (body.message != null ? String(body.message) : "")
 
-        if (!message || !message.trim()) {
+        if (!rawMessage || !rawMessage.trim()) {
             return res.status(400).json({
                 message: "El mensaje del usuario no puede estar vacío."
             })
@@ -22,7 +23,7 @@ exports.handleChatConversation = async (req, res) => {
 
         // Delegar la gestión del turno conversacional al gestor de diálogo
         const result = await processDialogueTurn({
-            userMessage: message.trim(),
+            userMessage: rawMessage.trim(),
             accumulatedCriteria,
             dialogueState
         })

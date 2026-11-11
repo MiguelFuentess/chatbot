@@ -174,20 +174,23 @@ function createRecommendationIntro(criteria = {}) {
  * @returns {Promise<Object>} Respuesta, criterios actualizados, nuevo estado y recomendaciones si aplica
  */
 async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {}, dialogueState = {} }) {
-    // 1. Clonar estado y criterios
+    const safeDialogueState = dialogueState || {}
+    const safeCriteria = accumulatedCriteria || {}
+
+    // 1. Clonar estado y criterios con salvaguardas
     const state = {
-        stage: dialogueState.stage || "initial",
-        questionsAsked: Array.isArray(dialogueState.questionsAsked) ? [...dialogueState.questionsAsked] : [],
-        turnCount: (dialogueState.turnCount || 0) + 1,
-        modeIndifferent: !!dialogueState.modeIndifferent,
-        genreIndifferent: !!dialogueState.genreIndifferent,
-        isSurpriseMe: !!dialogueState.isSurpriseMe,
-        shownGameTitles: Array.isArray(dialogueState.shownGameTitles) ? [...dialogueState.shownGameTitles] : [],
-        rejectedGames: Array.isArray(dialogueState.rejectedGames) ? [...dialogueState.rejectedGames] : []
+        stage: safeDialogueState.stage || "initial",
+        questionsAsked: Array.isArray(safeDialogueState.questionsAsked) ? [...safeDialogueState.questionsAsked] : [],
+        turnCount: (safeDialogueState.turnCount || 0) + 1,
+        modeIndifferent: !!safeDialogueState.modeIndifferent,
+        genreIndifferent: !!safeDialogueState.genreIndifferent,
+        isSurpriseMe: !!safeDialogueState.isSurpriseMe,
+        shownGameTitles: Array.isArray(safeDialogueState.shownGameTitles) ? [...safeDialogueState.shownGameTitles] : [],
+        rejectedGames: Array.isArray(safeDialogueState.rejectedGames) ? [...safeDialogueState.rejectedGames] : []
     }
 
     // 2. Procesar el texto mediante el servicio NLP
-    const analysis = parseUserMessage(userMessage, accumulatedCriteria, state)
+    const analysis = parseUserMessage(userMessage, safeCriteria, state)
     const criteria = analysis.criteria
 
     if (analysis.isSurpriseMe) state.isSurpriseMe = true
@@ -306,7 +309,9 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         state.shownGameTitles = [...new Set([...state.shownGameTitles, ...newlyShown])]
 
         let replyIntro = ""
-        if (gameRejectedTitle) {
+        if (recommendations.length === 0) {
+            replyIntro = "No se encontraron videojuegos que coincidan con todos los filtros y restricciones indicadas. Puedes probar relajando algún criterio o iniciando una nueva búsqueda."
+        } else if (gameRejectedTitle) {
             replyIntro = `Entendido, descartamos "${gameRejectedTitle}" de las recomendaciones. Conservando tus demás preferencias, aquí tienes nuevas opciones que encajan con tu perfil:`
         } else if (analysis.wantsAlternatives) {
             replyIntro = "¡De acuerdo! Buscando alternativas diferentes para ti. Excluyendo las que ya revisamos, aquí tienes otras opciones que se adaptan a lo que buscas:"

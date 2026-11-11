@@ -92,18 +92,20 @@ function cleanText(text = "") {
  * @returns {Object} Intención detectada, criterios actualizados y metadatos
  */
 function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState = {}) {
-    const rawText = userMessage.trim()
+    const rawText = (userMessage || "").trim()
     const text = cleanText(userMessage)
+    const prev = previousCriteria || {}
+    const dState = dialogueState || {}
 
-    // Clonar criterios acumulados previos
+    // Clonar criterios acumulados previos con salvaguarda ante valores nulos
     const criteria = {
-        preferredGenres: [...(previousCriteria.preferredGenres || [])],
-        dislikedGenres: [...(previousCriteria.dislikedGenres || [])],
-        emotionalContext: [...(previousCriteria.emotionalContext || [])],
-        availableTime: previousCriteria.availableTime || null,
-        gameMode: previousCriteria.gameMode || null,
-        desiredPacing: previousCriteria.desiredPacing || null,
-        similarTo: [...(previousCriteria.similarTo || [])]
+        preferredGenres: [...(prev.preferredGenres || [])],
+        dislikedGenres: [...(prev.dislikedGenres || [])],
+        emotionalContext: [...(prev.emotionalContext || [])],
+        availableTime: prev.availableTime || null,
+        gameMode: prev.gameMode || null,
+        desiredPacing: prev.desiredPacing || null,
+        similarTo: [...(prev.similarTo || [])]
     }
 
     // 1. Detección de saludos iniciales
@@ -115,7 +117,7 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
 
     // 3. Detección de indiferencia en modalidad ("Me da igual")
     const isModeIndifferent = /(?:me da igual|da igual|no importa|indiferente|como sea|cualquiera)/i.test(text) &&
-        (dialogueState.stage === "mode" || text.includes("modo") || text.includes("jugar"))
+        (dState.stage === "mode" || text.includes("modo") || text.includes("jugar"))
 
     // 4. Detección de indiferencia en géneros ("No tengo preferencias")
     const isGenreIndifferent = /(?:no tengo preferencias|sin preferencias|cualquier genero|no importa el genero|todos los generos)/i.test(text)
@@ -218,6 +220,31 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
             criteria.availableTime = item.duration
             timeModified = true
             break
+        }
+    }
+
+    // Detección numérica dinámica de minutos u horas (ej. "25 minutos", "40 min", "2 horas")
+    if (!timeModified) {
+        const minMatch = text.match(/\b([0-9]{1,3})\s*(?:minutos|minuto|min|m)\b/i)
+        if (minMatch && minMatch[1]) {
+            const mins = parseInt(minMatch[1], 10)
+            if (mins < 30) {
+                criteria.availableTime = "corta (< 30 min)"
+                timeModified = true
+            } else if (mins <= 60) {
+                criteria.availableTime = "media (30-60 min)"
+                timeModified = true
+            } else {
+                criteria.availableTime = "larga (> 1 hora)"
+                timeModified = true
+            }
+        } else {
+            const hrMatch = text.match(/\b([0-9]{1,2})\s*(?:horas|hora|hrs|hr|h)\b/i)
+            if (hrMatch && hrMatch[1]) {
+                const hrs = parseInt(hrMatch[1], 10)
+                criteria.availableTime = hrs >= 1 ? "larga (> 1 hora)" : "corta (< 30 min)"
+                timeModified = true
+            }
         }
     }
 

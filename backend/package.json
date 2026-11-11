@@ -11,7 +11,8 @@
     "test:nlp": "node test/testNLPAndChat.js",
     "test:dialogue": "node test/testAdaptiveDialogue.js",
     "test:phase4": "node test/testPhase4AdvancedChat.js",
-    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js"
+    "test:validation": "node test/testPhase5Validation.js",
+    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js && node test/testPhase5Validation.js"
   },
   "keywords": [
     "chatbot",
