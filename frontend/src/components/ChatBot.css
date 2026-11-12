@@ -282,6 +282,33 @@
   box-shadow: none;
 }
 
+.rg-top-header-btn-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background-color: #e3ebd7;
+  color: #05386b;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1.5px solid #002247;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #002247;
+  transition: all 0.15s ease;
+}
+
+.rg-top-header-btn-profile:hover {
+  background-color: #5cdb95;
+  color: #002247;
+}
+
+.rg-top-header-btn-profile:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
 /* Barra Decorativa Superior Multicolor */
 .rg-chat-top-gradient {
   width: 100%;
@@ -860,6 +887,92 @@
 .rg-chat-footnote .material-symbols-outlined {
   color: #006b5b;
   font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Banner de Selección de Comparación Activa (Opción A - Etapa 6)
+   -------------------------------------------------------------------------- */
+.rg-compare-candidate-banner {
+  width: 100%;
+  max-width: 860px;
+  background-color: #05386b;
+  color: #edf5e1;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 14px rgba(5, 56, 107, 0.25);
+  animation: fadeInCompBanner 0.2s ease-out;
+  border-left: 4px solid #5cdb95;
+}
+
+@keyframes fadeInCompBanner {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rg-compare-candidate-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.rg-compare-candidate-info .material-symbols-outlined {
+  color: #5cdb95;
+}
+
+.rg-compare-candidate-info strong {
+  color: #8ee4af;
+  font-weight: 700;
+}
+
+.rg-compare-cancel-btn {
+  background-color: rgba(237, 245, 225, 0.15);
+  border: 1px solid rgba(237, 245, 225, 0.3);
+  color: #edf5e1;
+  border-radius: 8px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.rg-compare-cancel-btn:hover {
+  background-color: rgba(237, 245, 225, 0.25);
+  border-color: #edf5e1;
+}
+
+.rg-comparison-block {
+  width: 100%;
+  margin-top: 0.75rem;
+  animation: fadeInCompBlock 0.25s ease-out;
+}
+
+@keyframes fadeInCompBlock {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --------------------------------------------------------------------------

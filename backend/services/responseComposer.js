@@ -482,12 +482,13 @@ function composeTurnReply({
 
     // Reconocimiento de preferencia de descubrimiento
     if (analysis.criteria?.discoveryPreference && previousCriteria.discoveryPreference !== analysis.criteria.discoveryPreference) {
-        if (analysis.criteria.discoveryPreference === "similar") {
+        const dPref = analysis.criteria.discoveryPreference
+        if (dPref === "similar" || dPref === "familiar") {
             parts.push("¡Anotado! Buscaremos títulos en esa misma línea.")
-        } else if (analysis.criteria.discoveryPreference === "diferente") {
+        } else if (dPref === "diferente" || dPref === "exploratory") {
             parts.push("¡Perfecto! Buscaremos algo fresco y diferente a lo que sueles jugar.")
-        } else if (analysis.criteria.discoveryPreference === "indistinto") {
-            parts.push("De acuerdo, exploraremos opciones afines sin cerrarnos a novedades.")
+        } else if (dPref === "indistinto" || dPref === "balanced") {
+            parts.push("De acuerdo, exploraremos opciones afines equilibrando variedad y afinidad.")
         }
     }
 
@@ -569,9 +570,10 @@ function composeRecommendationIntro(criteria = {}, dialogueState = {}, analysis 
     // Gustos previos / descubrimiento
     if (criteria.likedGames && criteria.likedGames.length > 0) {
         const gList = criteria.likedGames.join(", ")
-        if (criteria.discoveryPreference === "diferente") {
+        const dPref = criteria.discoveryPreference
+        if (dPref === "diferente" || dPref === "exploratory") {
             clauses.push(`buscando algo diferente a ${gList}`)
-        } else if (criteria.discoveryPreference === "similar") {
+        } else if (dPref === "similar" || dPref === "familiar") {
             clauses.push(`en la línea de ${gList}`)
         }
     }
@@ -633,12 +635,28 @@ function composeRecommendationIntro(criteria = {}, dialogueState = {}, analysis 
         clauses.push(`del género ${criteria.preferredGenres.join(" y ")}`)
     }
 
-    // Exclusiones
+    // Exclusiones y preferencias de experiencia (Etapa 3)
     if (criteria.dislikedGenres && criteria.dislikedGenres.length > 0) {
         clauses.push(`evitando títulos de ${criteria.dislikedGenres.join(" y ")}`)
     }
     if (criteria.dislikedFeatures && criteria.dislikedFeatures.includes("combate_dificil")) {
         clauses.push("sin combates difíciles")
+    }
+    if (criteria.experiencePreferences?.combat === "bajo" || criteria.experiencePreferences?.combat === "ninguno") {
+        clauses.push("con poco o ningún combate")
+    }
+    if (criteria.objectiveStylePreference === "guiado") {
+        clauses.push("con objetivos claros y guiados")
+    } else if (criteria.objectiveStylePreference === "libre") {
+        clauses.push("con objetivos libres")
+    }
+    if (criteria.desiredDifficulty === "baja") {
+        clauses.push("dificultad accesible")
+    } else if (criteria.desiredDifficulty === "alta") {
+        clauses.push("un reto difícil")
+    }
+    if (criteria.pricePreference === "gratuito") {
+        clauses.push("juegos gratuitos")
     }
 
     if (clauses.length > 0) {
@@ -735,12 +753,13 @@ function createAcknowledgment(analysis = {}, previousCriteria = {}) {
         }
     }
     if (analysis.criteria?.discoveryPreference && previousCriteria.discoveryPreference !== analysis.criteria.discoveryPreference) {
-        if (analysis.criteria.discoveryPreference === "similar") {
+        const dPref = analysis.criteria.discoveryPreference
+        if (dPref === "similar" || dPref === "familiar") {
             acks.push("¡Anotado! Buscaremos títulos en esa misma línea.")
-        } else if (analysis.criteria.discoveryPreference === "diferente") {
+        } else if (dPref === "diferente" || dPref === "exploratory") {
             acks.push("¡Perfecto! Buscaremos algo fresco y diferente a lo que sueles jugar.")
-        } else if (analysis.criteria.discoveryPreference === "indistinto") {
-            acks.push("De acuerdo, exploraremos opciones afines sin cerrarnos a novedades.")
+        } else if (dPref === "indistinto" || dPref === "balanced") {
+            acks.push("De acuerdo, exploraremos opciones afines equilibrando variedad y afinidad.")
         }
     }
     if (analysis.isChangingGenre && analysis.criteria?.preferredGenres?.length > 0) {

@@ -1,13 +1,23 @@
 /**
+ * Servicio de Generación de Explicaciones Transparentes y Personalizadas (Etapa 3)
+ *
+ * Justifica objetivamente las recomendaciones basándose exclusivamente en:
+ * - Preferencias expresadas por el usuario.
+ * - Criterios realmente evaluados (género, tiempo, modo, ritmo, experiencia, objetivos, dificultad, precio).
+ * - Metadatos verificados del catálogo sin inventar atributos.
+ * - Desgloses y advertencias transparentes cuando existan desajustes secundarios.
+ */
+
+/**
  * Genera explicaciones transparentes, comprensibles y personalizadas
  * para cada videojuego recomendado con base en los factores de coincidencia.
  *
- * @param {Object} scoredItem Objeto con el videojuego, score y matchFactors
+ * @param {Object} scoredItem Objeto con el videojuego, score, breakdown y matchFactors
  * @param {Object} criteria Criterios originales solicitados por el usuario
  * @returns {Object} Justificación estructurada y texto redactado
  */
 function generateExplanation(scoredItem, criteria = {}) {
-    const { game, score, matchFactors } = scoredItem
+    const { game, score, matchFactors = {}, breakdown = {} } = scoredItem
     const reasons = []
     const userClause = []
 
@@ -71,7 +81,72 @@ function generateExplanation(scoredItem, criteria = {}) {
         }
     }
 
-    // 5. Características disfrutadas concretas (Etapa 2)
+    // 5. Atributos de Experiencia Graduables (Etapa 3 - Sección 6 y 9)
+    if (matchFactors.matchedExperienceAttributes && matchFactors.matchedExperienceAttributes.length > 0) {
+        for (const exp of matchFactors.matchedExperienceAttributes) {
+            if (exp.isUnknown) continue
+            if (exp.attribute === "exploration" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("buscas exploración libre y descubrimiento")
+                reasons.push("Ofrece escenarios abiertos con amplias oportunidades de exploración a tu ritmo.")
+            } else if (exp.attribute === "narrative" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("valoras una historia profunda y trama envolvente")
+                reasons.push("Posee un alto valor narrativo con guion maduro y trasfondo profundo.")
+            } else if (exp.attribute === "creativity" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("buscas construir y expresar tu creatividad")
+                reasons.push("Brinda ricas posibilidades creativas y de construcción.")
+            } else if (exp.attribute === "strategy" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("quieres pensar y planificar estrategias")
+                reasons.push("Exige planificación táctica y toma meditada de decisiones.")
+            } else if (exp.attribute === "combat" && (exp.requestedPreference === "bajo" || exp.requestedPreference === "baja" || exp.requestedPreference === "ninguno") && exp.score >= 0.65) {
+                userClause.push("prefieres poco o ningún combate")
+                reasons.push("No se centra en el combate, priorizando la resolución pacífica o la exploración.")
+            } else if (exp.attribute === "combat" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("te atraen los combates intensos y activos")
+                reasons.push("Ofrece enfrentamientos ágiles y mecánicas de combate profundas.")
+            } else if (exp.attribute === "freedom" && (exp.requestedPreference === "alto" || exp.requestedPreference === "alta") && exp.score >= 0.65) {
+                userClause.push("prefieres jugar a tu propio ritmo con total libertad")
+                reasons.push("Otorga total libertad sin misiones coercitivas ni presiones de tiempo.")
+            } else if (exp.attribute === "complexity" && (exp.requestedPreference === "bajo" || exp.requestedPreference === "baja") && exp.score >= 0.65) {
+                userClause.push("buscas mecánicas accesibles sin excesiva complejidad")
+                reasons.push("Mantiene un diseño directo y fácil de comprender.")
+            }
+        }
+    }
+
+    // 6. Estilo de Objetivos (Etapa 3)
+    if (matchFactors.objectiveDetails && !matchFactors.objectiveDetails.isUnknown) {
+        const { requested, gameValue } = matchFactors.objectiveDetails
+        if (requested === "guiado" && (gameValue === "guiado" || gameValue === "mixto")) {
+            userClause.push("te gustan los juegos con objetivos claros")
+            reasons.push("Ofrece una progresión guiada con metas e indicaciones claras.")
+        } else if (requested === "libre" && (gameValue === "libre" || gameValue === "mixto")) {
+            userClause.push("buscas objetivos libres y autonomía")
+            reasons.push("Estructura de mundo abierto con total libertad para marcar tus propios objetivos.")
+        }
+    }
+
+    // 7. Dificultad (Etapa 3)
+    if (matchFactors.difficultyDetails && !matchFactors.difficultyDetails.isUnknown) {
+        const { requested, gameValue } = matchFactors.difficultyDetails
+        if (requested === "baja" && (gameValue === "baja" || gameValue === "ajustable")) {
+            userClause.push("prefieres una dificultad accesible y tranquila")
+            reasons.push("Dificultad baja o ajustable, ideal para una sesión relajada sin frustración.")
+        } else if (requested === "alta" && (gameValue === "alta" || gameValue === "ajustable")) {
+            userClause.push("buscas una experiencia difícil y exigente")
+            reasons.push("Curva de dificultad exigente con retos notables.")
+        }
+    }
+
+    // 8. Condición de Precio (Etapa 3)
+    if (matchFactors.priceDetails && !matchFactors.priceDetails.isUnknown) {
+        const { requested, gameValue } = matchFactors.priceDetails
+        if ((requested === "gratuito" || requested === "gratis") && (gameValue.toLowerCase().includes("gratuito") || gameValue.toLowerCase().includes("free"))) {
+            userClause.push("prefieres juegos gratuitos")
+            reasons.push("Disponible de forma completamente gratuita en PC.")
+        }
+    }
+
+    // 9. Características disfrutadas concretas (Etapa 2)
     if (matchFactors.matchedFeatures && matchFactors.matchedFeatures.length > 0) {
         const featurePhrases = {
             exploracion: "disfrutas de la exploración y descubrir nuevos mundos",
@@ -102,6 +177,14 @@ function generateExplanation(scoredItem, criteria = {}) {
         }
 
         for (const feat of matchFactors.matchedFeatures) {
+            // Evitar duplicar si ya se redactó en atributos de experiencia
+            if (feat === "exploracion" && userClause.some(c => c.includes("exploración"))) continue
+            if (feat === "narrativa_historia" && userClause.some(c => c.includes("historia"))) continue
+            if (feat === "construccion_creatividad" && userClause.some(c => c.includes("construir"))) continue
+            if (feat === "estrategia_planificacion" && userClause.some(c => c.includes("estrategia"))) continue
+            if (feat === "libertad_sandbox" && userClause.some(c => c.includes("ritmo") || c.includes("libertad"))) continue
+            if (feat === "combate_accion" && userClause.some(c => c.includes("combate"))) continue
+
             if (featurePhrases[feat]) {
                 userClause.push(featurePhrases[feat])
             }
@@ -111,7 +194,7 @@ function generateExplanation(scoredItem, criteria = {}) {
         }
     }
 
-    // 6. Similitud, juegos disfrutados y preferencia de descubrimiento (Etapa 2)
+    // 10. Similitud, juegos disfrutados y preferencia de descubrimiento
     if (criteria.discoveryPreference === "diferente" && criteria.likedGames && criteria.likedGames.length > 0) {
         userClause.push(`buscas una experiencia diferente a los juegos que sueles jugar (${criteria.likedGames.join(", ")})`)
         reasons.push(`Te brinda un cambio de aires fresco y diferente respecto a ${criteria.likedGames.join(", ")}, explorando nuevas dinámicas.`)
@@ -123,21 +206,39 @@ function generateExplanation(scoredItem, criteria = {}) {
         reasons.push(`Comparte elementos y mecánicas que recuerdan a ${matchFactors.matchedSimilar.join(", ")}.`)
     }
 
-    // 7. Respeto a características evitadas
+    // 11. Respeto a características evitadas
     if (criteria.dislikedFeatures && criteria.dislikedFeatures.includes("combate_dificil")) {
         reasons.push("No incluye combates frustrantes ni dificultad excesiva, respetando tu preferencia.")
     }
+    if (criteria.dislikedFeatures && criteria.dislikedFeatures.includes("pixel_art")) {
+        reasons.push("Evita el estilo pixel art, respetando tu preferencia visual.")
+    }
+    if (criteria.dislikedFeatures && criteria.dislikedFeatures.includes("combate_accion")) {
+        reasons.push("Ajustado a tu preferencia de evitar combates intensos en esta sesión.")
+    }
 
-    // 8. Aspecto clave destacado del juego
+    // 12. Advertencias transparentes (caveats - Sección 9)
+    if (matchFactors.caveats && matchFactors.caveats.length > 0) {
+        for (const cav of matchFactors.caveats) {
+            reasons.push(cav)
+        }
+    }
+
+    // 13. Aspecto clave destacado del juego
     if (game.experienceHighlights && game.experienceHighlights.length > 0) {
         reasons.push(`Aspecto clave: "${game.experienceHighlights[0]}".`)
     }
 
+    // Deduplicar cláusulas del usuario
+    const uniqueUserClauses = [...new Set(userClause)]
+
     // Redacción de resumen contextual y natural
     let summaryText = ""
-    if (userClause.length > 0) {
-        summaryText = `Te recomendamos este juego porque ${userClause.join(", ")}.`
-        if (game.experienceHighlights && game.experienceHighlights.length > 0) {
+    if (uniqueUserClauses.length > 0) {
+        summaryText = `Te recomendamos este juego porque ${uniqueUserClauses.join(", ")}.`
+        if (matchFactors.caveats && matchFactors.caveats.length > 0) {
+            summaryText += ` ${matchFactors.caveats[0]}`
+        } else if (game.experienceHighlights && game.experienceHighlights.length > 0) {
             summaryText += ` Aspecto clave: "${game.experienceHighlights[0]}".`
         }
     } else if (reasons.length > 0) {
@@ -146,10 +247,14 @@ function generateExplanation(scoredItem, criteria = {}) {
         summaryText = "Se ajusta a las preferencias generales de tu solicitud."
     }
 
+    const confidenceLabel = breakdown.confidenceLevel || "evaluación multicriterio"
+
     return {
         summaryText,
         reasonsList: reasons,
-        confidenceScore: `${score}% de afinidad`
+        text: summaryText,
+        reasons: reasons,
+        confidenceScore: `${score}% de afinidad estimada (${confidenceLabel})`
     }
 }
 

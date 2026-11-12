@@ -83,7 +83,68 @@ const KNOWN_GAME_CATALOG = [
     { title: "Portal 2", patterns: ["portal 2", "portal"] },
     { title: "Deep Rock Galactic", patterns: ["deep rock galactic", "deep rock"] },
     { title: "Overcooked! All You Can Eat", patterns: ["overcooked! all you can eat", "overcooked 2", "overcooked"] },
-    { title: "Frostpunk", patterns: ["frostpunk"] }
+    { title: "Frostpunk", patterns: ["frostpunk"] },
+    { title: "Unpacking", patterns: ["unpacking"] },
+    { title: "Spiritfarer: Farewell Edition", patterns: ["spiritfarer: farewell edition", "spiritfarer"] },
+    { title: "Townscaper", patterns: ["townscaper"] },
+    { title: "PowerWash Simulator", patterns: ["powerwash simulator", "powerwash"] },
+    { title: "Potion Craft: Alchemist Simulator", patterns: ["potion craft: alchemist simulator", "potion craft"] },
+    { title: "Alba: A Wildlife Adventure", patterns: ["alba: a wildlife adventure", "alba"] },
+    { title: "Tiny Glade", patterns: ["tiny glade"] },
+    { title: "Dave the Diver", patterns: ["dave the diver"] },
+    { title: "Journey", patterns: ["journey"] },
+    { title: "ABZÛ", patterns: ["abzu", "abzû"] },
+    { title: "Sable", patterns: ["sable"] },
+    { title: "The Pathless", patterns: ["the pathless"] },
+    { title: "Tunic", patterns: ["tunic"] },
+    { title: "Return of the Obra Dinn", patterns: ["return of the obra dinn", "obra dinn"] },
+    { title: "Chants of Sennaar", patterns: ["chants of sennaar", "sennaar"] },
+    { title: "What Remains of Edith Finch", patterns: ["what remains of edith finch", "edith finch"] },
+    { title: "Life is Strange", patterns: ["life is strange"] },
+    { title: "Oxenfree", patterns: ["oxenfree"] },
+    { title: "Coffee Talk", patterns: ["coffee talk"] },
+    { title: "Night in the Woods", patterns: ["night in the woods"] },
+    { title: "The Stanley Parable: Ultra Deluxe", patterns: ["the stanley parable: ultra deluxe", "the stanley parable", "stanley parable"] },
+    { title: "Baba Is You", patterns: ["baba is you"] },
+    { title: "The Witness", patterns: ["the witness"] },
+    { title: "The Talos Principle", patterns: ["the talos principle", "talos principle"] },
+    { title: "Superliminal", patterns: ["superliminal"] },
+    { title: "Cocoon", patterns: ["cocoon"] },
+    { title: "Ori and the Blind Forest: Definitive Edition", patterns: ["ori and the blind forest: definitive edition", "ori and the blind forest", "ori"] },
+    { title: "Cuphead", patterns: ["cuphead"] },
+    { title: "Shovel Knight: Treasure Trove", patterns: ["shovel knight: treasure trove", "shovel knight"] },
+    { title: "Inside", patterns: ["inside"] },
+    { title: "Pizza Tower", patterns: ["pizza tower"] },
+    { title: "Factorio", patterns: ["factorio"] },
+    { title: "RimWorld", patterns: ["rimworld"] },
+    { title: "Oxygen Not Included", patterns: ["oxygen not included"] },
+    { title: "Timberborn", patterns: ["timberborn"] },
+    { title: "Against the Storm", patterns: ["against the storm"] },
+    { title: "Northgard", patterns: ["northgard"] },
+    { title: "FTL: Faster Than Light", patterns: ["ftl: faster than light", "faster than light", "ftl"] },
+    { title: "XCOM 2", patterns: ["xcom 2", "xcom"] },
+    { title: "Crusader Kings III", patterns: ["crusader kings iii", "crusader kings 3", "crusader kings", "ck3"] },
+    { title: "Balatro", patterns: ["balatro"] },
+    { title: "Inscryption", patterns: ["inscryption"] },
+    { title: "Monster Train", patterns: ["monster train"] },
+    { title: "Darkest Dungeon", patterns: ["darkest dungeon"] },
+    { title: "PlateUp!", patterns: ["plateup!", "plateup"] },
+    { title: "Moving Out", patterns: ["moving out"] },
+    { title: "Human: Fall Flat", patterns: ["human: fall flat", "human fall flat"] },
+    { title: "Keep Talking and Nobody Explodes", patterns: ["keep talking and nobody explodes"] },
+    { title: "We Were Here Together", patterns: ["we were here together", "we were here"] },
+    { title: "Phasmophobia", patterns: ["phasmophobia"] },
+    { title: "Lethal Company", patterns: ["lethal company"] },
+    { title: "Satisfactory", patterns: ["satisfactory"] },
+    { title: "Astroneer", patterns: ["astroneer"] },
+    { title: "Pentiment", patterns: ["pentiment"] },
+    { title: "To the Moon", patterns: ["to the moon"] },
+    { title: "Vampire Survivors", patterns: ["vampire survivors"] },
+    { title: "Risk of Rain 2", patterns: ["risk of rain 2", "risk of rain"] },
+    { title: "Katana Zero", patterns: ["katana zero"] },
+    { title: "Sekiro: Shadows Die Twice", patterns: ["sekiro: shadows die twice", "sekiro"] },
+    { title: "The Forest", patterns: ["the forest"] },
+    { title: "Subnautica: Below Zero", patterns: ["subnautica: below zero", "below zero"] }
 ]
 
 // Lista aplanada de patrones de títulos conocidos para retrocompatibilidad
@@ -176,6 +237,10 @@ const FEATURE_DEFINITIONS = [
     {
         id: "desafio_progresion",
         patterns: ["desafio", "progresion", "reto", "superarme", "dificultad alta", "souls", "desafiante", "poner a prueba mi habilidad", "retos dificiles", "dificultad"]
+    },
+    {
+        id: "pixel_art",
+        patterns: ["pixel art", "graficos retro", "pixelado", "estilo retro", "retro"]
     }
 ]
 
@@ -235,7 +300,7 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
     const prev = previousCriteria || {}
     const dState = dialogueState || {}
 
-    // Clonar criterios acumulados previos con salvaguarda ante valores nulos (Etapas 1 y 2)
+    // Clonar criterios acumulados previos con salvaguarda ante valores nulos (Etapas 1, 2 y 3)
     const criteria = {
         preferredGenres: [...(prev.preferredGenres || [])],
         dislikedGenres: [...(prev.dislikedGenres || [])],
@@ -250,7 +315,22 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         likedFeatures: [...(prev.likedFeatures || [])],
         dislikedFeatures: [...(prev.dislikedFeatures || [])],
         discoveryPreference: prev.discoveryPreference || null,
-        habitualTastes: [...(prev.habitualTastes || [])]
+        habitualTastes: [...(prev.habitualTastes || [])],
+        // --- ETAPA 3: Atributos de experiencia graduables y preferencias ampliadas ---
+        experiencePreferences: {
+            exploration: prev.experiencePreferences?.exploration || null,
+            narrative: prev.experiencePreferences?.narrative || null,
+            creativity: prev.experiencePreferences?.creativity || null,
+            strategy: prev.experiencePreferences?.strategy || null,
+            combat: prev.experiencePreferences?.combat || null,
+            freedom: prev.experiencePreferences?.freedom || null,
+            complexity: prev.experiencePreferences?.complexity || null
+        },
+        objectiveStylePreference: prev.objectiveStylePreference || null,
+        desiredDifficulty: prev.desiredDifficulty || null,
+        isDifficultyStrict: prev.isDifficultyStrict || false,
+        pricePreference: prev.pricePreference || null,
+        isPriceStrict: prev.isPriceStrict || false
     }
 
     // Detección de contraste: Gusto habitual vs. Necesidad actual (Etapa 4, Sección 7)
@@ -320,14 +400,14 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         /(?:me da igual el tiempo|no importa el tiempo|cualquier duracion)/i.test(text)
 
     // 5. Detección de solicitud de alternativas ("Muéstrame otros juegos", "algo diferente", "no me convencen estas opciones", "más alternativas")
-    const wantsAlternatives = /(?:muestrame otros|otros juegos|otras opciones|dame otras opciones|mas alternativas|dame mas alternativas|algo diferente|quiero algo diferente|no me convencen|no me convence|ver otras|ver mas alternativas|diferentes juegos|cambiar opciones|opciones diferentes)/i.test(text)
+    const wantsAlternatives = /(?:dame\s+alternativas|buscar\s+alternativas|alternativas|muestrame otros|otros juegos|otras opciones|dame otras opciones|mas alternativas|dame mas alternativas|algo diferente|quiero algo diferente|no me convencen|no me convence|ver otras|ver mas alternativas|diferentes juegos|cambiar opciones|opciones diferentes)/i.test(text)
 
     // 6. Detección de solicitud explícita de recomendación inmediata (Regla D)
     const wantsRecommendationsNow = /(?:ya\s+(?:puedes\s+)?recomendar(?:me)?|recomiendame\s+(?:ya|juegos)|recomienda(?:me)?\s+ya\b|recomiendame\s+.*?\s+ya\b|recomiendame\s+segun\s+lo\s+que|recomi[eé]ndame\s+seg[uú]n\s+(?:lo\s+hablado|el\s+contexto|lo\s+que\s+hemos\s+hablado)|busca\s+seg[uú]n\s+lo\s+hablado|puedes\s+recomendarme|muestrame\s+(?:los\s+)?(?:juegos|opciones|recomendaciones)|ver\s+(?:los\s+)?(?:juegos|recomendaciones)|(?:con\s+eso\s+)?(?:es\s+)?suficiente|con\s+eso\s+basta|no\s+(?:quiero\s+)?(?:responder\s+)?mas\s+preguntas|sin\s+mas\s+preguntas|dame\s+recomendaciones)/i.test(text)
 
     // 7. Detección de cambio de opinión / corrección ("Mejor quiero...", "cambia a...")
-    const isChangingMind = /(?:mejor|cambia|cambiar|ahora prefiero|en vez de eso)/i.test(text)
-    const isChangingGenre = /(?:mejor\s+(?:recomiendame\s+)?(?:algo\s+de\s+)?|aunque\s+mejor\s+(?:algo\s+de\s+)?|cambia(?:r)?\s+(?:a|el\s+genero\s+a)\s+|ahora\s+prefiero\s+|en\s+vez\s+de\s+[a-z\s]+prefiero\s+|prefiero\s+algo\s+de\s+|recomiendame\s+algo\s+de\s+)/i.test(text)
+    const isChangingMind = /(?:pens[aá]ndolo\s+bien|mejor|cambia|cambiar|ahora prefiero|en vez de eso)/i.test(text)
+    const isChangingGenre = /(?:pens[aá]ndolo\s+bien|mejor\s+prefiero|mejor\s+(?:recomiendame\s+)?(?:algo\s+de\s+)?|aunque\s+mejor\s+(?:algo\s+de\s+)?|cambia(?:r)?\s+(?:a|el\s+genero\s+a)\s+|ahora\s+prefiero\s+|en\s+vez\s+de\s+[a-z\s]+prefiero\s+|prefiero\s+algo\s+de\s+|recomiendame\s+algo\s+de\s+)/i.test(text)
 
     // 8. Detección de rechazo explícito de un juego específico
     let rejectedGame = null
@@ -371,6 +451,14 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         })
 
         if (isMentioned && !criteria.dislikedGenres.includes(item.genre)) {
+            // Salvaguardas ante negaciones o peticiones de intensidad baja (Etapa 3)
+            if (item.genre === "Acción" && /(?:poco\s+combate|sin\s+combate|nada\s+de\s+combate|cero\s+combate|evitar\s+combate|sin\s+peleas?|no\s+quiero\s+combates?|poco\s+de\s+acci[oó]n|sin\s+demasiada\s+acci[oó]n)/i.test(text)) {
+                continue
+            }
+            if (item.genre === "Estrategia" && /(?:sin\s+estrategia|cero\s+estrategia|sin\s+pensar\s+tanto|no\s+quiero\s+estrategia)/i.test(text)) {
+                continue
+            }
+
             if (isChangingGenre) {
                 // Reemplazar género previo por el nuevo género corregido
                 criteria.preferredGenres = [item.genre]
@@ -486,9 +574,15 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         (dState.stage === "followup_game" || dState.stage === "followup_disliked" || dState.stage === "past_games" || text.includes("saltar") || text.includes("omitir"))
 
     // B. Detección de preferencia de descubrimiento (discoveryPreference)
-    if (/(?:algo\s+(?:completamente\s+|totalmente\s+)?(?:distinto|diferente)|probar\s+algo\s+(?:completamente\s+|totalmente\s+)?(?:distinto|diferente)|descubrir\s+algo\s+(?:completamente\s+|totalmente\s+)?(?:diferente|nuevo)|salir\s+de\s+la\s+rutina|(?:distinto|diferente)\s+a\s+(?:lo\s+que\s+suelo\s+jugar|los\s+juegos\s+que\s+suelo\s+jugar|lo\s+habitual|lo\s+de\s+siempre))/i.test(text)) {
+    if (/(?:modo\s+exploratorio|\bexploratorio\b)/i.test(text)) {
+        criteria.discoveryPreference = "exploratory"
+    } else if (/(?:modo\s+familiar|\bfamiliar\b)/i.test(text)) {
+        criteria.discoveryPreference = "familiar"
+    } else if (/(?:modo\s+equilibrado|equilibrado|balanceado)/i.test(text)) {
+        criteria.discoveryPreference = "balanced"
+    } else if (/(?:descubrir\s+algo\s+nuevo|probar\s+otro\s+estilo|opciones\s+menos\s+habituales|sorpr[eé]ndeme\s+con\s+(?:un\s+juego\s+)?diferente|siempre\s+me\s+recomiendas\s+juegos?\s+parecidos|algo\s+(?:completamente\s+|totalmente\s+)?(?:distinto|diferente)|probar\s+(?:algo|otro)\s+(?:completamente\s+|totalmente\s+)?(?:distinto|diferente|estilo)|descubrir\s+algo\s+(?:completamente\s+|totalmente\s+)?(?:diferente|nuevo)|salir\s+de\s+la\s+rutina|(?:distinto|diferente)\s+a\s+(?:lo\s+que\s+suelo\s+jugar|los\s+juegos\s+que\s+suelo\s+jugar|lo\s+habitual|lo\s+de\s+siempre)|quiero\s+algo\s+diferente)/i.test(text)) {
         criteria.discoveryPreference = "diferente"
-    } else if (/(?:algo\s+parecido|algo\s+similar|volver\s+a\s+vivir\s+algo\s+parecido|en\s+la\s+misma\s+linea|parecido\s+a\s+los\s+que\s+suelo\s+jugar|parecido\s+a|similar\s+a)/i.test(text)) {
+    } else if (/(?:algo\s+parecid[oa]s?|juegos?\s+parecid[oa]s?|algo\s+similar(?:es)?|volver\s+a\s+vivir\s+algo\s+parecid[oa]|en\s+la\s+misma\s+l[ií]nea|parecid[oa]s?\s+a\s+(?:los\s+que\s+suelo\s+jugar|lo\s+que\s+suelo\s+jugar)|parecid[oa]s?\s+a\s+mis\s+gustos|algo\s+parecid[oa]\s+a\s+lo\s+que\s+me\s+gusta|quedarme\s+con\s+juegos?\s+similar(?:es)?|recomendaciones\s+m[aá]s\s+precisas|parecid[oa]s?\s+a|similar(?:es)?\s+a)/i.test(text)) {
         criteria.discoveryPreference = "similar"
     } else if (/(?:me\s+da\s+igual\s+si\s+es\s+parecido|da\s+igual\s+si\s+es\s+similar|indiferente|no\s+importa\s+si\s+es\s+parecido)/i.test(text) && dState.stage === "discovery_pref") {
         criteria.discoveryPreference = "indistinto"
@@ -633,7 +727,7 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
     for (const feat of FEATURE_DEFINITIONS) {
         for (const p of feat.patterns) {
             const escapedP = cleanText(p).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-            const dislikeRegex = new RegExp(`(?:no\\s+(?:me\\s+)?gust(?:an?|a)?|sin|evit(?:ar|o|ando)?|nada\\s+de|odio|detesto|cero|menos)\\s+(?:el|la|los|las)?\\s*(?:de\\s+)?(?:much[oa]s?\\s+)?\\b${escapedP}\\b`, "i")
+            const dislikeRegex = new RegExp(`(?:no\\s+(?:me\\s+)?gust(?:an?|a)?|sin|evit(?:ar|o|ando)?|nada\\s+de|odio|detesto|cero|menos)\\s+(?:el|la|los|las)?\\s*(?:juegos?\\s+(?:de\\s+|con\\s+)?)?(?:de\\s+)?(?:much[oa]s?\\s+)?\\b${escapedP}\\b`, "i")
             if (dislikeRegex.test(text)) {
                 if (!criteria.dislikedFeatures.includes(feat.id)) {
                     criteria.dislikedFeatures.push(feat.id)
@@ -647,7 +741,14 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
     // F. Detección de características disfrutadas (likedFeatures)
     for (const feat of FEATURE_DEFINITIONS) {
         if (criteria.dislikedFeatures.includes(feat.id)) continue
-        if (feat.id === "combate_accion" && criteria.dislikedFeatures.includes("combate_dificil")) continue
+        if (feat.id === "combate_accion" && (
+            criteria.dislikedFeatures.includes("combate_dificil") ||
+            /(?:poco\s+combate|sin\s+combate|nada\s+de\s+combate|cero\s+combates?|evitar\s+combates?|sin\s+peleas?|no\s+quiero\s+combates?|sin\s+demasiada\s+acci[oó]n|poco\s+de\s+acci[oó]n)/i.test(text)
+        )) continue
+        if (feat.id === "estrategia_planificacion" && /(?:sin\s+estrategia|cero\s+estrategia|sin\s+pensar\s+tanto|no\s+quiero\s+estrategia)/i.test(text)) continue
+        if (feat.id === "construccion_creatividad" && /(?:sin\s+construcci[oó]n|nada\s+de\s+crafteo|sin\s+craftear|no\s+me\s+gusta\s+construir)/i.test(text)) continue
+        if (feat.id === "exploracion" && /(?:sin\s+exploraci[oó]n|no\s+quiero\s+explorar|nada\s+de\s+explorar|poco\s+de\s+explorar)/i.test(text)) continue
+        if (feat.id === "narrativa_historia" && /(?:sin\s+historia|poca\s+historia|sin\s+tanto\s+texto|sin\s+di[aá]logos|directo\s+a\s+la\s+acci[oó]n)/i.test(text)) continue
 
         const positiveMatch = feat.patterns.some(p => {
             const escapedP = cleanText(p).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -726,6 +827,146 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         }
     }
 
+    // =========================================================================
+    // ETAPA 3: ATRIBUTOS DE EXPERIENCIA, OBJETIVOS, DIFICULTAD Y PRECIO
+    // =========================================================================
+
+    // --- A. Correcciones explícitas de nuevos criterios / cambios de opinión ---
+    if (/(?:olvida(?:r)?\s+(?:lo\s+de\s+)?(?:los?\s+)?juegos?\s+gratis|olvida(?:r)?\s+(?:lo\s+del?\s+)?precio|no\s+importa\s+el\s+precio|me\s+da\s+igual\s+el\s+precio)/i.test(text)) {
+        criteria.pricePreference = null
+        criteria.isPriceStrict = false
+    }
+
+    if (/(?:pens[aá]ndolo\s+mejor|cambia(?:r)?\s+(?:de\s+opini[oó]n|a)?|ahora\s+prefiero)\s+.*?(?:explorar|historia|relaj|evitar\s+combate)/i.test(text)) {
+        if (/evitar\s+combate|sin\s+combate|poco\s+combate|menos\s+combate/i.test(text)) {
+            criteria.experiencePreferences.combat = "bajo"
+            criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            if (!criteria.dislikedFeatures.includes("combate_accion")) criteria.dislikedFeatures.push("combate_accion")
+        }
+        if (/explorar/i.test(text)) {
+            criteria.experiencePreferences.exploration = "alto"
+            if (!criteria.likedFeatures.includes("exploracion")) criteria.likedFeatures.push("exploracion")
+        }
+    }
+
+    // --- B. Atributos de Experiencia Graduables (experiencePreferences) ---
+
+    // 1. Exploración
+    if (/(?:no\s+(?:me\s+gusta\s+|quiero\s+)?explorar|sin\s+(?:tanta\s+)?exploraci[oó]n|poco\s+de\s+explorar|nada\s+de\s+explorar|sin\s+exploraci[oó]n|evitar\s+explorar)/i.test(text)) {
+        criteria.experiencePreferences.exploration = "bajo"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "exploracion")
+    } else if (/(?:explorar\s+libremente|exploraci[oó]n\s+libre|mucha\s+exploraci[oó]n|mundo\s+abierto\s+para\s+explorar|descubrir\s+(?:lugares|rincones|el\s+mapa)|curiosear\s+el\s+mapa|explorar\s+a\s+fondo|gran\s+exploraci[oó]n|dedicarme\s+a\s+explorar|explorar\s+el\s+mundo|algo\s+de\s+exploraci[oó]n|exploraci[oó]n|explorar)/i.test(text)) {
+        criteria.experiencePreferences.exploration = "alto"
+        if (!criteria.likedFeatures.includes("exploracion")) criteria.likedFeatures.push("exploracion")
+    }
+
+    // 2. Narrativa / Historia profunda
+    if (/(?:sin\s+historia|poca\s+historia|no\s+me\s+interesa\s+la\s+historia|sin\s+tanto\s+texto|sin\s+di[aá]logos|directo\s+a\s+la\s+acci[oó]n|nada\s+de\s+historia)/i.test(text)) {
+        criteria.experiencePreferences.narrative = "bajo"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "narrativa_historia")
+    } else if (/(?:historia\s+profunda|narrativa\s+(?:profunda|rica|inmersiva)|buena\s+historia|trama\s+(?:profunda|atrapante|envolvente)|mucho\s+lore|buen\s+gui[oó]n|historia\s+conmovedora|centrado\s+en\s+la\s+historia)/i.test(text)) {
+        criteria.experiencePreferences.narrative = "alto"
+        if (!criteria.likedFeatures.includes("narrativa_historia")) criteria.likedFeatures.push("narrativa_historia")
+    }
+
+    // 3. Creatividad / Construcción
+    if (/(?:sin\s+construcci[oó]n|no\s+me\s+gusta\s+construir|nada\s+de\s+crafteo|sin\s+craftear|cero\s+construcci[oó]n|sin\s+crear\s+cosas)/i.test(text)) {
+        criteria.experiencePreferences.creativity = "bajo"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "construccion_creatividad")
+    } else if (/(?:construir\s+cosas|libertad\s+creativa|crear\s+y\s+construir|crafteo\s+y\s+construcci[oó]n|diseñar|fabricar|hacer\s+mis\s+construcciones|creatividad|construir\s+a\s+mi\s+ritmo)/i.test(text)) {
+        criteria.experiencePreferences.creativity = "alto"
+        if (!criteria.likedFeatures.includes("construccion_creatividad")) criteria.likedFeatures.push("construccion_creatividad")
+    }
+
+    // 4. Estrategia y planificación
+    if (/(?:sin\s+pensar\s+tanto|sin\s+estrategia|cero\s+gesti[oó]n|no\s+quiero\s+planear|nada\s+de\s+estrategia|sin\s+gesti[oó]n)/i.test(text)) {
+        criteria.experiencePreferences.strategy = "bajo"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "estrategia_planificacion")
+    } else if (/(?:pensar\s+y\s+planear|planear\s+estrategias|estrategia\s+(?:profunda|t[aá]ctica)|t[aá]ctico|tomar\s+decisiones\s+t[aá]cticas|gesti[oó]n\s+profunda|pensar\s+jugadas|optimizar\s+recursos|que\s+me\s+haga\s+pensar)/i.test(text)) {
+        criteria.experiencePreferences.strategy = "alto"
+        if (!criteria.likedFeatures.includes("estrategia_planificacion")) criteria.likedFeatures.push("estrategia_planificacion")
+    }
+
+    // 5. Combate
+    if (/(?:sin\s+combates?|nada\s+de\s+combates?|cero\s+(?:combates?|peleas?)|evitar\s+combates?|sin\s+pelear|no\s+quiero\s+combates?|no\s+me\s+gustan\s+los\s+combates|sin\s+violencia)/i.test(text)) {
+        criteria.experiencePreferences.combat = "ninguno"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+        if (!criteria.dislikedFeatures.includes("combate_accion")) criteria.dislikedFeatures.push("combate_accion")
+        criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== "Acción")
+    } else if (/(?:poco\s+combate|combate\s+ligero|sin\s+demasiad[oa]\s+(?:acci[oó]n|combate)|no\s+tanto\s+combate|combates?\s+m[ií]nimos?|combate\s+secundario|combate\s+suave|menos\s+combate|evitar\s+combates?)/i.test(text)) {
+        criteria.experiencePreferences.combat = "bajo"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+        criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== "Acción")
+    } else if (/(?:mucho\s+combate|combates?\s+intensos?|mucha\s+acci[oó]n|peleas?\s+intensas?|combate\s+din[aá]mico|disparos\s+y\s+acci[oó]n|enfrentamientos\s+intensos|combate\s+desafiante)/i.test(text)) {
+        criteria.experiencePreferences.combat = "alto"
+        if (!criteria.likedFeatures.includes("combate_accion")) criteria.likedFeatures.push("combate_accion")
+    }
+
+    // 6. Libertad de juego (freedom)
+    if (/(?:m[aá]s\s+lineal|lineal|sin\s+tanta\s+libertad|no\s+tan\s+abierto)/i.test(text)) {
+        criteria.experiencePreferences.freedom = "bajo"
+    } else if (/(?:a\s+mi\s+propio\s+ritmo|a\s+mi\s+ritmo|libertad\s+de\s+juego|hacer\s+lo\s+que\s+quiera|sin\s+presiones|jugar\s+a\s+mi\s+aire|total\s+libertad|sin\s+apuros|ritmo\s+libre)/i.test(text)) {
+        criteria.experiencePreferences.freedom = "alto"
+        if (!criteria.likedFeatures.includes("libertad_sandbox")) criteria.likedFeatures.push("libertad_sandbox")
+    }
+
+    // 7. Complejidad
+    if (/(?:no\s+(?:quiero\s+)?(?:un\s+juego\s+)?demasiado\s+complicado|demasiado\s+complicado|no\s+(?:sea\s+)?muy\s+complicado|poco\s+complicado|sin\s+complicaciones|sencillo|simple|f[aá]cil\s+de\s+entender|f[aá]cil\s+de\s+aprender|baja\s+complejidad|poca\s+complejidad|no\s+complicado|accesible)/i.test(text)) {
+        criteria.experiencePreferences.complexity = "bajo"
+    } else if (/(?:juego\s+complejo|mec[aá]nicas\s+complejas|sistemas\s+complejos|profundidad\s+mec[aá]nica|alta\s+complejidad|dif[ií]cil\s+de\s+dominar|complejo)/i.test(text)) {
+        criteria.experiencePreferences.complexity = "alto"
+    }
+
+    // --- C. Estilo de Objetivos (objectiveStylePreference) ---
+    if (/(?:objetivos?\s+claros?|misiones?\s+definidas?|saber\s+siempre\s+qu[eé]\s+hacer|metas?\s+claras?|juego\s+guiado|guiado|lineal\s+con\s+objetivos|indicaciones\s+claras)/i.test(text)) {
+        criteria.objectiveStylePreference = "guiado"
+    } else if (/(?:objetivos?\s+libres?|sin\s+misiones\s+obligatorias?|a\s+mi\s+manera|libertad\s+para\s+decidir|mundo\s+libre|sin\s+metas\s+fijas)/i.test(text)) {
+        criteria.objectiveStylePreference = "libre"
+    } else if (/(?:objetivos\s+con\s+libertad|un\s+poco\s+de\s+ambos|misiones\s+opcionales|mixto)/i.test(text)) {
+        criteria.objectiveStylePreference = "mixto"
+    }
+
+    // --- D. Dificultad (desiredDifficulty) ---
+    if (/(?:cambia(?:r)?\s+(?:la\s+)?dificultad\s+a\s+alta|ahora\s+quiero\s+algo\s+dif[ií]cil)/i.test(text)) {
+        criteria.desiredDifficulty = "alta"
+    } else if (/(?:cambia(?:r)?\s+(?:la\s+)?dificultad\s+a\s+baja|ahora\s+quiero\s+algo\s+f[aá]cil)/i.test(text)) {
+        criteria.desiredDifficulty = "baja"
+    } else if (/(?:experiencia\s+f[aá]cil|juego\s+f[aá]cil|dificultad\s+baja|dificultad\s+relajada|relajada|sin\s+frustraci[oó]n|no\s+quiero\s+frustrarme|relajado\s+y\s+f[aá]cil|accesible|tranquil[ao]\s+sin\s+estr[eé]s)/i.test(text)) {
+        criteria.desiredDifficulty = "baja"
+    } else if (/(?:experiencia\s+dif[ií]cil|reto\s+dif[ií]cil|dificultad\s+alta|dificultad\s+desafiante|muy\s+desafiante|hardcore|exigente)/i.test(text)) {
+        criteria.desiredDifficulty = "alta"
+    } else if (/(?:dificultad\s+media|equilibrado|dificultad\s+equilibrada|equilibrada|dificultad\s+moderada|ni\s+muy\s+f[aá]cil\s+ni\s+muy\s+dif[ií]cil)/i.test(text)) {
+        criteria.desiredDifficulty = "media"
+    } else if (/(?:dificultad\s+ajustable|dificultad\s+personalizable|cambiar\s+la\s+dificultad)/i.test(text)) {
+        criteria.desiredDifficulty = "ajustable"
+    }
+
+    // --- E. Condición de Precio (pricePreference & isPriceStrict) ---
+    if (/(?:solo\s+(?:juegos?\s+)?(?:gratuitos?|gratis)|[uú]nicamente\s+gratuitos?|solo\s+quiero\s+juegos?\s+gratis|sin\s+pagar\s+nada|solo\s+gratis)/i.test(text)) {
+        criteria.pricePreference = "gratuito"
+        criteria.isPriceStrict = true
+    } else if (/(?:juegos?\s+gratuitos?|gratis|free\s+to\s+play|f2p|prefiero\s+juegos?\s+gratuitos?|no\s+quiero\s+pagar)/i.test(text)) {
+        criteria.pricePreference = "gratuito"
+        criteria.isPriceStrict = false
+    }
+
+    // Sincronización de compatibilidad: reflejar características consolidadas en experiencePreferences
+    if (criteria.likedFeatures.includes("exploracion") && !criteria.experiencePreferences.exploration) {
+        criteria.experiencePreferences.exploration = "alto"
+    }
+    if (criteria.likedFeatures.includes("narrativa_historia") && !criteria.experiencePreferences.narrative) {
+        criteria.experiencePreferences.narrative = "alto"
+    }
+    if (criteria.likedFeatures.includes("construccion_creatividad") && !criteria.experiencePreferences.creativity) {
+        criteria.experiencePreferences.creativity = "alto"
+    }
+    if (criteria.likedFeatures.includes("estrategia_planificacion") && !criteria.experiencePreferences.strategy) {
+        criteria.experiencePreferences.strategy = "alto"
+    }
+    if (criteria.likedFeatures.includes("libertad_sandbox") && !criteria.experiencePreferences.freedom) {
+        criteria.experiencePreferences.freedom = "alto"
+    }
+
     // 16. Detección de solicitudes genéricas / ambiguas
     const totalCriteriaPoints =
         criteria.preferredGenres.length +
@@ -734,7 +975,11 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         (criteria.gameMode ? 1 : 0) +
         criteria.similarTo.length +
         criteria.likedGames.length +
-        criteria.likedFeatures.length
+        criteria.likedFeatures.length +
+        Object.values(criteria.experiencePreferences || {}).filter(Boolean).length +
+        (criteria.objectiveStylePreference ? 1 : 0) +
+        (criteria.desiredDifficulty ? 1 : 0) +
+        (criteria.pricePreference ? 1 : 0)
 
     const isGenericRequest = /^(?:quiero jugar algo|recomiendame un juego|recomiendame algo|que puedo jugar|busco un juego|dame un juego|juegos)[\s?!.]*$/i.test(text)
     const isAmbiguous = isGenericRequest || totalCriteriaPoints === 0

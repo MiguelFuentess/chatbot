@@ -6,6 +6,7 @@
 
 const { parseUserMessage } = require("./nlpService")
 const { evaluateRecommendations } = require("./recommendationEngine")
+const { explainBatchDiversity } = require("./diversityService")
 const { generateExplanation } = require("./explanationService")
 const {
     composeTurnReply,
@@ -27,7 +28,8 @@ const {
 const {
     handlePostRecommendationTurn,
     resolveGameReference,
-    getGameDetails
+    getGameDetails,
+    detectComparisonIntent
 } = require("./feedbackManager")
 const {
     createInitialMemory,
@@ -230,6 +232,41 @@ function evaluateRecommendationReadiness({ criteria = {}, dialogueState = {}, an
         })
     }
 
+    // 6. Atributos de experiencia y preferencias específicas (Etapa 3)
+    const activeExp = Object.entries(criteria.experiencePreferences || {}).filter(([_, v]) => v != null)
+    if (activeExp.length > 0) {
+        knownDimensions.push({
+            id: "experiencePreferences",
+            name: "Atributos de experiencia",
+            value: activeExp.map(([k, v]) => `${k}: ${v}`).join(", "),
+            type: "preference"
+        })
+    }
+    if (criteria.objectiveStylePreference) {
+        knownDimensions.push({
+            id: "objectiveStyle",
+            name: "Estilo de objetivos",
+            value: criteria.objectiveStylePreference,
+            type: "preference"
+        })
+    }
+    if (criteria.desiredDifficulty) {
+        knownDimensions.push({
+            id: "difficulty",
+            name: "Dificultad deseada",
+            value: criteria.desiredDifficulty,
+            type: "preference"
+        })
+    }
+    if (criteria.pricePreference) {
+        knownDimensions.push({
+            id: "price",
+            name: "Condición de precio",
+            value: criteria.pricePreference,
+            type: "preference"
+        })
+    }
+
     // Dimensiones pendientes que aún no se han formulado
     const questionsAsked = Array.isArray(dialogueState.questionsAsked) ? dialogueState.questionsAsked : []
     const unaskedDimensions = unresolvedDimensions.filter((dim) => !questionsAsked.includes(dim))
@@ -280,13 +317,17 @@ function evaluateRecommendationReadiness({ criteria = {}, dialogueState = {}, an
         reason = `Información insuficiente: existen ${unresolvedDimensions.length} dimensión(es) sin resolver (${unresolvedDimensions.join(", ")}). Formular una pregunta sobre '${nextTarget}' mejorará sustancialmente la recomendación.`
     }
 
+    const coreDimensionsCount = [hasExperience, hasTime, hasMode, hasGenre].filter(Boolean).length
+
     return {
         readyToRecommend,
         reason,
         knownDimensions,
         unresolvedDimensions,
         unaskedDimensions,
-        dimensionsCount: knownDimensions.length,
+        dimensionsCount: coreDimensionsCount,
+        coreDimensionsCount,
+        knownDimensionsCount: knownDimensions.length,
         hasExperience,
         hasTime,
         hasMode,
@@ -330,6 +371,9 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         feedbackMotives: Array.isArray(safeDialogueState.feedbackMotives) ? [...safeDialogueState.feedbackMotives] : [],
         clarifiedStages: Array.isArray(safeDialogueState.clarifiedStages) ? [...safeDialogueState.clarifiedStages] : [],
         recentOpeners: Array.isArray(safeDialogueState.recentOpeners) ? [...safeDialogueState.recentOpeners] : [],
+        lastComparedGames: Array.isArray(safeDialogueState.lastComparedGames) ? [...safeDialogueState.lastComparedGames] : [],
+        pendingComparisonGame: safeDialogueState.pendingComparisonGame || null,
+        pendingRejectionGame: safeDialogueState.pendingRejectionGame || null,
         questionTracker: safeDialogueState.questionTracker ? JSON.parse(JSON.stringify(safeDialogueState.questionTracker)) : {}
     }
     initQuestionTracker(state)
@@ -386,7 +430,21 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
                 likedFeatures: [],
                 dislikedFeatures: [],
                 discoveryPreference: null,
-                habitualTastes: []
+                habitualTastes: [],
+                experiencePreferences: {
+                    exploration: null,
+                    narrative: null,
+                    creativity: null,
+                    strategy: null,
+                    combat: null,
+                    freedom: null,
+                    complexity: null
+                },
+                objectiveStylePreference: null,
+                desiredDifficulty: null,
+                isDifficultyStrict: false,
+                pricePreference: null,
+                isPriceStrict: false
             },
             dialogueState: {
                 stage: "experience",
@@ -468,6 +526,20 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
             Object.assign(criteria, activeCriteria)
             state.conversationMemory = conversationMemory
 
+            if (memMod.field === "difficulty") {
+                return {
+                    reply: "De acuerdo, he eliminado la restricción de dificultad. Ahora consideraremos títulos con cualquier nivel de desafío sin exigencia estricta. ¿Te gustaría ver nuevas recomendaciones?",
+                    updatedCriteria: criteria,
+                    dialogueState: {
+                        ...state,
+                        conversationMemory
+                    },
+                    conversationMemory,
+                    recommendations: [],
+                    suggestedReplies: ["Recomiéndame según lo hablado", "Buscar alternativas", "Nueva búsqueda"]
+                }
+            }
+
             return {
                 reply: `De acuerdo, he eliminado "${memMod.value}" de tus preferencias para esta búsqueda. ¿Qué otro género o estilo te gustaría explorar?`,
                 updatedCriteria: criteria,
@@ -496,6 +568,57 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
                 conversationMemory,
                 recommendations: [],
                 suggestedReplies: ["Recomiéndame ya", ...QUESTIONS_CONFIG.genres.options.slice(0, 4)]
+            }
+        } else if (memMod.type === "change_game_opinion") {
+            syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+            const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+            Object.assign(criteria, activeCriteria)
+            state.conversationMemory = conversationMemory
+
+            return {
+                reply: `¡Excelente! He actualizado tu perfil para darle una oportunidad a **${memMod.gameTitle}**, retirándolo de tus descartes y sumándolo a tus títulos de interés. ¿Te gustaría saber más sobre él o buscar recomendaciones similares?`,
+                updatedCriteria: criteria,
+                dialogueState: {
+                    ...state,
+                    conversationMemory
+                },
+                conversationMemory,
+                recommendations: [],
+                suggestedReplies: [`Saber más sobre ${memMod.gameTitle}`, `Juegos parecidos a ${memMod.gameTitle}`, "Ver recomendaciones"]
+            }
+        } else if (memMod.type === "correct_difficulty") {
+            syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+            const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+            Object.assign(criteria, activeCriteria)
+            state.conversationMemory = conversationMemory
+
+            return {
+                reply: `Entendido, he actualizado tu preferencia de dificultad a ${memMod.newValue === "baja" ? "sencilla / baja" : memMod.newValue}, sustituyendo la solicitud anterior para evitar contradicciones. ¿Quieres que busquemos recomendaciones acordes?`,
+                updatedCriteria: criteria,
+                dialogueState: {
+                    ...state,
+                    conversationMemory
+                },
+                conversationMemory,
+                recommendations: [],
+                suggestedReplies: ["Recomiéndame ya", "Buscar alternativas", "Nueva búsqueda"]
+            }
+        } else if (memMod.type === "exclude_genre") {
+            syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+            const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+            Object.assign(criteria, activeCriteria)
+            state.conversationMemory = conversationMemory
+
+            return {
+                reply: `Entendido, he excluido los juegos de **${memMod.genre}** de tus preferencias. No te mostraremos títulos de esa categoría. ¿Quieres ver nuevas opciones adaptadas?`,
+                updatedCriteria: criteria,
+                dialogueState: {
+                    ...state,
+                    conversationMemory
+                },
+                conversationMemory,
+                recommendations: [],
+                suggestedReplies: ["Recomiéndame ya", "Buscar alternativas", "Nueva búsqueda"]
             }
         }
     }
@@ -550,8 +673,9 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         }
     }
 
-    // 4b. Manejo de retroalimentación e interacciones conversacionales post-recomendación (Etapa 5)
-    if (safeDialogueState.stage === "recommended") {
+    // 4b. Manejo de retroalimentación e interacciones conversacionales post-recomendación o comparación (Etapas 5 y 6)
+    const isComparison = detectComparisonIntent(userMessage, state)
+    if (safeDialogueState.stage === "recommended" || safeDialogueState.stage === "compared" || safeDialogueState.stage === "feedback_rejection_followup" || isComparison) {
         const postRecResult = await handlePostRecommendationTurn({
             userMessage,
             criteria,
@@ -638,6 +762,9 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
             markQuestionStatus(state, "genres", state.genreIndifferent ? "resolved_flexible" : "resolved")
         }
     }
+    if (/amigos|pareja|novio|novia|con alguien|competir|versus|pvp/i.test(userMessage || "")) {
+        markQuestionStatus(state, "feature_cooperacion", "resolved")
+    }
 
     if (analysis.isSkippingPastGames) {
         state.pastGamesSkipped = true
@@ -704,6 +831,10 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
             replyIntro = "No se encontraron videojuegos que coincidan con todos los filtros y restricciones indicadas. Puedes probar relajando algún criterio o iniciando una nueva búsqueda."
         } else {
             replyIntro = composeRecommendationIntro(criteria, state, analysis, gameRejectedTitle)
+            const diversityExp = explainBatchDiversity(recommendations, criteria)
+            if (diversityExp && recommendations.length > 1) {
+                replyIntro += `\n\n${diversityExp}`
+            }
             if (!replyIntro.includes("¿Alguna") && !replyIntro.includes("¿Qué te parecen") && !replyIntro.includes("¿Te llama")) {
                 replyIntro += "\n\nEstas son algunas opciones que podrían encajar con lo que buscas. ¿Alguna te llamó especialmente la atención o quieres explorar alternativas?"
             }
@@ -724,9 +855,9 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
             suggestedReplies: [
                 "Me interesa el primero",
                 topGame ? `¿De qué trata ${topGame}?` : "Quiero saber más",
-                "¿Cuál es más tranquilo?",
-                "Buscar alternativas",
-                "Nueva búsqueda"
+                "Quiero algo diferente",
+                "Algo parecido a mis gustos",
+                "Muéstrame más alternativas"
             ]
         }
     }

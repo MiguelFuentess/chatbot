@@ -1,5 +1,61 @@
 const mongoose = require("mongoose")
 
+/**
+ * Validador para atributos numéricos de experiencia graduables entre 0 y 5 o null.
+ */
+const experienceAttributeValidator = {
+    validator: function (v) {
+        if (v === null || v === undefined) return true
+        return Number.isInteger(v) && v >= 0 && v <= 5
+    },
+    message: (props) => `${props.path} debe ser un número entero entre 0 y 5 o null, recibido: ${props.value}`
+}
+
+/**
+ * Subdocumento de atributos de experiencia de juego (Etapa 1 - Tercera Evolución).
+ * Permite capturar dimensiones granulares del diseño lúdico.
+ */
+const experienceAttributesSchema = new mongoose.Schema(
+    {
+        exploration: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        narrative: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        creativity: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        strategy: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        combat: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        freedom: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        },
+        complexity: {
+            type: Number,
+            default: null,
+            validate: experienceAttributeValidator
+        }
+    },
+    { _id: false }
+)
+
 const gameSchema = new mongoose.Schema(
     {
         title: {
@@ -63,6 +119,21 @@ const gameSchema = new mongoose.Schema(
             type: String,
             enum: ["Gratuito", "De pago", "Free-to-play"],
             default: "De pago"
+        },
+        // --- NUEVOS ATRIBUTOS DE METADATOS AMPLIADOS (Etapa 1 - Tercera Evolución) ---
+        objectiveStyle: {
+            type: String,
+            enum: {
+                values: ["libre", "guiado", "mixto"],
+                message: "objectiveStyle debe ser 'libre', 'guiado', 'mixto' o null, recibido: {VALUE}"
+            },
+            default: null,
+            required: false
+        },
+        experienceAttributes: {
+            type: experienceAttributesSchema,
+            default: null,
+            required: false
         }
     },
     {

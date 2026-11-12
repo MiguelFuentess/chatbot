@@ -20,3 +20,11 @@ Thumbs.db
 # Build outputs.
 build/
 dist/
+
+# Backups and temporary seed dumps
+*.backup.json
+backend/data/backups/
+
+# Private documentation
+docs/
+

@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import GameCard from "./GameCard"
+import GameComparison from "./GameComparison"
 import QuickReplies from "./QuickReplies"
+import PlayerProfile from "./PlayerProfile"
 import "./ChatBot.css"
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api"
@@ -40,9 +42,11 @@ const ChatBot = () => {
         turnCount: 0
     })
     const [conversationMemory, setConversationMemory] = useState(null)
+    const [compareCandidate, setCompareCandidate] = useState(null)
     const [isOnline, setIsOnline] = useState(true)
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+    const [profileOpen, setProfileOpen] = useState(false)
 
     const messagesEndRef = useRef(null)
 
@@ -106,7 +110,8 @@ const ChatBot = () => {
                 updatedCriteria,
                 dialogueState: newDialogueState,
                 suggestedReplies,
-                conversationMemory: newMemory
+                conversationMemory: newMemory,
+                comparisonData
             } = res.data
 
             // 3. Confirmar conexión exitosa
@@ -133,7 +138,8 @@ const ChatBot = () => {
                     role: "bot",
                     text: reply,
                     recommendations: recommendations || [],
-                    suggestedReplies: suggestedReplies || []
+                    suggestedReplies: suggestedReplies || [],
+                    comparisonData: comparisonData || null
                 }
             ])
         } catch (error) {
@@ -159,6 +165,21 @@ const ChatBot = () => {
         }
     }
 
+    const handleCardCompare = (game) => {
+        if (!game || !game.title) return
+        if (!compareCandidate) {
+            setCompareCandidate(game)
+        } else if (compareCandidate.title.toLowerCase() === game.title.toLowerCase()) {
+            // Deseleccionar al hacer clic nuevamente sobre el mismo
+            setCompareCandidate(null)
+        } else {
+            const titleA = compareCandidate.title
+            const titleB = game.title
+            setCompareCandidate(null)
+            sendMessage(`Compara ${titleA} con ${titleB}`)
+        }
+    }
+
     const handleReset = () => {
         setAccumulatedCriteria({})
         setDialogueState({
@@ -167,6 +188,7 @@ const ChatBot = () => {
             turnCount: 0
         })
         setConversationMemory(null)
+        setCompareCandidate(null)
         setMessages([
             {
                 role: "bot",
@@ -177,6 +199,26 @@ const ChatBot = () => {
         ])
         if (mobileSidebarOpen) {
             setMobileSidebarOpen(false)
+        }
+    }
+
+    const handleProfileUpdate = async (updateAction) => {
+        try {
+            const payload = {
+                memory: conversationMemory,
+                criteria: accumulatedCriteria,
+                dialogueState,
+                updateAction
+            }
+            const res = await axios.post(`${API_BASE}/recommendations/profile-update`, payload)
+            if (res.data) {
+                if (res.data.memory) setConversationMemory(res.data.memory)
+                if (res.data.criteria) setAccumulatedCriteria(res.data.criteria)
+                if (res.data.dialogueState) setDialogueState(res.data.dialogueState)
+            }
+        } catch (error) {
+            console.error("Error al actualizar perfil en servidor:", error)
+            throw error
         }
     }
 
@@ -242,6 +284,16 @@ const ChatBot = () => {
                             <span className="material-symbols-outlined" aria-hidden="true">explore</span>
                             {!sidebarCollapsed && <span>Inicio</span>}
                         </button>
+
+                        <button
+                            type="button"
+                            className="rg-sidebar-nav-item"
+                            onClick={() => setProfileOpen(true)}
+                            title="Ver y editar mis preferencias de juego"
+                        >
+                            <span className="material-symbols-outlined" aria-hidden="true">tune</span>
+                            {!sidebarCollapsed && <span>Mis preferencias</span>}
+                        </button>
                     </nav>
                 </div>
 
@@ -278,6 +330,18 @@ const ChatBot = () => {
                     </div>
 
                     <div className="rg-top-header-right">
+                        <button
+                            type="button"
+                            className="rg-top-header-btn-profile"
+                            onClick={() => setProfileOpen(true)}
+                            title="Ver y editar mis preferencias de juego"
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                tune
+                            </span>
+                            <span>Mis preferencias</span>
+                        </button>
+
                         <button
                             type="button"
                             className="rg-top-header-btn-new"
@@ -462,6 +526,16 @@ const ChatBot = () => {
                                                 <p>{msg.text}</p>
                                             </div>
 
+                                            {/* Comparador Visual y Conversacional de Videojuegos (Etapa 6) */}
+                                            {msg.comparisonData && (
+                                                <div className="rg-comparison-block">
+                                                    <GameComparison
+                                                        comparisonData={msg.comparisonData}
+                                                        onAction={(actionText) => sendMessage(actionText)}
+                                                    />
+                                                </div>
+                                            )}
+
                                             {/* Tarjetas de Videojuegos Recomendados */}
                                             {msg.recommendations && msg.recommendations.length > 0 && (
                                                 <div className="rg-recommendations-block">
@@ -477,6 +551,8 @@ const ChatBot = () => {
                                                             key={recIdx}
                                                             recommendation={rec}
                                                             onAction={(actionText) => sendMessage(actionText)}
+                                                            onCompare={handleCardCompare}
+                                                            isSelectedForCompare={compareCandidate?.title === rec.game.title}
                                                         />
                                                     ))}
                                                 </div>
@@ -525,6 +601,31 @@ const ChatBot = () => {
 
                 {/* 4. Campo de Entrada Inferior (Input Bar & Footnote) */}
                 <footer className="rg-chat-input-dock">
+                    {/* Banner flotante de selección de comparación activa (Opción A) */}
+                    {compareCandidate && (
+                        <div className="rg-compare-candidate-banner" role="status">
+                            <div className="rg-compare-candidate-info">
+                                <span className="material-symbols-outlined" style={{ fontSize: "18px" }} aria-hidden="true">
+                                    compare_arrows
+                                </span>
+                                <span>
+                                    Comparando: <strong>{compareCandidate.title}</strong>. Selecciona el segundo juego haciendo clic en &ldquo;Comparar&rdquo;.
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                className="rg-compare-cancel-btn"
+                                onClick={() => setCompareCandidate(null)}
+                                title="Cancelar selección de comparación"
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                    close
+                                </span>
+                                <span>Cancelar</span>
+                            </button>
+                        </div>
+                    )}
+
                     <div className="rg-chat-input-wrapper">
                         <form
                             className="rg-chat-input-box"
@@ -562,6 +663,15 @@ const ChatBot = () => {
                     </p>
                 </footer>
             </div>
+
+            {/* 5. Perfil Temporal del Jugador (Drawer / Overlay Editable) */}
+            <PlayerProfile
+                isOpen={profileOpen}
+                onClose={() => setProfileOpen(false)}
+                conversationMemory={conversationMemory}
+                accumulatedCriteria={accumulatedCriteria}
+                onUpdateProfile={handleProfileUpdate}
+            />
         </div>
     )
 }

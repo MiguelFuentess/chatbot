@@ -15,6 +15,15 @@
  */
 
 const { cleanText, resolveGameTitle, FEATURE_DEFINITIONS, GENRE_PATTERNS } = require("./nlpService")
+const {
+    FEEDBACK_TYPES,
+    FEEDBACK_INTENSITIES,
+    FEEDBACK_SENTIMENTS,
+    FEEDBACK_SCOPES,
+    createFeedbackEvent,
+    recordFeedbackEvent,
+    classifyFeedbackIntensity
+} = require("./feedbackEventService")
 
 /**
  * Crea la estructura inicial en blanco de la memoria conversacional.
@@ -39,7 +48,23 @@ function createInitialMemory() {
             todayExperience: null,
             preferredGenres: [],
             dislikedGenres: [],
-            dislikedFeatures: []
+            dislikedFeatures: [],
+            // --- NUEVOS EN ETAPA 3 ---
+            experiencePreferences: {
+                exploration: null,
+                narrative: null,
+                creativity: null,
+                strategy: null,
+                combat: null,
+                freedom: null,
+                complexity: null
+            },
+            objectiveStylePreference: null,
+            desiredDifficulty: null,
+            isDifficultyStrict: false,
+            pricePreference: null,
+            isPriceStrict: false,
+            discoveryPreference: null
         },
         pastExperiences: {
             likedGames: [],      // [{ title, motive, features, turn }]
@@ -51,7 +76,8 @@ function createInitialMemory() {
             shownHistory: [],
             interestedGames: [], // [{ title, motive, turn }]
             rejectedGames: [],   // [{ title, motive, isTemporary, turn }]
-            requestedAdjustments: []
+            requestedAdjustments: [],
+            events: []           // [{ eventId, type, sentiment, intensity, scope, gameTitle, feature, reason, turn, createdAt }]
         },
         memoryLog: []
     }
@@ -80,6 +106,19 @@ function initConversationMemory(existingMemory, fallbackCriteria = {}, fallbackD
         if (Array.isArray(fallbackCriteria.preferredGenres)) base.currentNeeds.preferredGenres = [...fallbackCriteria.preferredGenres]
         if (Array.isArray(fallbackCriteria.dislikedGenres)) base.currentNeeds.dislikedGenres = [...fallbackCriteria.dislikedGenres]
         if (Array.isArray(fallbackCriteria.dislikedFeatures)) base.currentNeeds.dislikedFeatures = [...fallbackCriteria.dislikedFeatures]
+        if (fallbackCriteria.experiencePreferences) {
+            base.currentNeeds.experiencePreferences = {
+                ...base.currentNeeds.experiencePreferences,
+                ...fallbackCriteria.experiencePreferences
+            }
+        }
+        if (fallbackCriteria.objectiveStylePreference) base.currentNeeds.objectiveStylePreference = fallbackCriteria.objectiveStylePreference
+        if (fallbackCriteria.desiredDifficulty) base.currentNeeds.desiredDifficulty = fallbackCriteria.desiredDifficulty
+        if (fallbackCriteria.isDifficultyStrict !== undefined) base.currentNeeds.isDifficultyStrict = fallbackCriteria.isDifficultyStrict
+        if (fallbackCriteria.pricePreference !== undefined) {
+            base.currentNeeds.pricePreference = fallbackCriteria.pricePreference
+            base.currentNeeds.isPriceStrict = fallbackCriteria.isPriceStrict || false
+        }
 
         if (Array.isArray(fallbackCriteria.likedGames)) {
             for (const g of fallbackCriteria.likedGames) {
@@ -140,7 +179,8 @@ function initConversationMemory(existingMemory, fallbackCriteria = {}, fallbackD
             shownHistory: Array.isArray(existingMemory.recommendationFeedback?.shownHistory) ? [...existingMemory.recommendationFeedback.shownHistory] : [],
             interestedGames: Array.isArray(existingMemory.recommendationFeedback?.interestedGames) ? [...existingMemory.recommendationFeedback.interestedGames] : [],
             rejectedGames: Array.isArray(existingMemory.recommendationFeedback?.rejectedGames) ? [...existingMemory.recommendationFeedback.rejectedGames] : [],
-            requestedAdjustments: Array.isArray(existingMemory.recommendationFeedback?.requestedAdjustments) ? [...existingMemory.recommendationFeedback.requestedAdjustments] : []
+            requestedAdjustments: Array.isArray(existingMemory.recommendationFeedback?.requestedAdjustments) ? [...existingMemory.recommendationFeedback.requestedAdjustments] : [],
+            events: Array.isArray(existingMemory.recommendationFeedback?.events) ? [...existingMemory.recommendationFeedback.events] : []
         },
         memoryLog: Array.isArray(existingMemory.memoryLog) ? existingMemory.memoryLog.slice(-15) : []
     }
@@ -228,6 +268,58 @@ function detectMemoryCorrectionOrDeletion(userMessage = "", memory = {}) {
     const raw = (userMessage || "").trim()
     const clean = cleanText(userMessage)
 
+    // 0. Eliminación directa de restricción de dificultad ("quita la restricción de dificultad")
+    if (/(?:quita(?:r)?|elimina(?:r)?|borra(?:r)?|sin|olvida(?:r)?)\s+(?:la\s+)?restricci[oó]n\s+de\s+dificultad/i.test(clean) ||
+        /(?:sin|quitar?|eliminar?)\s+l[ií]mite\s+de\s+dificultad/i.test(clean)) {
+        return {
+            type: "delete_preference",
+            field: "difficulty",
+            value: "restricción de dificultad",
+            rawMatch: raw
+        }
+    }
+
+    // 0b. Cambio de opinión sobre un juego antes rechazado (Etapa 7, Escenario 14)
+    const changeGameOpinionMatch = raw.match(/(?:pens[aá]ndolo\s+bien,?\s+(?:me\s+interesa|dale\s+una\s+oportunidad\s+a)|cambi[eé]\s+de\s+opini[oó]n\s+(?:respecto\s+a|sobre)|ahora\s+s[ií]\s+me\s+interesa)\s+([a-záéíóúñ0-9: \-]+?)(?:[.,;]|$)/i)
+    if (changeGameOpinionMatch && changeGameOpinionMatch[1]) {
+        const candidateTitle = changeGameOpinionMatch[1].trim()
+        const resolved = resolveGameTitle(candidateTitle)
+        const finalTitle = resolved?.title || candidateTitle
+        return {
+            type: "change_game_opinion",
+            gameTitle: finalTitle,
+            targetState: "interested",
+            rawMatch: raw
+        }
+    }
+
+    // 0c. Ajuste de preferencia contradictoria de dificultad (Etapa 7, Escenario 16)
+    const diffTransitionMatch = raw.match(/(?:antes\s+(?:quer[ií]a|ped[ií]|buscaba)\s+.*?(?:dif[ií]cil|desafiante).*?(?:pero|ahora).*?(?:sencillo|f[aá]cil|relajado|tranquilo)|cambia(?:r)?\s+(?:la\s+)?dificultad\s+(?:de\s+alta\s+)?a\s+(?:baja|sencilla|f[aá]cil))/i)
+    if (diffTransitionMatch) {
+        return {
+            type: "correct_difficulty",
+            oldValue: "alta",
+            newValue: "baja",
+            isStrict: false,
+            rawMatch: raw
+        }
+    }
+
+    // 0d. Exclusión de categoría entera (Etapa 7, Escenario 24)
+    const excludeCategoryMatch = raw.match(/(?:ya\s+no\s+quiero\s+juegos?\s+de|no\s+me\s+recomiendes\s+(?:m[aá]s\s+)?juegos?\s+de|no\s+quiero\s+m[aá]s\s+juegos?\s+de|excluye\s+(?:los\s+juegos?\s+de|el\s+g[eé]nero)?)\s+([a-záéíóúñ]+)/i)
+    if (excludeCategoryMatch && excludeCategoryMatch[1]) {
+        const catClean = cleanText(excludeCategoryMatch[1].trim())
+        for (const item of GENRE_PATTERNS) {
+            if (item.patterns.some(p => catClean.includes(cleanText(p)))) {
+                return {
+                    type: "exclude_genre",
+                    genre: item.genre,
+                    rawMatch: raw
+                }
+            }
+        }
+    }
+
     // 1. Eliminación explícita: "Olvida que quería [género/característica]"
     const forgetMatch = raw.match(/(?:olvida\s+que\s+(?:quer[ií]a|dije|ped[ií]|mencion[eé])|elimina(?:\s+de\s+mis\s+gustos)?|quita|borra)\s+(.+?)(?:[.,;]|$)/i)
     if (forgetMatch && forgetMatch[1]) {
@@ -263,6 +355,22 @@ function detectMemoryCorrectionOrDeletion(userMessage = "", memory = {}) {
                 rawMatch: targetRaw
             }
         }
+        if (/precio|gratis|gratuito|pago/i.test(targetClean)) {
+            return {
+                type: "delete_preference",
+                field: "price",
+                value: "gratuito",
+                rawMatch: targetRaw
+            }
+        }
+        if (/dificultad/i.test(targetClean)) {
+            return {
+                type: "delete_preference",
+                field: "difficulty",
+                value: "restricción de dificultad",
+                rawMatch: targetRaw
+            }
+        }
 
         return {
             type: "delete_preference",
@@ -272,20 +380,20 @@ function detectMemoryCorrectionOrDeletion(userMessage = "", memory = {}) {
         }
     }
 
-    // 2. Corrección explícita de género: "Antes dije [X], pero prefiero [Y]"
-    const changeGenreMatch = raw.match(/(?:antes\s+dije\s+([a-záéíóúñ]+).*?(?:pero|ahora)\s+prefiero\s+([a-záéíóúñ]+)|cambia\s+([a-záéíóúñ]+)\s+(?:por|a)\s+([a-záéíóúñ]+))/i)
+    // 2. Corrección explícita de género: "Antes dije [X], pero prefiero [Y]" o "Pensándolo bien, mejor prefiero [Y]"
+    const changeGenreMatch = raw.match(/(?:antes\s+dije\s+([a-záéíóúñ]+).*?(?:pero|ahora)\s+prefiero\s+([a-záéíóúñ]+)|cambia\s+([a-záéíóúñ]+)\s+(?:por|a)\s+([a-záéíóúñ]+)|(?:pens[aá]ndolo\s+bien,?\s+)?mejor\s+prefiero\s+([a-záéíóúñ]+))/i)
     if (changeGenreMatch) {
-        const oldCandidate = changeGenreMatch[1] || changeGenreMatch[3]
-        const newCandidate = changeGenreMatch[2] || changeGenreMatch[4]
+        const oldCandidate = changeGenreMatch[1] || changeGenreMatch[3] || (memory.currentNeeds?.preferredGenres && memory.currentNeeds.preferredGenres[0]) || (memory.habitualPreferences?.genres && memory.habitualPreferences.genres[0]) || null
+        const newCandidate = changeGenreMatch[2] || changeGenreMatch[4] || changeGenreMatch[5]
 
         let oldGenre = null
         let newGenre = null
 
         for (const item of GENRE_PATTERNS) {
-            if (item.patterns.some(p => cleanText(oldCandidate).includes(cleanText(p)))) {
+            if (oldCandidate && item.patterns.some(p => cleanText(oldCandidate).includes(cleanText(p)))) {
                 oldGenre = item.genre
             }
-            if (item.patterns.some(p => cleanText(newCandidate).includes(cleanText(p)))) {
+            if (newCandidate && item.patterns.some(p => cleanText(newCandidate).includes(cleanText(p)))) {
                 newGenre = item.genre
             }
         }
@@ -300,7 +408,7 @@ function detectMemoryCorrectionOrDeletion(userMessage = "", memory = {}) {
     }
 
     // 3. Cambio temporal de modalidad: "Hoy ya no quiero jugar con amigos" / "Para hoy prefiero jugar solo"
-    if (/(?:hoy\s+)?ya\s+no\s+quiero\s+jugar\s+con\s+amigos|(?:solo\s+)?por\s+hoy\s+prefiero\s+(?:jugar\s+)?solo|hoy\s+quiero\s+jugar\s+solo/i.test(clean)) {
+    if (/(?:hoy\s+)?ya\s+no\s+quiero\s+jugar\s+con\s+amigos|(?:solo\s+)?por\s+hoy\s+prefiero\s+(?:jugar\s+)?solo|hoy\s+quiero\s+jugar\s+solo|prefiero\s+algo\s+individual/i.test(clean)) {
         return {
             type: "correct_mode_temporary",
             newValue: "individual",
@@ -539,7 +647,7 @@ function syncMemoryFromTurn({ memory, userMessage = "", analysis = {}, criteria 
     const clean = cleanText(raw)
     const turn = dialogueState.turnCount || 1
 
-    // 1. Manejar correcciones y eliminaciones explícitas (Requisito 6)
+    // 1. Manejar correcciones y eliminaciones explícitas (Requisito 6 y Etapa 7)
     const mod = detectMemoryCorrectionOrDeletion(userMessage, memory)
     if (mod) {
         if (mod.type === "delete_preference") {
@@ -547,16 +655,116 @@ function syncMemoryFromTurn({ memory, userMessage = "", analysis = {}, criteria 
                 memory.currentNeeds.preferredGenres = memory.currentNeeds.preferredGenres.filter(g => g !== mod.value)
                 memory.habitualPreferences.genres = memory.habitualPreferences.genres.filter(g => g !== mod.value)
                 criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== mod.value)
+            } else if (mod.field === "price") {
+                memory.currentNeeds.pricePreference = null
+                memory.currentNeeds.isPriceStrict = false
+                criteria.pricePreference = null
+                criteria.isPriceStrict = false
+            } else if (mod.field === "difficulty") {
+                memory.currentNeeds.desiredDifficulty = null
+                memory.currentNeeds.isDifficultyStrict = false
+                criteria.desiredDifficulty = null
+                criteria.isDifficultyStrict = false
             }
             memory.memoryLog.push({ turn, action: "delete_preference", value: mod.value })
+            recordFeedbackEvent(memory, {
+                type: FEEDBACK_TYPES.PREFERENCE_CORRECTION,
+                feature: mod.field,
+                sentiment: FEEDBACK_SENTIMENTS.NEUTRAL,
+                reason: `Eliminación de ${mod.value}`,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
         } else if (mod.type === "correct_genre") {
             memory.currentNeeds.preferredGenres = [mod.newValue]
             criteria.preferredGenres = [mod.newValue]
+            if (mod.oldValue && Array.isArray(memory.habitualPreferences.genres)) {
+                memory.habitualPreferences.genres = memory.habitualPreferences.genres.filter(g => g.toLowerCase() !== mod.oldValue.toLowerCase())
+            }
             memory.memoryLog.push({ turn, action: "correct_genre", old: mod.oldValue, new: mod.newValue })
+            recordFeedbackEvent(memory, {
+                type: FEEDBACK_TYPES.PREFERENCE_CORRECTION,
+                feature: "genero",
+                sentiment: FEEDBACK_SENTIMENTS.NEUTRAL,
+                reason: `Cambio de género a ${mod.newValue}`,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
+        } else if (mod.type === "correct_difficulty") {
+            memory.currentNeeds.desiredDifficulty = mod.newValue
+            memory.currentNeeds.isDifficultyStrict = mod.isStrict || false
+            criteria.desiredDifficulty = mod.newValue
+            criteria.isDifficultyStrict = mod.isStrict || false
+            memory.memoryLog.push({ turn, action: "correct_difficulty", old: mod.oldValue, new: mod.newValue })
+            recordFeedbackEvent(memory, {
+                type: FEEDBACK_TYPES.PREFERENCE_CORRECTION,
+                feature: "dificultad",
+                sentiment: FEEDBACK_SENTIMENTS.NEUTRAL,
+                reason: `Ajuste de dificultad a ${mod.newValue}`,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
+        } else if (mod.type === "change_game_opinion") {
+            const title = mod.gameTitle
+            memory.recommendationFeedback.rejectedGames = (memory.recommendationFeedback.rejectedGames || []).filter(g => cleanText(g.title) !== cleanText(title))
+            memory.pastExperiences.dislikedGames = (memory.pastExperiences.dislikedGames || []).filter(g => cleanText(g.title) !== cleanText(title))
+            if (Array.isArray(criteria.dislikedGames)) {
+                criteria.dislikedGames = criteria.dislikedGames.filter(g => cleanText(g) !== cleanText(title))
+            }
+            if (Array.isArray(dialogueState.rejectedGames)) {
+                dialogueState.rejectedGames = dialogueState.rejectedGames.filter(g => cleanText(g) !== cleanText(title))
+            }
+            if (!memory.recommendationFeedback.interestedGames.some(g => cleanText(g.title) === cleanText(title))) {
+                memory.recommendationFeedback.interestedGames.push({
+                    title,
+                    motive: "cambio de opinión",
+                    turn
+                })
+            }
+            if (Array.isArray(criteria.likedGames) && !criteria.likedGames.some(g => cleanText(g) === cleanText(title))) {
+                criteria.likedGames.push(title)
+            }
+            memory.memoryLog.push({ turn, action: "change_game_opinion", game: title, state: "interested" })
+            recordFeedbackEvent(memory, {
+                gameTitle: title,
+                type: FEEDBACK_TYPES.GAME_INTEREST,
+                sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+                reason: "Cambio de opinión sobre el videojuego",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
+        } else if (mod.type === "exclude_genre") {
+            if (!memory.currentNeeds.dislikedGenres.includes(mod.genre)) {
+                memory.currentNeeds.dislikedGenres.push(mod.genre)
+            }
+            if (Array.isArray(criteria.dislikedGenres) && !criteria.dislikedGenres.includes(mod.genre)) {
+                criteria.dislikedGenres.push(mod.genre)
+            }
+            memory.currentNeeds.preferredGenres = memory.currentNeeds.preferredGenres.filter(g => g !== mod.genre)
+            if (Array.isArray(criteria.preferredGenres)) {
+                criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== mod.genre)
+            }
+            memory.memoryLog.push({ turn, action: "exclude_genre", genre: mod.genre })
+            recordFeedbackEvent(memory, {
+                type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                feature: mod.genre,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: `Exclusión de la categoría ${mod.genre}`,
+                intensity: FEEDBACK_INTENSITIES.STRICT,
+                turn
+            })
         } else if (mod.type === "correct_mode_temporary") {
             memory.currentNeeds.gameMode = mod.newValue
             criteria.gameMode = mod.newValue
             memory.memoryLog.push({ turn, action: "correct_mode_temporary", mode: mod.newValue })
+            recordFeedbackEvent(memory, {
+                type: FEEDBACK_TYPES.PREFERENCE_CORRECTION,
+                feature: "modalidad",
+                sentiment: FEEDBACK_SENTIMENTS.NEUTRAL,
+                reason: `Ajuste puntual de modo a ${mod.newValue}`,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
         } else if (mod.type === "keep_feature") {
             if (!memory.currentNeeds.dislikedFeatures.includes(mod.featureId)) {
                 if (!criteria.likedFeatures.includes(mod.featureId)) criteria.likedFeatures.push(mod.featureId)
@@ -614,6 +822,30 @@ function syncMemoryFromTurn({ memory, userMessage = "", analysis = {}, criteria 
             }
             if (criteria.preferredGenres && criteria.preferredGenres.length > 0) {
                 memory.currentNeeds.preferredGenres = [...criteria.preferredGenres]
+            }
+
+            // Sincronizar nuevos atributos de experiencia y preferencias (Etapa 3)
+            if (criteria.experiencePreferences) {
+                memory.currentNeeds.experiencePreferences = {
+                    ...memory.currentNeeds.experiencePreferences,
+                    ...criteria.experiencePreferences
+                }
+            }
+            if (criteria.objectiveStylePreference) {
+                memory.currentNeeds.objectiveStylePreference = criteria.objectiveStylePreference
+            }
+            if (criteria.desiredDifficulty) {
+                memory.currentNeeds.desiredDifficulty = criteria.desiredDifficulty
+            }
+            if (criteria.isDifficultyStrict !== undefined) {
+                memory.currentNeeds.isDifficultyStrict = criteria.isDifficultyStrict
+            }
+            if (criteria.pricePreference !== undefined) {
+                memory.currentNeeds.pricePreference = criteria.pricePreference
+                memory.currentNeeds.isPriceStrict = criteria.isPriceStrict || false
+            }
+            if (criteria.discoveryPreference) {
+                memory.currentNeeds.discoveryPreference = criteria.discoveryPreference
             }
         }
     }
@@ -683,20 +915,28 @@ function syncMemoryFromTurn({ memory, userMessage = "", analysis = {}, criteria 
     }
     if (Array.isArray(dialogueState.interestedGames)) {
         for (const title of dialogueState.interestedGames) {
+            const motiveObj = (dialogueState.feedbackMotives || []).find(m => m.game === title && m.type === "interest")
             if (!memory.recommendationFeedback.interestedGames.some(i => i.title === title)) {
-                const motiveObj = (dialogueState.feedbackMotives || []).find(m => m.game === title && m.type === "interest")
                 memory.recommendationFeedback.interestedGames.push({
                     title,
                     motive: motiveObj?.motiveText || null,
                     turn
                 })
             }
+            recordFeedbackEvent(memory, {
+                gameTitle: title,
+                type: FEEDBACK_TYPES.GAME_INTEREST,
+                sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+                reason: motiveObj?.motiveText || null,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
         }
     }
     if (Array.isArray(dialogueState.rejectedGames)) {
         for (const title of dialogueState.rejectedGames) {
+            const motiveObj = (dialogueState.feedbackMotives || []).find(m => m.game === title && m.type === "rejection")
             if (!memory.recommendationFeedback.rejectedGames.some(r => r.title === title)) {
-                const motiveObj = (dialogueState.feedbackMotives || []).find(m => m.game === title && m.type === "rejection")
                 memory.recommendationFeedback.rejectedGames.push({
                     title,
                     motive: motiveObj?.motiveText || null,
@@ -704,6 +944,14 @@ function syncMemoryFromTurn({ memory, userMessage = "", analysis = {}, criteria 
                     turn
                 })
             }
+            recordFeedbackEvent(memory, {
+                gameTitle: title,
+                type: FEEDBACK_TYPES.GAME_REJECTION,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: motiveObj?.motiveText || null,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn
+            })
         }
     }
 
@@ -741,31 +989,67 @@ function buildActiveCriteria(memory, baseCriteria = {}) {
         unverifiedGames: [...(baseCriteria.unverifiedGames || [])],
         likedFeatures: [...(baseCriteria.likedFeatures || [])],
         dislikedFeatures: [...(baseCriteria.dislikedFeatures || [])],
-        discoveryPreference: baseCriteria.discoveryPreference || null,
-        habitualTastes: [...(baseCriteria.habitualTastes || [])]
+        discoveryPreference: memory.currentNeeds?.discoveryPreference || baseCriteria.discoveryPreference || null,
+        habitualTastes: [...(baseCriteria.habitualTastes || [])],
+        // --- ETAPA 3: Atributos de experiencia y filtros ampliados ---
+        experiencePreferences: {
+            exploration: baseCriteria.experiencePreferences?.exploration || null,
+            narrative: baseCriteria.experiencePreferences?.narrative || null,
+            creativity: baseCriteria.experiencePreferences?.creativity || null,
+            strategy: baseCriteria.experiencePreferences?.strategy || null,
+            combat: baseCriteria.experiencePreferences?.combat || null,
+            freedom: baseCriteria.experiencePreferences?.freedom || null,
+            complexity: baseCriteria.experiencePreferences?.complexity || null
+        },
+        objectiveStylePreference: baseCriteria.objectiveStylePreference || null,
+        desiredDifficulty: baseCriteria.desiredDifficulty || null,
+        isDifficultyStrict: baseCriteria.isDifficultyStrict || false,
+        pricePreference: baseCriteria.pricePreference || null,
+        isPriceStrict: baseCriteria.isPriceStrict || false
     }
 
     if (!memory) return active
 
+    // Sincronizar atributos de Etapa 3 desde la memoria activa
+    if (memory.currentNeeds.experiencePreferences) {
+        active.experiencePreferences = {
+            ...active.experiencePreferences,
+            ...memory.currentNeeds.experiencePreferences
+        }
+    }
+    if (memory.currentNeeds.objectiveStylePreference) {
+        active.objectiveStylePreference = memory.currentNeeds.objectiveStylePreference
+    }
+    if (memory.currentNeeds.desiredDifficulty) {
+        active.desiredDifficulty = memory.currentNeeds.desiredDifficulty
+    }
+    if (memory.currentNeeds.isDifficultyStrict !== undefined) {
+        active.isDifficultyStrict = memory.currentNeeds.isDifficultyStrict
+    }
+    if (memory.currentNeeds.pricePreference !== undefined) {
+        active.pricePreference = memory.currentNeeds.pricePreference
+        active.isPriceStrict = memory.currentNeeds.isPriceStrict || false
+    }
+
     // 1. Prioridad: Exclusiones actuales
-    if (memory.currentNeeds.dislikedGenres.length > 0) {
+    if (memory.currentNeeds.dislikedGenres && memory.currentNeeds.dislikedGenres.length > 0) {
         active.dislikedGenres = [...new Set([...active.dislikedGenres, ...memory.currentNeeds.dislikedGenres])]
         // Eliminar de preferidos si está excluido
         active.preferredGenres = active.preferredGenres.filter(g => !active.dislikedGenres.includes(g))
     }
-    if (memory.currentNeeds.dislikedFeatures.length > 0) {
+    if (memory.currentNeeds.dislikedFeatures && memory.currentNeeds.dislikedFeatures.length > 0) {
         active.dislikedFeatures = [...new Set([...active.dislikedFeatures, ...memory.currentNeeds.dislikedFeatures])]
         active.likedFeatures = active.likedFeatures.filter(f => !active.dislikedFeatures.includes(f))
     }
 
     // 2. Prioridad: Necesidades actuales de la sesión
-    if (memory.currentNeeds.availableTime) {
+    if (memory.currentNeeds.availableTime !== undefined && memory.currentNeeds.availableTime !== null) {
         active.availableTime = memory.currentNeeds.availableTime
     }
-    if (memory.currentNeeds.gameMode) {
+    if (memory.currentNeeds.gameMode !== undefined && memory.currentNeeds.gameMode !== null) {
         active.gameMode = memory.currentNeeds.gameMode
     }
-    if (memory.currentNeeds.emotion.length > 0) {
+    if (Array.isArray(memory.currentNeeds.emotion) && memory.currentNeeds.emotion.length > 0) {
         active.emotionalContext = [...memory.currentNeeds.emotion]
     }
     if (memory.currentNeeds.desiredPacing) {
@@ -776,9 +1060,9 @@ function buildActiveCriteria(memory, baseCriteria = {}) {
         active.desiredPacing = "intenso"
     }
 
-    if (memory.currentNeeds.preferredGenres.length > 0) {
+    if (memory.currentNeeds.preferredGenres && memory.currentNeeds.preferredGenres.length > 0) {
         active.preferredGenres = [...memory.currentNeeds.preferredGenres]
-    } else if (memory.habitualPreferences.genres.length > 0 && active.preferredGenres.length === 0) {
+    } else if (memory.habitualPreferences.genres && memory.habitualPreferences.genres.length > 0 && active.preferredGenres.length === 0) {
         // 3. Prioridad: Gustos habituales si no se especificaron géneros actuales
         active.preferredGenres = [...memory.habitualPreferences.genres]
     }
@@ -790,6 +1074,153 @@ function buildActiveCriteria(memory, baseCriteria = {}) {
     return active
 }
 
+/**
+ * Aplica una actualización estructurada de preferencias desde el perfil temporal del jugador (Etapa 5).
+ * Valida el cambio, resuelve contradicciones y sincroniza tanto la memoria como los criterios activos.
+ *
+ * @param {Object} params
+ * @param {Object} params.memory Memoria conversacional de la sesión
+ * @param {Object} params.criteria Criterios acumulados activos
+ * @param {Object} params.dialogueState Estado actual del diálogo
+ * @param {Object} params.updateAction Acción estructurada { type, field, value, operation }
+ * @returns {Object} { memory, criteria, dialogueState }
+ */
+function applyProfileUpdate({ memory, criteria = {}, dialogueState = {}, updateAction = {} }) {
+    const mem = initConversationMemory(memory, criteria, dialogueState)
+    const turn = dialogueState.turnCount || 1
+    const { type, field, value, operation = "replace" } = updateAction
+
+    switch (type) {
+        case "change_genre":
+            if (value) {
+                if (operation === "add") {
+                    if (!mem.currentNeeds.preferredGenres.includes(value)) {
+                        mem.currentNeeds.preferredGenres.push(value)
+                    }
+                    if (Array.isArray(criteria.preferredGenres) && !criteria.preferredGenres.includes(value)) {
+                        criteria.preferredGenres.push(value)
+                    }
+                } else {
+                    // Sustitución directa
+                    mem.currentNeeds.preferredGenres = [value]
+                    if (Array.isArray(criteria.preferredGenres)) {
+                        criteria.preferredGenres = [value]
+                    }
+                }
+                // Resolución de contradicciones: retirar de exclusiones si existía
+                mem.currentNeeds.dislikedGenres = mem.currentNeeds.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                mem.habitualPreferences.dislikedGenres = mem.habitualPreferences.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                if (Array.isArray(criteria.dislikedGenres)) {
+                    criteria.dislikedGenres = criteria.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                }
+            }
+            break
+
+        case "delete_genre":
+            if (value) {
+                mem.currentNeeds.preferredGenres = mem.currentNeeds.preferredGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                mem.habitualPreferences.genres = mem.habitualPreferences.genres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                if (Array.isArray(criteria.preferredGenres)) {
+                    criteria.preferredGenres = criteria.preferredGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                }
+            }
+            break
+
+        case "change_time":
+            mem.currentNeeds.availableTime = value || null
+            if (criteria) criteria.availableTime = value || null
+            break
+
+        case "change_mode":
+            mem.currentNeeds.gameMode = value || null
+            if (criteria) criteria.gameMode = value || null
+            break
+
+        case "change_difficulty":
+            mem.currentNeeds.desiredDifficulty = value || null
+            if (criteria) criteria.desiredDifficulty = value || null
+            break
+
+        case "change_discovery":
+            mem.currentNeeds.discoveryPreference = value || null
+            if (criteria) criteria.discoveryPreference = value || null
+            break
+
+        case "add_exclusion":
+            if (value) {
+                if (!mem.currentNeeds.dislikedGenres.includes(value)) {
+                    mem.currentNeeds.dislikedGenres.push(value)
+                }
+                if (Array.isArray(criteria.dislikedGenres) && !criteria.dislikedGenres.includes(value)) {
+                    criteria.dislikedGenres.push(value)
+                }
+                // Resolución de contradicciones: retirar de géneros preferidos si existía
+                mem.currentNeeds.preferredGenres = mem.currentNeeds.preferredGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                mem.habitualPreferences.genres = mem.habitualPreferences.genres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                if (Array.isArray(criteria.preferredGenres)) {
+                    criteria.preferredGenres = criteria.preferredGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                }
+            }
+            break
+
+        case "remove_exclusion":
+            if (value) {
+                mem.currentNeeds.dislikedGenres = mem.currentNeeds.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                mem.habitualPreferences.dislikedGenres = mem.habitualPreferences.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                if (Array.isArray(criteria.dislikedGenres)) {
+                    criteria.dislikedGenres = criteria.dislikedGenres.filter((g) => g.toLowerCase() !== value.toLowerCase())
+                }
+            }
+            break
+
+        case "remove_feature":
+            if (value) {
+                mem.habitualPreferences.features = mem.habitualPreferences.features.filter((f) => f !== value)
+                if (Array.isArray(criteria.likedFeatures)) {
+                    criteria.likedFeatures = criteria.likedFeatures.filter((f) => f !== value)
+                }
+            }
+            break
+
+        case "remove_disliked_feature":
+            if (value) {
+                mem.currentNeeds.dislikedFeatures = mem.currentNeeds.dislikedFeatures.filter((f) => f !== value)
+                mem.habitualPreferences.dislikedFeatures = mem.habitualPreferences.dislikedFeatures.filter((f) => f !== value)
+            }
+            break
+
+        case "change_experience_attr":
+            if (field && mem.currentNeeds.experiencePreferences) {
+                mem.currentNeeds.experiencePreferences[field] = value || null
+            }
+            break
+
+        default:
+            break
+    }
+
+    // Registrar en el log de auditoría interna de la memoria
+    mem.memoryLog.push({
+        turn,
+        action: "profile_update",
+        updateType: type,
+        value,
+        timestamp: new Date().toISOString()
+    })
+
+    // Reconstruir los criterios activos sincronizados determinísticamente
+    const activeCriteria = buildActiveCriteria(mem, criteria)
+
+    return {
+        memory: mem,
+        criteria: activeCriteria,
+        dialogueState: {
+            ...dialogueState,
+            conversationMemory: mem
+        }
+    }
+}
+
 module.exports = {
     createInitialMemory,
     initConversationMemory,
@@ -797,5 +1228,6 @@ module.exports = {
     detectMemoryCorrectionOrDeletion,
     handleMemoryQuery,
     syncMemoryFromTurn,
-    buildActiveCriteria
+    buildActiveCriteria,
+    applyProfileUpdate
 }

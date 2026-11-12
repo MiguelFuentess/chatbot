@@ -1,0 +1,582 @@
+[
+    {
+        "title": "Factorio",
+        "description": "Construye y automatiza complejas fábricas en un planeta alienígena hostil. Extrae recursos, investiga tecnologías, diseña redes logísticas y defiéndete de la fauna nativa.",
+        "genres": ["Estrategia", "Construcción", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "moderado",
+        "difficulty": "alta",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["adictivo", "estimulante", "desafiante", "creativo", "profundo"],
+        "experienceHighlights": [
+            "La cúspide mundial de los juegos de optimización y automatización de cadenas de montaje",
+            "Soporte colosal para multijugador cooperativo de gran escala y mods ilimitados",
+            "Placer intelectual inmenso al ver fluir cintas transportadoras, trenes y robots logísticos"
+        ],
+        "similarTo": ["Cities: Skylines", "Minecraft", "Satisfactory"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/427520/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 1,
+            "creativity": 5,
+            "strategy": 5,
+            "combat": 3,
+            "freedom": 5,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "RimWorld",
+        "description": "Un simulador de colonias de ciencia ficción dirigido por una IA narradora inteligente. Gestiona supervivientes con personalidades, necesidades y traumas psicológicos únicos.",
+        "genres": ["Simulación", "Estrategia", "Supervivencia", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "ajustable",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["profundo", "desafiante", "inmersivo", "adictivo", "estimulante"],
+        "experienceHighlights": [
+            "Generador de historias emergentes inolvidables: dramas, romances y catástrofes imprevistas",
+            "Simulación médica y psicológica hiperdetallada de cada colono individual",
+            "Infinita rejugabilidad gracias a los tres estilos de IAs narradoras disponibles"
+        ],
+        "similarTo": ["Frostpunk", "Civilization VI", "Cities: Skylines"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/294100/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 4,
+            "creativity": 4,
+            "strategy": 5,
+            "combat": 4,
+            "freedom": 5,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "Oxygen Not Included",
+        "description": "Guía a tus colonos en el interior de un asteroide alienígena. Domina la termodinámica, la física de gases y líquidos y la canalización de oxígeno para que tu colonia no perezca.",
+        "genres": ["Simulación", "Supervivencia", "Estrategia", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "alta",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["desafiante", "estimulante", "creativo", "colorido", "profundo"],
+        "experienceHighlights": [
+            "Simulación científica minuciosa de temperatura, presión atmosférica y mezclas de gases",
+            "Diseño de complejos sistemas de tuberías, ventilación, cableado y automatización lógica",
+            "Estilo visual cartoon encantador que contrasta con su exigente profundidad de ingeniería"
+        ],
+        "similarTo": ["Factorio", "RimWorld", "Frostpunk"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/457140/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 1,
+            "creativity": 4,
+            "strategy": 5,
+            "combat": 1,
+            "freedom": 4,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "Timberborn",
+        "description": "La humanidad ha desaparecido. Construye una próspera sociedad de castores leñadores dominando la física del agua con presas, canales y arquitectura de madera vertical.",
+        "genres": ["Estrategia", "Gestión", "Construcción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["relajante", "creativo", "estimulante", "colorido", "profundo"],
+        "experienceHighlights": [
+            "Ingeniería fluvial dinámica: contén embalses para sobrevivir a devastadoras sequías estacionales",
+            "Construcción modular vertical que permite apilar viviendas y fábricas sobre andamios",
+            "Dos facciones de castores con filosofías ecológicas y mecánicas tecnológicas contrastadas"
+        ],
+        "similarTo": ["Cities: Skylines", "Frostpunk", "Dorfromantik"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1062090/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 1,
+            "creativity": 4,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 4,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Against the Storm",
+        "description": "Un constructor de ciudades roguelite de fantasía oscura donde debes levantar asentamientos de humanos, castores, lagartos y zorros bajo lluvias tormentosas implacables.",
+        "genres": ["Estrategia", "Roguelike", "Gestión", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["adictivo", "desafiante", "estimulante", "atmosferico", "profundo"],
+        "experienceHighlights": [
+            "Fusión magistral de la gestión urbana con partidas roguelite autónomas de 45 a 60 minutos",
+            "Satisfacción de necesidades de especies con dietas, hábitats y oficios diferenciados",
+            "Elige órdenes de la Reina Ardiente y desbroza claros del bosque con recursos aleatorios"
+        ],
+        "similarTo": ["Frostpunk", "Slay the Spire", "Civilization VI"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1336490/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 2,
+            "creativity": 3,
+            "strategy": 5,
+            "combat": 1,
+            "freedom": 3,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Northgard",
+        "description": "Estrategia nórdica en tiempo real donde controlas un clan vikingo que compite por dominar un continente recién descubierto, resistiendo inviernos mortales y bestias míticas.",
+        "genres": ["Estrategia", "Gestión", "Histórico", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["desafiante", "estimulante", "atmosferico", "profundo"],
+        "experienceHighlights": [
+            "Mecánica estacional estricta: almacenar víveres y leña para superar el gélido invierno",
+            "Clanes vikingos asimétricos con dioses patronos y condiciones de victoria variadas",
+            "Modo Conquista cooperativo con misiones dinámicas de alta rejugabilidad"
+        ],
+        "similarTo": ["Civilization VI", "Frostpunk", "Into the Breach"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/466560/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 2,
+            "creativity": 2,
+            "strategy": 4,
+            "combat": 3,
+            "freedom": 3,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "FTL: Faster Than Light",
+        "description": "Dirige la tripulación de una nave espacial en una desesperada carrera a través de galaxias generadas proceduralmente para entregar información militar crucial a la Federación.",
+        "genres": ["Roguelike", "Estrategia", "Ciencia Ficción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["desafiante", "adrenalina", "adictivo", "estimulante", "profundo"],
+        "experienceHighlights": [
+            "Combate táctico con pausa activa: asigna energía a escudos, armas o motores en microsegundos",
+            "Gestión dramática de emergencias: fuegos a bordo, brechas de casco y abordajes hostiles",
+            "Toma de decisiones éticas y encuentros aleatorios de gran impacto narrativo espacial"
+        ],
+        "similarTo": ["Into the Breach", "Slay the Spire", "Dead Cells"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/212680/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 3,
+            "creativity": 2,
+            "strategy": 5,
+            "combat": 4,
+            "freedom": 2,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "XCOM 2",
+        "description": "Los alienígenas gobiernan la Tierra bajo una falsa promesa de progreso. Lidera la resistencia móvil global en combates tácticos por turnos con soldados personalizables.",
+        "genres": ["Estrategia", "Por Turnos", "Ciencia Ficción", "RPG"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "multijugador"],
+        "pacing": "moderado",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["desafiante", "estimulante", "adrenalina", "profundo", "maduro"],
+        "experienceHighlights": [
+            "Combate táctico por turnos de referencia con coberturas destructibles y emboscadas",
+            "Vínculo emocional profundo con tus soldados personalizados y muerte permanente implacable",
+            "Capa estratégica global gestionando la nave base Avenger y recursos de la resistencia"
+        ],
+        "similarTo": ["Into the Breach", "Civilization VI", "Slay the Spire"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/268500/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 3,
+            "creativity": 3,
+            "strategy": 5,
+            "combat": 5,
+            "freedom": 3,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "Crusader Kings III",
+        "description": "El juego de rol y gran estrategia dinástica por excelencia. Guía a una estirpe noble a través de la Edad Media mediante diplomacia, matrimonios, intrigas y conquistas militares.",
+        "genres": ["Estrategia", "RPG", "Simulación", "Histórico"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "multijugador"],
+        "pacing": "relajado",
+        "difficulty": "alta",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["profundo", "inmersivo", "maduro", "buena historia", "adictivo"],
+        "experienceHighlights": [
+            "Simulación de drama humano y dinastías donde cada personaje tiene rasgos psicológicos vivos",
+            "Intrigas palaciegas, asesinatos encubiertos, seducciones y herejías religiosas personalizables",
+            "Inmenso mapa histórico medieval que abarca desde Islandia hasta la India"
+        ],
+        "similarTo": ["Civilization VI", "RimWorld", "Disco Elysium - The Final Cut"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1158310/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 3,
+            "strategy": 5,
+            "combat": 3,
+            "freedom": 5,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "Balatro",
+        "description": "Un hipnótico roguelike de construcción de barajas basado en el póker. Combina manos reales con comodines que desencadenan sinergias y multiplicadores extravagantes.",
+        "genres": ["Roguelike", "Cartas", "Estrategia", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adictivo", "estimulante", "desafiante", "divertido", "rapido"],
+        "experienceHighlights": [
+            "Sensación matemática adictiva de ver cómo los multiplicadores rompen las apuestas ciegas",
+            "Más de 150 comodines únicos con habilidades que transforman por completo cada partida",
+            "Diseño audiovisual CRT psicodélico y música sintética sumamente envolvente"
+        ],
+        "similarTo": ["Slay the Spire", "Inscryption", "Into the Breach"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2379780/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 0,
+            "creativity": 3,
+            "strategy": 5,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Inscryption",
+        "description": "Una perturbadora odisea de cartas deconstruida que fusiona la construcción de barajas roguelike con puzles de escape room y misterios psicológicos inolvidables.",
+        "genres": ["Cartas", "Roguelike", "Misterio", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "inmersivo", "atmosferico", "buena historia", "desafiante"],
+        "experienceHighlights": [
+            "Subversión constante de las expectativas del jugador y rotura de la cuarta pared",
+            "Mecánica de sacrificios de sangre, huesos e injertos de sellos en cartas tácticas",
+            "Puzles en 3D explorando la cabaña de Leshy mientras juegas sobre el tablero"
+        ],
+        "similarTo": ["Slay the Spire", "Balatro", "Return of the Obra Dinn"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1092790/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 2,
+            "strategy": 4,
+            "combat": 2,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Monster Train",
+        "description": "Un constructor de barajas roguelike vertical en el que debes defender la pira del infierno en un tren que avanza por tres pisos simultáneos contra fuerzas celestiales.",
+        "genres": ["Cartas", "Roguelike", "Estrategia", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "multijugador"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adictivo", "estimulante", "desafiante", "rapido"],
+        "experienceHighlights": [
+            "Defensa táctica en tres niveles simultáneos con planificación de oleadas enemigas",
+            "Combinación de dos clanes de monstruos en cada partida para sinergias explosivas",
+            "Mejoras dobles de cartas y campeones con árboles de habilidades diferenciados"
+        ],
+        "similarTo": ["Slay the Spire", "Balatro", "Into the Breach"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1102190/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 1,
+            "creativity": 2,
+            "strategy": 5,
+            "combat": 4,
+            "freedom": 2,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Darkest Dungeon",
+        "description": "Recluta, entrena y lidera a un equipo de héroes imperfectos en combates por turnos mientras gestionas no solo sus heridas físicas, sino también su estrés mental y paranoia.",
+        "genres": ["RPG", "Por Turnos", "Roguelike", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["desafiante", "maduro", "atmosferico", "profundo", "inmersivo"],
+        "experienceHighlights": [
+            "Sistema de aflicciones psicológicas: el estrés puede quebrar o ennoblecer a tus héroes",
+            "Dirección de arte en grabado gótico e inolvidable voz del ancestro narrador",
+            "Gestión estratégica despiadada del campamento y recursos de expedición en mazmorras"
+        ],
+        "similarTo": ["Slay the Spire", "Hades", "Dead Cells"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/262060/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 4,
+            "creativity": 2,
+            "strategy": 5,
+            "combat": 5,
+            "freedom": 3,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "PlateUp!",
+        "description": "Caótico juego cooperativo de cocina y hostelería con progresión roguelite. Diseña y decora tu restaurante, automatiza la cocina con cintas y atiende clientes con amigos.",
+        "genres": ["Cooperativo", "Gestión", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["divertido", "amigos", "adrenalina", "adictivo", "estimulante"],
+        "experienceHighlights": [
+            "Fusión entre la coordinación en cocina y la automatización progresiva con robots y cintas",
+            "Diseño de la distribución del restaurante entre turnos con compras y mejoras",
+            "Risas garantizadas y dinamismo excelente para partidas de hasta 4 jugadores"
+        ],
+        "similarTo": ["Overcooked! All You Can Eat", "It Takes Two", "Factorio"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1599600/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 0,
+            "creativity": 3,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Moving Out",
+        "description": "Divertido simulador de mudanzas cooperativo basado en la física. Trabaja en equipo para cargar muebles por ventanas, piscinas y carreteras antes de que acabe el tiempo.",
+        "genres": ["Party", "Cooperativo", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "intenso",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["divertido", "amigos", "colorido", "cero estres", "rapido"],
+        "experienceHighlights": [
+            "Física elástica de objetos que recompensa lanzar sofás por balcones entre risas",
+            "Opciones de accesibilidad completas para adaptar la dificultad a cualquier edad",
+            "Niveles disparatados que incluyen aviones en pleno vuelo y casas encantadas"
+        ],
+        "similarTo": ["Overcooked! All You Can Eat", "PlateUp!", "It Takes Two"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/996770/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 1,
+            "creativity": 1,
+            "strategy": 2,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Human: Fall Flat",
+        "description": "Un hilarante juego de plataformas y puzles de física cómica en paisajes oníricos flotantes. Coordina a tu muñeco tambaleante solo o con hasta 8 amigos online.",
+        "genres": ["Puzzle", "Plataformas", "Cooperativo", "Casual"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["divertido", "amigos", "cero estres", "creativo", "colorido"],
+        "experienceHighlights": [
+            "Física 'ragdoll' tambaleante con soluciones abiertas a cada rompecabezas",
+            "Personalización completa de los personajes y soporte para creaciones de la comunidad",
+            "Cero penalización por caída: reapareces instantáneamente para seguir riendo"
+        ],
+        "similarTo": ["Moving Out", "Portal 2", "It Takes Two"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/477160/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 0,
+            "creativity": 3,
+            "strategy": 2,
+            "combat": 0,
+            "freedom": 4,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Keep Talking and Nobody Explodes",
+        "description": "Un jugador está atrapado en una habitación con una bomba de tiempo; los demás son los 'expertos' con el manual de desactivación y no pueden ver la bomba.",
+        "genres": ["Puzzle", "Cooperativo", "Party", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adrenalina", "amigos", "desafiante", "estimulante", "divertido"],
+        "experienceHighlights": [
+            "Comunicación verbal pura: solo uno mira la pantalla mientras los demás leen el manual en papel o PDF",
+            "Módulos de bomba aleatorios con cables, símbolos, contraseñas y código morse",
+            "Tensión vertiginosa que pone a prueba la claridad descriptiva y la calma del grupo"
+        ],
+        "similarTo": ["Overcooked! All You Can Eat", "It Takes Two", "Portal 2"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/341800/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 0,
+            "creativity": 0,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 1,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "We Were Here Together",
+        "description": "Una aventura de puzles puramente cooperativa para dos jugadores. Atrapados en el misterioso castillo de Castle Rock, comunicaos por walkie-talkie para resolver acertijos asimétricos.",
+        "genres": ["Puzzle", "Aventura", "Cooperativo", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["cooperativo"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "amigos", "inmersivo", "atmosferico", "desafiante"],
+        "experienceHighlights": [
+            "Cooperación asimétrica obligatoria: lo que ve uno es la clave para lo que debe activar el otro",
+            "Uso de walkie-talkies con voz en el juego para mantener el suspense y la inmersión",
+            "Escenarios gélidos y medievales con ambientación misteriosa y envolvente"
+        ],
+        "similarTo": ["Portal 2", "It Takes Two", "The Room"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/865360/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 3,
+            "creativity": 0,
+            "strategy": 3,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Phasmophobia",
+        "description": "Terror psicológico cooperativo para 4 jugadores. Investiga actividad paranormal en casas encantadas utilizando equipo de cazafantasmas real con reconocimiento de voz.",
+        "genres": ["Terror", "Cooperativo", "Misterio", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adrenalina", "amigos", "inmersivo", "misterio", "desafiante"],
+        "experienceHighlights": [
+            "Reconocimiento de voz real: los fantasmas te escuchan hablar y reaccionan a su nombre",
+            "Uso de herramientas científicas: termómetros, medidores EMF, cámaras de vídeo y cajas espirituales",
+            "Momentos cumbre de tensión donde las luces parpadean y empieza la cacería mortal"
+        ],
+        "similarTo": ["Deep Rock Galactic", "Lethal Company", "It Takes Two"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/739630/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 1,
+            "creativity": 1,
+            "strategy": 4,
+            "combat": 1,
+            "freedom": 3,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Lethal Company",
+        "description": "Trabajas para la Compañía. Explora lunas industriales abandonadas para recolectar chatarra y cumplir la cuota de beneficios, sorteando peligros biológicos y monstruos en equipo.",
+        "genres": ["Supervivencia", "Cooperativo", "Acción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adrenalina", "amigos", "divertido", "inmersivo", "desafiante"],
+        "experienceHighlights": [
+            "Chat de voz de proximidad estelar que hace los sustos y muertes desternillantes y aterradores",
+            "Gestión estricta de peso, inventario y tiempo antes de que anochezca en la luna",
+            "Criaturas procedurales hostiles con comportamientos de caza impredecibles"
+        ],
+        "similarTo": ["Deep Rock Galactic", "Phasmophobia", "Subnautica"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1966720/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 1,
+            "creativity": 1,
+            "strategy": 4,
+            "combat": 2,
+            "freedom": 4,
+            "complexity": 3
+        }
+    }
+]

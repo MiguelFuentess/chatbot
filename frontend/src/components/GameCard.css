@@ -237,6 +237,24 @@
   border-color: #ffb4ab;
 }
 
+.rg-btn-compare {
+  background-color: #e3ebd7;
+  color: #05386b;
+  border: 1.5px solid #002247;
+  box-shadow: 2px 2px 0px #002247;
+}
+
+.rg-btn-compare:hover {
+  background-color: #5cdb95;
+  color: #002247;
+}
+
+.rg-btn-compare.is-selected {
+  background-color: #05386b;
+  color: #7dfbb2;
+  box-shadow: none;
+}
+
 @media (max-width: 640px) {
   .rg-game-card-banner {
     height: 175px;

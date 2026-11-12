@@ -1,0 +1,562 @@
+/* ==========================================================================
+   RECOGAMES — PERFIL TEMPORAL DEL JUGADOR (DRAWER / OVERLAY ESTILO STITCH)
+   ========================================================================== */
+
+.rg-profile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #171e12;
+}
+
+.rg-profile-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 34, 71, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: rgFadeIn 0.25s ease-out;
+}
+
+.rg-profile-drawer {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: #fdfef9;
+  border-left: 2px solid #002247;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -6px 0 24px rgba(0, 34, 71, 0.18);
+  animation: rgSlideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1001;
+  overflow: hidden;
+}
+
+@keyframes rgSlideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes rgFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Cabecera del Drawer
+   -------------------------------------------------------------------------- */
+.rg-profile-header {
+  padding: 1.25rem 1.5rem;
+  background-color: #f4fce8;
+  border-bottom: 1.5px solid rgba(0, 34, 71, 0.12);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.rg-profile-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rg-profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  background-color: #05386b;
+  color: #7dfbb2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.rg-profile-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #002247;
+  margin: 0;
+}
+
+.rg-profile-subtitle {
+  font-size: 0.825rem;
+  color: #43474f;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.rg-profile-close-btn {
+  background: #ffffff;
+  border: 1.5px solid #002247;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #002247;
+  box-shadow: 2px 2px 0px #002247;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.rg-profile-close-btn:hover {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.rg-profile-close-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Toast de Feedback
+   -------------------------------------------------------------------------- */
+.rg-profile-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #006b5b;
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-bottom: 1.5px solid #002247;
+  animation: rgFadeIn 0.2s ease-in;
+}
+
+/* --------------------------------------------------------------------------
+   Aviso de Temporalidad
+   -------------------------------------------------------------------------- */
+.rg-profile-notice {
+  margin: 1rem 1.25rem 0.5rem;
+  padding: 0.75rem 0.9rem;
+  background-color: #e9f1dd;
+  border-left: 3px solid #05386b;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #2b3924;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   Cuerpo Desplazable
+   -------------------------------------------------------------------------- */
+.rg-profile-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rg-profile-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rg-profile-body::-webkit-scrollbar-track {
+  background: #f4fce8;
+}
+
+.rg-profile-body::-webkit-scrollbar-thumb {
+  background: #b2c5a0;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Secciones del Perfil
+   -------------------------------------------------------------------------- */
+.rg-profile-section {
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 34, 71, 0.15);
+  border-radius: 12px;
+  padding: 1.1rem;
+  box-shadow: 2px 2px 0px rgba(0, 34, 71, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rg-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(0, 34, 71, 0.08);
+  padding-bottom: 0.5rem;
+}
+
+.rg-sec-icon {
+  font-size: 20px;
+  color: #05386b;
+}
+
+.rg-sec-icon-negative {
+  color: #b00020;
+}
+
+.rg-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #002247;
+  margin: 0;
+}
+
+/* Campos individuales */
+.rg-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.rg-field-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #43474f;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rg-empty-text {
+  font-size: 0.825rem;
+  font-style: italic;
+  color: #72787e;
+  padding: 0.2rem 0;
+}
+
+/* Chips / Tags */
+.rg-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.rg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.rg-chip-habitual {
+  background-color: #e3ebd7;
+  color: #05386b;
+  border-color: rgba(5, 56, 107, 0.2);
+}
+
+.rg-chip-feature {
+  background-color: #e0f2f1;
+  color: #004d40;
+  border-color: #80cbc4;
+}
+
+.rg-chip-emotion {
+  background-color: #fff9c4;
+  color: #f57f17;
+  border-color: #fff176;
+}
+
+.rg-chip-active-genre {
+  background-color: #05386b;
+  color: #ffffff;
+  border-color: #002247;
+}
+
+.rg-chip-attr {
+  background-color: #e8eaf6;
+  color: #1a237e;
+  border-color: #c5cae9;
+}
+
+.rg-chip-disliked {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+.rg-chip-del-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.rg-chip-del-btn:hover {
+  opacity: 1;
+  font-weight: 800;
+}
+
+/* Listas de juegos */
+.rg-games-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.rg-game-item {
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  background-color: #f4fce8;
+  border: 1px solid rgba(0, 34, 71, 0.08);
+  font-size: 0.825rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.rg-game-item-disliked {
+  background-color: #fff8f8;
+  border-color: #ffcdd2;
+}
+
+.rg-game-title {
+  font-weight: 700;
+  color: #002247;
+}
+
+.rg-game-motive {
+  font-size: 0.775rem;
+  font-style: italic;
+  color: #43474f;
+}
+
+/* Selectores segmentados (tiempo, modo, dificultad) */
+.rg-segmented-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.rg-option-btn {
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  background-color: #f4fce8;
+  border: 1.5px solid rgba(0, 34, 71, 0.18);
+  color: #002247;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rg-option-btn:hover {
+  background-color: #e3ebd7;
+  border-color: #05386b;
+}
+
+.rg-option-btn.selected {
+  background-color: #05386b;
+  color: #ffffff;
+  border-color: #002247;
+  box-shadow: 1px 1px 0px #002247;
+}
+
+/* Cards de modo de diversidad / descubrimiento */
+.rg-discovery-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.rg-discovery-card {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 34, 71, 0.15);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.rg-discovery-card:hover {
+  background-color: #f4fce8;
+  border-color: #006b5b;
+}
+
+.rg-discovery-card.active {
+  background-color: #e9f8f3;
+  border-color: #006b5b;
+  box-shadow: 2px 2px 0px #006b5b;
+}
+
+.rg-discovery-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.rg-discovery-card-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #002247;
+}
+
+.rg-discovery-card.active .rg-discovery-card-name {
+  color: #006b5b;
+}
+
+.rg-discovery-card-desc {
+  font-size: 0.75rem;
+  color: #555c63;
+  margin: 0;
+}
+
+/* Inputs en línea para agregar */
+.rg-inline-adder {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.rg-select-input {
+  flex: 1;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  border: 1.5px solid rgba(0, 34, 71, 0.2);
+  background-color: #ffffff;
+  font-family: inherit;
+  font-size: 0.825rem;
+  color: #002247;
+}
+
+.rg-select-input:focus {
+  outline: none;
+  border-color: #05386b;
+}
+
+.rg-adder-btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  background-color: #05386b;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 1px 1px 0px #002247;
+  transition: all 0.15s;
+}
+
+.rg-adder-btn:hover:not(:disabled) {
+  background-color: #002247;
+}
+
+.rg-adder-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rg-adder-btn-danger {
+  background-color: #c62828;
+  box-shadow: 1px 1px 0px #8e0000;
+}
+
+.rg-adder-btn-danger:hover:not(:disabled) {
+  background-color: #b71c1c;
+}
+
+/* --------------------------------------------------------------------------
+   Pie del Drawer
+   -------------------------------------------------------------------------- */
+.rg-profile-footer {
+  padding: 1rem 1.25rem;
+  background-color: #f4fce8;
+  border-top: 1.5px solid rgba(0, 34, 71, 0.12);
+}
+
+.rg-profile-btn-close {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: #05386b;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #002247;
+  transition: all 0.15s ease;
+}
+
+.rg-profile-btn-close:hover {
+  background-color: #002247;
+}
+
+.rg-profile-btn-close:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Mobile
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .rg-profile-drawer {
+    max-width: 100%;
+    border-left: none;
+    border-top: 2px solid #002247;
+    height: 90vh;
+    margin-top: auto;
+    border-radius: 16px 16px 0 0;
+    animation: rgSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes rgSlideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}

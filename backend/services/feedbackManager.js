@@ -19,6 +19,17 @@
 const Game = require("../models/Game")
 const seedGames = require("../data/seedGames.json")
 const { cleanText } = require("./nlpService")
+const {
+    FEEDBACK_TYPES,
+    FEEDBACK_INTENSITIES,
+    FEEDBACK_SENTIMENTS,
+    FEEDBACK_SCOPES,
+    createFeedbackEvent,
+    recordFeedbackEvent,
+    parseMixedFeedbackClauses,
+    resolveDescriptiveGameReference,
+    classifyFeedbackIntensity
+} = require("./feedbackEventService")
 
 /**
  * Obtiene los detalles completos de un videojuego desde la base de datos o el catálogo semilla en memoria.
@@ -61,6 +72,54 @@ function resolveGameReference(userMessage = "", dialogueState = {}) {
     const lastRecs = Array.isArray(dialogueState.lastRecommendedGames) ? dialogueState.lastRecommendedGames : []
     const currentFocus = dialogueState.currentReferencedGame || null
 
+    // 0. Detección descriptiva o superlativa ("el que tiene más historia", "el que tiene menos combate", "el último")
+    if (lastRecs.length > 0) {
+        if (/(?:\b(?:el\s+)?(?:[uú]ltim[oa]|final)(?:\s+juego|\s+opci[oó]n)?\b)/i.test(clean)) {
+            const lastTitle = lastRecs[lastRecs.length - 1]
+            return {
+                resolvedGameTitle: lastTitle,
+                resolvedFrom: "descriptive_last",
+                ordinalIndex: lastRecs.length - 1,
+                isAmbiguous: false,
+                isNotRecommended: false
+            }
+        }
+
+        const moreMatch = clean.match(/(?:el\s+que\s+tiene\s+m[aá]s|el\s+de\s+m[aá]s|con\s+m[aá]s)\s+([a-z]+)/i)
+        const lessMatch = clean.match(/(?:el\s+que\s+tiene\s+menos|el\s+de\s+menos|con\s+menos)\s+([a-z]+)/i)
+        if (moreMatch || lessMatch) {
+            const isMore = !!moreMatch
+            const targetWord = (moreMatch && moreMatch[1]) || (lessMatch && lessMatch[1])
+            let attrKey = null
+            if (/historia|narrativ|trama|guion/i.test(targetWord)) attrKey = "narrative"
+            else if (/combate|pelea|accion/i.test(targetWord)) attrKey = "combat"
+            else if (/explor/i.test(targetWord)) attrKey = "exploration"
+            else if (/creativ|constru/i.test(targetWord)) attrKey = "creativity"
+            else if (/estrateg|tactica|gestion/i.test(targetWord)) attrKey = "strategy"
+            else if (/libertad|abierto/i.test(targetWord)) attrKey = "freedom"
+            else if (/complej|dificil/i.test(targetWord)) attrKey = "complexity"
+
+            if (attrKey) {
+                const candidatesWithData = lastRecs.map((title) => {
+                    const sg = seedGames.find((g) => cleanText(g.title) === cleanText(title))
+                    const val = sg?.experienceAttributes?.[attrKey] ?? 0
+                    return { title, val }
+                })
+                candidatesWithData.sort((a, b) => isMore ? b.val - a.val : a.val - b.val)
+                const best = candidatesWithData[0]?.title
+                if (best) {
+                    return {
+                        resolvedGameTitle: best,
+                        resolvedFrom: "descriptive_attribute",
+                        ordinalIndex: lastRecs.indexOf(best),
+                        isAmbiguous: false,
+                        isNotRecommended: false
+                    }
+                }
+            }
+        }
+    }
+
     // 1. Detección por número ordinal explícito ("el primero", "el 1", "el segundo", "el tercero")
     let ordinalIndex = null
     if (/(?:\b(?:el\s+)?primer(?:o|a)?(?:\s+juego|\s+opci[oó]n)?\b|\bel\s+1\b|\bopci[oó]n\s+1\b|\bn[uú]mero\s+1\b)/i.test(clean)) {
@@ -72,6 +131,17 @@ function resolveGameReference(userMessage = "", dialogueState = {}) {
     }
 
     if (ordinalIndex != null) {
+        if (dialogueState.lastComparedGames && dialogueState.lastComparedGames.length >= 2 && dialogueState.stage === "compared") {
+            if (dialogueState.lastComparedGames[ordinalIndex]) {
+                return {
+                    resolvedGameTitle: dialogueState.lastComparedGames[ordinalIndex],
+                    resolvedFrom: "compared_ordinal",
+                    ordinalIndex,
+                    isAmbiguous: false,
+                    isNotRecommended: false
+                }
+            }
+        }
         if (lastRecs[ordinalIndex]) {
             return {
                 resolvedGameTitle: lastRecs[ordinalIndex],
@@ -174,44 +244,76 @@ function resolveGameReference(userMessage = "", dialogueState = {}) {
  */
 function detectComparisonIntent(userMessage = "", dialogueState = {}) {
     const clean = cleanText(userMessage)
-    const isComparisonQuery =
-        /(?:comparar?|comparaci[oó]n|diferencia|cu[aá]l\s+(?:de\s+los\s+dos\s+)?es\s+m[aá]s|cu[aá]l\s+de\s+estos|entre\s+[a-z\s0-9]+y\s+[a-z\s0-9]+)/i.test(clean)
 
-    if (!isComparisonQuery) return null
+    // Descartar expresiones de rango temporal ("entre 30 y 60 minutos", etc.)
+    const isTimeRange = /\b(?:minutos?|horas?|sesi[oó]n|partidas?)\b/i.test(clean)
+    if (isTimeRange && !/(?:comparar?|diferencia\s+entre|\bvs\b)/i.test(clean)) {
+        return null
+    }
+
+    const isComparisonQuery =
+        /(?:comparar?|comparaci[oó]n|diferencia|cu[aá]l\s+(?:de\s+los\s+dos\s+)?es\s+m[aá]s|cu[aá]l\s+(?:de\s+estos|de\s+ambos|es\s+mejor)|cu[aá]l\s+tiene\s+m[aá]s|cu[aá]l\s+tiene\s+menos)/i.test(clean)
+
+    if (!isComparisonQuery && !dialogueState.pendingComparisonGame) return null
 
     const lastRecs = Array.isArray(dialogueState.lastRecommendedGames) ? dialogueState.lastRecommendedGames : []
+    const lastCompared = Array.isArray(dialogueState.lastComparedGames) ? dialogueState.lastComparedGames : []
     const targets = []
 
     // 1. Identificar si menciona títulos directamente
-    for (const title of seedGames.map((g) => g.title)) {
+    const candidatePool = [
+        ...new Set([
+            ...lastRecs,
+            ...lastCompared,
+            ...seedGames.map((g) => g.title)
+        ])
+    ].sort((a, b) => b.length - a.length)
+
+    for (const title of candidatePool) {
         const cleanTitle = cleanText(title)
-        if (clean.includes(cleanTitle)) {
-            targets.push(title)
+        const regex = new RegExp(`\\b${cleanTitle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i")
+        if (regex.test(clean)) {
+            if (!targets.some((t) => cleanText(t) === cleanTitle)) {
+                targets.push(title)
+            }
         }
     }
 
-    // 2. Identificar si menciona ordinales ("el primero y el segundo", etc.)
-    if (targets.length < 2 && lastRecs.length >= 2) {
+    // 2. Identificar si menciona ordinales ("el primero y el segundo", "compara los dos")
+    const activeRefList = lastRecs.length >= 2 ? lastRecs : (lastCompared.length >= 2 ? lastCompared : [])
+    if (targets.length < 2 && activeRefList.length >= 2) {
         if (/primer/i.test(clean) && /segund/i.test(clean)) {
             targets.length = 0
-            targets.push(lastRecs[0], lastRecs[1])
-        } else if (/primer/i.test(clean) && /tercer/i.test(clean) && lastRecs[2]) {
+            targets.push(activeRefList[0], activeRefList[1])
+        } else if (/primer/i.test(clean) && /tercer/i.test(clean) && activeRefList[2]) {
             targets.length = 0
-            targets.push(lastRecs[0], lastRecs[2])
-        } else if (/segund/i.test(clean) && /tercer/i.test(clean) && lastRecs[2]) {
+            targets.push(activeRefList[0], activeRefList[2])
+        } else if (/segund/i.test(clean) && /tercer/i.test(clean) && activeRefList[2]) {
             targets.length = 0
-            targets.push(lastRecs[1], lastRecs[2])
-        } else if (targets.length === 0 && /(?:cu[aá]l\s+(?:de\s+los\s+dos\s+)?es\s+m[aá]s|compara(?:r)?\s+(?:las|ambas|las\s+dos)\s+opciones)/i.test(clean)) {
-            // Comparar por defecto los dos primeros títulos en pantalla
-            targets.push(lastRecs[0], lastRecs[1])
+            targets.push(activeRefList[1], activeRefList[2])
+        } else if (targets.length === 0 && /(?:cu[aá]l\s+(?:de\s+los\s+dos\s+)?es\s+m[aá]s|compara(?:r)?\s+(?:las|ambas|las\s+dos|estos\s+dos)\s+opciones|compara\s+(?:estos|esos)\s+dos\s+juegos|qu[eé]\s+diferencia\s+hay\s+entre\s+los\s+dos|cu[aá]l\s+tiene\s+(?:m[aá]s|menos))/i.test(clean)) {
+            targets.push(activeRefList[0], activeRefList[1])
         }
     }
 
-    if (targets.length < 2) return null
+    // 3. Si había un juego pendiente para comparar de un turno previo
+    if (targets.length === 1 && dialogueState.pendingComparisonGame) {
+        if (cleanText(dialogueState.pendingComparisonGame) !== cleanText(targets[0])) {
+            targets.unshift(dialogueState.pendingComparisonGame)
+        }
+    }
 
-    // Identificar el aspecto a comparar
+    // Identificar el aspecto específico a contrastar
     let aspect = "general"
-    if (/tranquil|relaj|calm|paz/i.test(clean)) {
+    if (/explor/i.test(clean)) {
+        aspect = "exploracion"
+    } else if (/combate|pelea|acci[oó]n|violencia/i.test(clean)) {
+        aspect = "combate"
+    } else if (/historia|narrativa|trama|lore|guion/i.test(clean)) {
+        aspect = "narrativa"
+    } else if (/creativ|construc|crafteo/i.test(clean)) {
+        aspect = "creatividad"
+    } else if (/tranquil|relaj|calm|paz|desconexion/i.test(clean)) {
         aspect = "tranquilidad"
     } else if (/dificil|complej|exigente|reto|desafio/i.test(clean)) {
         aspect = "dificultad"
@@ -221,11 +323,36 @@ function detectComparisonIntent(userMessage = "", dialogueState = {}) {
         aspect = "modalidad"
     }
 
-    return {
-        gameA: targets[0],
-        gameB: targets[1],
-        aspect
+    if (targets.length === 1) {
+        return {
+            singleGame: targets[0],
+            aspect
+        }
     }
+
+    if (targets.length >= 2) {
+        return {
+            gameA: targets[0],
+            gameB: targets[1],
+            aspect
+        }
+    }
+
+    // Manejo de títulos libres o no identificados con patrón "compara X con Y"
+    const explicitPairMatch = clean.match(/(?:compara|diferencia\s+entre|qu[eé]\s+diferencia\s+hay\s+entre)\s+([a-z0-9\s]+?)\s+(?:con|y)\s+([a-z0-9\s]+?)(?:[.,;?!]|$)/i)
+    if (explicitPairMatch && explicitPairMatch[1] && explicitPairMatch[2]) {
+        const itemA = explicitPairMatch[1].trim()
+        const itemB = explicitPairMatch[2].trim()
+        if (!/^\d+$/.test(itemA) && !/^\d+$/.test(itemB)) {
+            return {
+                gameA: itemA,
+                gameB: itemB,
+                aspect
+            }
+        }
+    }
+
+    return null
 }
 
 /**
@@ -238,6 +365,51 @@ function detectComparisonIntent(userMessage = "", dialogueState = {}) {
  */
 function detectFeedbackIntent(userMessage = "", dialogueState = {}, resolvedRef = {}) {
     const clean = cleanText(userMessage)
+
+    // 0. Retroalimentación mixta con conectores de contraste (Etapa 7, Escenario 4)
+    const mixed = parseMixedFeedbackClauses(userMessage)
+    if (mixed) {
+        return {
+            type: "mixed_feedback",
+            targetGame: resolvedRef.resolvedGameTitle,
+            mixedData: mixed
+        }
+    }
+
+    // 0b. Descarte por precio (Etapa 7, Escenario 21)
+    const isPriceRejection = /(?:es\s+de\s+pago|no\s+quiero\s+pagar|solo\s+(?:busco|quiero)\s+gratis|solo\s+gratuitos|solo\s+gratis)/i.test(clean)
+    if (isPriceRejection) {
+        return { type: "price_rejection", targetGame: resolvedRef.resolvedGameTitle }
+    }
+
+    // 0c. Aversión a estética (Etapa 7, Escenario 18)
+    if (/pixel\s*art|retro|pixelado/i.test(clean) && /(?:no\s+me\s+gusta|sin|odio|detesto|nada\s+de)/i.test(clean)) {
+        return { type: "aesthetic_dislike", feature: "pixel_art", targetGame: resolvedRef.resolvedGameTitle }
+    }
+
+    // 0d. Solicitud de juego más relajante (Etapa 7, Escenario 25)
+    if (/(?:m[aá]s\s+relajante\s+que|m[aá]s\s+tranquilo\s+que)/i.test(clean)) {
+        return { type: "more_relaxing_request", targetGame: resolvedRef.resolvedGameTitle }
+    }
+
+    // 0e. Interés en un aspecto específico de una recomendación (Etapa 7, Escenario 3)
+    const isFeatureLike =
+        /(?:me\s+gusta|me\s+interesa|me\s+llama|me\s+encanta|valoro|prefiero)\s+(?:la\s+|el\s+|los\s+|las\s+)?([a-záéíóúñ\s]+?)\s+(?:de|en)\s+/i.test(clean) ||
+        (/(?:me\s+gusta|me\s+interesa|me\s+llama)\s+(?:la\s+)?(?:exploraci[oó]n|historia|narrativa|creatividad|libertad|construcci[oó]n)/i.test(clean) && !/(?:no\s+me\s+gusta|pero\s+no|sin)/i.test(clean))
+
+    if (isFeatureLike) {
+        let feat = "exploracion"
+        if (/historia|narrativ|trama|lore|guion/i.test(clean)) feat = "narrativa_historia"
+        else if (/explor|descubrir/i.test(clean)) feat = "exploracion"
+        else if (/creativ|constru|crafteo/i.test(clean)) feat = "construccion_creatividad"
+        else if (/estrateg|tactica|gestion/i.test(clean)) feat = "estrategia_planificacion"
+        else if (/libertad|ritmo/i.test(clean)) feat = "libertad_sandbox"
+        return {
+            type: "feature_like",
+            targetGame: resolvedRef.resolvedGameTitle,
+            targetFeature: feat
+        }
+    }
 
     // 1. Solicitud de alternativas directa
     const isRequestingAlternatives =
@@ -470,6 +642,11 @@ async function handlePostRecommendationTurn({
     dialogueState = {},
     analysis = {}
 }) {
+    // Salvaguarda ante entradas vacías o malformadas (Escenario 26)
+    if (!userMessage || typeof userMessage !== "string" || !userMessage.trim()) {
+        return null
+    }
+
     const { evaluateRecommendations } = require("./recommendationEngine")
     const { generateExplanation } = require("./explanationService")
     const { composeRecommendationIntro } = require("./responseComposer")
@@ -477,24 +654,261 @@ async function handlePostRecommendationTurn({
     const rawClean = cleanText(userMessage)
     const state = dialogueState
 
+    // 0. Manejo de respuesta tras pregunta de seguimiento de descarte sin motivo (Etapa 7, Escenario 2 & 22)
+    if (state.stage === "feedback_rejection_followup") {
+        const rejectedGame = state.pendingRejectionGame || (state.rejectedGames && state.rejectedGames[state.rejectedGames.length - 1]) || null
+        let appliedFeature = null
+        let explanationReason = null
+
+        if (/(?:menos\s+combate|sin\s+combate|evitar\s+combate)/i.test(rawClean)) {
+            criteria.experiencePreferences.combat = "bajo"
+            criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            appliedFeature = "combate_accion"
+            explanationReason = "reducir el combate"
+        } else if (/(?:menor\s+dificultad|m[aá]s\s+f[aá]cil|menos\s+dif[ií]cil|sin\s+frustraci[oó]n)/i.test(rawClean)) {
+            criteria.desiredDifficulty = "baja"
+            criteria.isDifficultyStrict = false
+            appliedFeature = "dificultad"
+            explanationReason = "reducir la dificultad a nivel relajado"
+        } else if (/(?:m[aá]s\s+historia|mejor\s+narrativa|trama)/i.test(rawClean)) {
+            criteria.experiencePreferences.narrative = "alto"
+            if (!criteria.likedFeatures.includes("narrativa_historia")) criteria.likedFeatures.push("narrativa_historia")
+            appliedFeature = "narrativa_historia"
+            explanationReason = "mayor énfasis en la historia"
+        } else if (/(?:m[aá]s\s+relajante|algo\s+m[aá]s\s+tranquilo|relajarme)/i.test(rawClean)) {
+            criteria.emotionalContext = ["relajante"]
+            criteria.desiredPacing = "relajado"
+            criteria.desiredDifficulty = "baja"
+            appliedFeature = "relajante"
+            explanationReason = "ritmo más relajado y tranquilo"
+        } else if (/(?:partidas?\s+m[aá]s\s+cortas?|menos\s+tiempo|poco\s+tiempo)/i.test(rawClean)) {
+            criteria.availableTime = "corta (< 30 min)"
+            appliedFeature = "duracion"
+            explanationReason = "partidas más cortas"
+        } else if (/(?:menos\s+plataformas?|sin\s+saltos)/i.test(rawClean)) {
+            if (!criteria.dislikedGenres.includes("Plataformas")) criteria.dislikedGenres.push("Plataformas")
+            criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== "Plataformas")
+            appliedFeature = "plataformas"
+            explanationReason = "evitar juegos de plataformas"
+        }
+
+        if (appliedFeature) {
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: rejectedGame,
+                type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                feature: appliedFeature,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: explanationReason,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+        }
+
+        state.pendingRejectionGame = null
+        state.stage = "recommended"
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 45
+        })
+
+        if (scoredGames.length === 0) {
+            scoredGames = await evaluateRecommendations(criteria, {
+                limit: 3,
+                excludeTitles: state.rejectedGames || [],
+                minScore: 40
+            })
+        }
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+
+        const adjustNote = explanationReason ? ` teniendo en cuenta tu preferencia de ${explanationReason}` : ""
+        const reply = `¡Perfecto! Hemos actualizado tus filtros${adjustNote}. Aquí tienes nuevas recomendaciones acordes:\n\n¿Alguna de estas nuevas opciones te llama la atención?`
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
+
+    // 0b. Manejo de retroalimentación en comparativa activa (Etapa 7, Escenario 7)
+    if (state.stage === "compared" && Array.isArray(state.lastComparedGames) && state.lastComparedGames.length >= 2) {
+        const [compA, compB] = state.lastComparedGames
+
+        // Sub-caso: "Ninguno me convence"
+        if (/(?:ningun(?:o|a)\s+me\s+(?:convence|gusta|llama)|no\s+me\s+gusta\s+ningun(?:o|a)|no\s+me\s+convence\s+ningun(?:o|a)|ninguno\b)/i.test(rawClean)) {
+            if (!state.rejectedGames) state.rejectedGames = []
+            if (!state.rejectedGames.includes(compA)) state.rejectedGames.push(compA)
+            if (!state.rejectedGames.includes(compB)) state.rejectedGames.push(compB)
+            if (!criteria.dislikedGames) criteria.dislikedGames = []
+            if (!criteria.dislikedGames.includes(compA)) criteria.dislikedGames.push(compA)
+            if (!criteria.dislikedGames.includes(compB)) criteria.dislikedGames.push(compB)
+
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: compA,
+                type: FEEDBACK_TYPES.GAME_REJECTION,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: "Descarte conjunto tras comparación",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: compB,
+                type: FEEDBACK_TYPES.GAME_REJECTION,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: "Descarte conjunto tras comparación",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+
+            return {
+                reply: `Entendido, descartamos tanto **${compA}** como **${compB}**. ¿Qué te gustaría cambiar para las siguientes recomendaciones: el tipo de juego (género), el ritmo o la duración?`,
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: [
+                    "Cambiar el género",
+                    "Cambiar el ritmo o dificultad",
+                    "Buscar otras alternativas directamente",
+                    "Nueva búsqueda"
+                ]
+            }
+        }
+
+        // Sub-caso: "Prefiero el primero porque tiene menos combate" / "Prefiero el segundo..."
+        const isPrefFirst = /(?:prefiero\s+el\s+primer(?:o)?|me\s+quedo\s+con\s+el\s+primer(?:o)?|me\s+gusta\s+m[aá]s\s+el\s+primer(?:o)?)/i.test(rawClean)
+        const isPrefSecond = /(?:prefiero\s+el\s+segund(?:o)?|me\s+quedo\s+con\s+el\s+segund(?:o)?|me\s+gusta\s+m[aá]s\s+el\s+segund(?:o)?)/i.test(rawClean)
+
+        if (isPrefFirst || isPrefSecond) {
+            const chosen = isPrefFirst ? compA : compB
+            const motives = extractFeedbackMotives(userMessage)
+            if (motives.hasMotives && motives.rejectedFeatures.includes("combate_accion")) {
+                criteria.experiencePreferences.combat = "bajo"
+                criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            }
+            if (!state.interestedGames) state.interestedGames = []
+            if (!state.interestedGames.includes(chosen)) state.interestedGames.push(chosen)
+            if (!criteria.likedGames) criteria.likedGames = []
+            if (!criteria.likedGames.includes(chosen)) criteria.likedGames.push(chosen)
+
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: chosen,
+                type: FEEDBACK_TYPES.GAME_INTEREST,
+                sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+                reason: motives.explanationText || "Elegido en comparación",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+            if (motives.rejectedFeatures.length > 0) {
+                for (const f of motives.rejectedFeatures) {
+                    recordFeedbackEvent(state.conversationMemory, {
+                        type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                        feature: f,
+                        sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                        reason: motives.explanationText,
+                        intensity: classifyFeedbackIntensity(userMessage),
+                        turn: state.turnCount
+                    })
+                }
+            }
+
+            const game = await getGameDetails(chosen)
+            const reasonNote = motives.explanationText ? ` por ${motives.explanationText}` : ""
+            return {
+                reply: `¡Excelente elección! Te has decantado por **${chosen}**${reasonNote}. ${game?.description || ""}\n\n¿Deseas conocer más detalles de este título o prefieres buscar alternativas?`,
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: [
+                    `Saber más sobre ${chosen}`,
+                    "Buscar alternativas",
+                    "Nueva búsqueda"
+                ]
+            }
+        }
+    }
+
     // 1. Detección de intención de comparación entre dos títulos
     const comp = detectComparisonIntent(userMessage, state)
     if (comp) {
-        const gameA = await getGameDetails(comp.gameA)
-        const gameB = await getGameDetails(comp.gameB)
-        const compReply = compareGames(gameA, gameB, comp.aspect)
-        state.currentReferencedGame = comp.gameA
+        if (comp.singleGame) {
+            state.pendingComparisonGame = comp.singleGame
+            return {
+                reply: `He seleccionado **${comp.singleGame}** para comparar. ¿Con qué otro videojuego te gustaría contrastarlo?`,
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: (state.lastRecommendedGames || [])
+                    .filter((t) => t !== comp.singleGame)
+                    .slice(0, 3)
+                    .map((t) => `Comparar con ${t}`)
+            }
+        }
+
+        const { compareGamesData } = require("./comparisonService")
+        const compResult = await compareGamesData({
+            titleA: comp.gameA,
+            titleB: comp.gameB,
+            criteria,
+            aspect: comp.aspect
+        })
+
+        if (compResult.error === "same_game") {
+            return {
+                reply: "Por favor selecciona dos videojuegos diferentes. No es posible comparar un título consigo mismo.",
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: ["Comparar opciones recomendadas", "Buscar alternativas", "Nueva búsqueda"]
+            }
+        }
+
+        if (compResult.error === "game_not_found") {
+            return {
+                reply: `No pude encontrar el videojuego "${compResult.missingGame}" en el catálogo de PC para realizar la comparación. Puedes elegir otro título o comparar entre los recomendados.`,
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: (state.lastRecommendedGames || []).slice(0, 2).map((t) => `Comparar ${t}`)
+            }
+        }
+
+        state.lastComparedGames = [compResult.gameA.title, compResult.gameB.title]
+        state.currentReferencedGame = compResult.gameA.title
+        state.pendingComparisonGame = null
+        state.stage = "compared"
 
         return {
-            reply: compReply,
+            reply: compResult.explanation,
+            comparisonData: compResult,
             updatedCriteria: criteria,
             dialogueState: state,
             recommendations: [],
             suggestedReplies: [
-                `Me interesa ${comp.gameA}`,
-                `Me interesa ${comp.gameB}`,
-                "Buscar alternativas",
-                "Nueva búsqueda"
+                `Me interesa ${compResult.gameA.title}`,
+                `Me interesa ${compResult.gameB.title}`,
+                `¿Cuál tiene menos combate?`,
+                `Buscar alternativas a ambos`
             ]
         }
     }
@@ -515,6 +929,327 @@ async function handlePostRecommendationTurn({
             dialogueState: state,
             recommendations: [],
             suggestedReplies
+        }
+    }
+
+    // 2b. Retroalimentación mixta / contrastada (Etapa 7, Escenario 4)
+    const mixed = parseMixedFeedbackClauses(userMessage)
+    if (mixed) {
+        const targetTitle = resolvedRef.resolvedGameTitle || state.currentReferencedGame || null
+        if (targetTitle) {
+            state.currentReferencedGame = targetTitle
+        }
+        for (const feat of mixed.positiveFeatures) {
+            if (!criteria.likedFeatures.includes(feat)) criteria.likedFeatures.push(feat)
+            if (feat === "narrativa_historia") criteria.experiencePreferences.narrative = "alto"
+            else if (feat === "exploracion") criteria.experiencePreferences.exploration = "alto"
+            else if (feat === "construccion_creatividad") criteria.experiencePreferences.creativity = "alto"
+            else if (feat === "estrategia_planificacion") criteria.experiencePreferences.strategy = "alto"
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.FEATURE_LIKE,
+                feature: feat,
+                sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+                reason: `Interés positivo en ${feat}`,
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+        }
+        for (const feat of mixed.negativeFeatures) {
+            if (feat === "combate_accion") {
+                criteria.experiencePreferences.combat = "bajo"
+                criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            } else if (feat === "combate_dificil") {
+                if (!criteria.dislikedFeatures.includes("combate_dificil")) criteria.dislikedFeatures.push("combate_dificil")
+                criteria.desiredDifficulty = "baja"
+            } else {
+                if (!criteria.dislikedFeatures.includes(feat)) criteria.dislikedFeatures.push(feat)
+                criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== feat)
+            }
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                feature: feat,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: `Aversión hacia ${feat}`,
+                intensity: classifyFeedbackIntensity(userMessage),
+                turn: state.turnCount
+            })
+        }
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 45
+        })
+        if (scoredGames.length === 0) {
+            scoredGames = await evaluateRecommendations(criteria, {
+                limit: 3,
+                excludeTitles: state.rejectedGames || [],
+                minScore: 40
+            })
+        }
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+        state.stage = "recommended"
+
+        if (state.conversationMemory && state.conversationMemory.recommendationFeedback) {
+            state.conversationMemory.recommendationFeedback.lastShownGames = newlyShown
+            state.conversationMemory.recommendationFeedback.shownHistory = state.shownGameTitles
+        }
+
+        const posNames = mixed.positiveFeatures.map(f => f.replace("_", " ")).join(", ")
+        const negNames = mixed.negativeFeatures.map(f => f.replace("_", " ")).join(", ")
+        const reply = `¡Anotado! Potenciaremos los aspectos que te gustan (como ${posNames}) y reduciremos los elementos que prefieres evitar (como ${negNames}). Aquí tienes recomendaciones adaptadas a ese balance:\n\n¿Alguna de estas opciones se ajusta mejor a lo que buscas?`
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
+
+    // 2c. Interés específico en un aspecto (Etapa 7, Escenario 3)
+    const fbIntentEarly = detectFeedbackIntent(userMessage, state, resolvedRef)
+    if (fbIntentEarly.type === "feature_like") {
+        const feat = fbIntentEarly.targetFeature || "exploracion"
+        const targetTitle = fbIntentEarly.targetGame || resolvedRef.resolvedGameTitle || null
+        if (!criteria.likedFeatures.includes(feat)) criteria.likedFeatures.push(feat)
+        if (feat === "exploracion") criteria.experiencePreferences.exploration = "alto"
+        else if (feat === "narrativa_historia") criteria.experiencePreferences.narrative = "alto"
+        else if (feat === "construccion_creatividad") criteria.experiencePreferences.creativity = "alto"
+        else if (feat === "estrategia_planificacion") criteria.experiencePreferences.strategy = "alto"
+
+        recordFeedbackEvent(state.conversationMemory, {
+            gameTitle: targetTitle,
+            type: FEEDBACK_TYPES.FEATURE_LIKE,
+            feature: feat,
+            sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+            reason: `Interés específico en ${feat}`,
+            intensity: FEEDBACK_INTENSITIES.CLEAR,
+            turn: state.turnCount
+        })
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 45
+        })
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+        state.stage = "recommended"
+
+        const gameMention = targetTitle ? ` como en **${targetTitle}**` : ""
+        const reply = `¡Anotado! Priorizaremos videojuegos con un gran componente de ${feat.replace("_", " ")}${gameMention}. Aquí tienes nuevas opciones que destacan especialmente en ese aspecto:\n\n¿Alguna de estas opciones te llama la atención?`
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
+
+    // 2d. Descarte por precio (Etapa 7, Escenario 21)
+    if (fbIntentEarly.type === "price_rejection") {
+        criteria.pricePreference = "gratuito"
+        criteria.isPriceStrict = true
+        const targetTitle = resolvedRef.resolvedGameTitle || null
+        if (targetTitle) {
+            if (!state.rejectedGames) state.rejectedGames = []
+            if (!state.rejectedGames.includes(targetTitle)) state.rejectedGames.push(targetTitle)
+            if (!criteria.dislikedGames) criteria.dislikedGames = []
+            if (!criteria.dislikedGames.includes(targetTitle)) criteria.dislikedGames.push(targetTitle)
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.GAME_REJECTION,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: "Rechazado por ser de pago (se busca gratuito)",
+                intensity: FEEDBACK_INTENSITIES.STRICT,
+                turn: state.turnCount
+            })
+        }
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 35
+        })
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+        state.stage = "recommended"
+
+        const reply = "Entendido. A partir de ahora filtraremos exclusivamente videojuegos gratuitos (free-to-play) para PC. Aquí tienes opciones gratuitas que se adaptan a lo que buscas:\n\n¿Alguna de estas opciones gratuitas te llama la atención?"
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
+
+    // 2e. Aversión estética (Etapa 7, Escenario 18)
+    if (fbIntentEarly.type === "aesthetic_dislike" || (/pixel\s*art|pixelado/i.test(rawClean) && /(?:no\s+me\s+gusta|sin|odio|detesto|nada\s+de)/i.test(rawClean))) {
+        if (!criteria.dislikedFeatures.includes("pixel_art")) {
+            criteria.dislikedFeatures.push("pixel_art")
+        }
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "pixel_art")
+
+        recordFeedbackEvent(state.conversationMemory, {
+            type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+            feature: "pixel_art",
+            sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+            reason: "Aversión a estética pixel art",
+            intensity: FEEDBACK_INTENSITIES.STRICT,
+            turn: state.turnCount
+        })
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 45
+        })
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+        state.stage = "recommended"
+
+        const reply = "Entendido, evitaremos videojuegos con estética pixel art en nuestras recomendaciones. Aquí tienes opciones con otros estilos visuales que encajan con tu búsqueda:\n\n¿Alguna de estas opciones te atrae?"
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
+
+    // 2f. Petición de juego más relajante (Etapa 7, Escenario 25)
+    if (fbIntentEarly.type === "more_relaxing_request" || /(?:m[aá]s\s+relajante\s+que|m[aá]s\s+tranquilo\s+que)/i.test(rawClean)) {
+        const targetTitle = resolvedRef.resolvedGameTitle || state.currentReferencedGame || null
+        if (targetTitle) {
+            if (!state.rejectedGames) state.rejectedGames = []
+            if (!state.rejectedGames.includes(targetTitle)) state.rejectedGames.push(targetTitle)
+            if (!criteria.dislikedGames) criteria.dislikedGames = []
+            if (!criteria.dislikedGames.includes(targetTitle)) criteria.dislikedGames.push(targetTitle)
+        }
+        criteria.emotionalContext = ["relajante"]
+        criteria.desiredPacing = "relajado"
+        criteria.desiredDifficulty = "baja"
+        criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion" && f !== "desafio_progresion")
+
+        recordFeedbackEvent(state.conversationMemory, {
+            gameTitle: targetTitle,
+            type: FEEDBACK_TYPES.PREFERENCE_CORRECTION,
+            feature: "relajante",
+            sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+            reason: "Petición de experiencia más relajante y tranquila",
+            intensity: FEEDBACK_INTENSITIES.CLEAR,
+            turn: state.turnCount
+        })
+
+        const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+        let scoredGames = await evaluateRecommendations(criteria, {
+            limit: 3,
+            excludeTitles: excludeList,
+            minScore: 45
+        })
+
+        const newRecommendations = scoredGames.map((item) => ({
+            game: item.game,
+            score: item.score,
+            breakdown: item.breakdown,
+            explanation: generateExplanation(item, criteria)
+        }))
+
+        const newlyShown = newRecommendations.map((r) => r.game.title)
+        state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+        state.stage = "recommended"
+
+        const reply = "Entendido, buscamos una experiencia notablemente más relajante, con ritmo tranquilo y sin presiones. Aquí tienes nuevas opciones ideales para desconectar:\n\n¿Alguna de estas opciones relajantes te llama la atención?"
+
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            recommendations: newRecommendations,
+            suggestedReplies: [
+                "Me interesa el primero",
+                newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
         }
     }
 
@@ -561,16 +1296,23 @@ async function handlePostRecommendationTurn({
         }
     }
 
-    // 3. Si hay un juego resuelto (por nombre, ordinal o foco previo)
+    // 3. Si hay un juego resuelto (por nombre, ordinal, descriptivo o foco previo)
     if (resolvedRef.resolvedGameTitle) {
         const targetTitle = resolvedRef.resolvedGameTitle
         state.currentReferencedGame = targetTitle
-        const fbIntent = detectFeedbackIntent(userMessage, state, resolvedRef)
+        const fbIntent = fbIntentEarly
 
-        // Caso 3.1: Solicitud de información detallada (de qué trata, modo, dificultad, duración, unsupported)
+        // Caso 3.1: Solicitud de información detallada (Escenario 8: comentario neutral / consulta informativa)
         if (fbIntent.type.startsWith("info_")) {
             const game = await getGameDetails(targetTitle)
             const answer = answerGameQuestion(game, fbIntent.type)
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.NEUTRAL_COMMENT,
+                sentiment: FEEDBACK_SENTIMENTS.NEUTRAL,
+                reason: "Consulta de información sin modificación de preferencias",
+                turn: state.turnCount
+            })
             const reply = `${answer}\n\n¿Te gustaría saber más detalles, comparar con otra opción o prefieres explorar alternativas?`
             return {
                 reply,
@@ -592,6 +1334,10 @@ async function handlePostRecommendationTurn({
             if (!state.interestedGames.includes(targetTitle)) {
                 state.interestedGames.push(targetTitle)
             }
+            if (!Array.isArray(criteria.likedGames)) criteria.likedGames = []
+            if (!criteria.likedGames.includes(targetTitle)) {
+                criteria.likedGames.push(targetTitle)
+            }
 
             const motives = extractFeedbackMotives(userMessage)
             if (motives.hasMotives) {
@@ -610,6 +1356,15 @@ async function handlePostRecommendationTurn({
                     motiveText: motives.explanationText
                 })
             }
+
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.GAME_INTEREST,
+                sentiment: FEEDBACK_SENTIMENTS.POSITIVE,
+                reason: motives.explanationText || "Interés en el juego",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
 
             if (state.conversationMemory && state.conversationMemory.recommendationFeedback) {
                 const rf = state.conversationMemory.recommendationFeedback
@@ -642,6 +1397,92 @@ async function handlePostRecommendationTurn({
 
         // Caso 3.3: Rechazo explícito de un juego específico
         if (fbIntent.type === "rejection") {
+            const motives = extractFeedbackMotives(userMessage)
+
+            // Sub-caso A: Rechazo SIN motivo (Etapa 7, Escenario 2 & 22)
+            if (!motives.hasMotives && !/(?:combate|dificil|historia|tiempo|largo|corto|pixel|precio|gratis)/i.test(rawClean)) {
+                if (!Array.isArray(state.rejectedGames)) state.rejectedGames = []
+                if (!state.rejectedGames.includes(targetTitle)) {
+                    state.rejectedGames.push(targetTitle)
+                }
+                if (!Array.isArray(criteria.dislikedGames)) criteria.dislikedGames = []
+                if (!criteria.dislikedGames.includes(targetTitle)) {
+                    criteria.dislikedGames.push(targetTitle)
+                }
+
+                recordFeedbackEvent(state.conversationMemory, {
+                    gameTitle: targetTitle,
+                    type: FEEDBACK_TYPES.GAME_REJECTION,
+                    sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                    reason: "Rechazo sin motivo especificado",
+                    intensity: FEEDBACK_INTENSITIES.CLEAR,
+                    turn: state.turnCount
+                })
+
+                state.pendingRejectionGame = targetTitle
+                state.stage = "feedback_rejection_followup"
+
+                // Sugerencias dinámicas según características reales del videojuego rechazado
+                const game = await getGameDetails(targetTitle)
+                const dynamicReplies = []
+                if (game?.experienceAttributes?.combat >= 3 || game?.genres?.includes("Acción")) {
+                    dynamicReplies.push("Menos combate")
+                }
+                if (game?.difficulty === "alta" || /desafiante/i.test(game?.difficulty || "")) {
+                    dynamicReplies.push("Menor dificultad")
+                }
+                if (game?.genres?.includes("Plataformas")) {
+                    dynamicReplies.push("Menos plataformas")
+                }
+                if ((game?.experienceAttributes?.narrative || 0) < 3) {
+                    dynamicReplies.push("Más historia")
+                }
+                if (game?.pacing === "intenso") {
+                    dynamicReplies.push("Algo más relajante")
+                }
+                if (game?.sessionDuration?.includes("larga")) {
+                    dynamicReplies.push("Partidas más cortas")
+                }
+                dynamicReplies.push("Buscar alternativas directamente")
+
+                const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
+                let scoredGames = await evaluateRecommendations(criteria, {
+                    limit: 3,
+                    excludeTitles: excludeList,
+                    minScore: 40
+                })
+
+                if (scoredGames.length === 0 && excludeList.length > state.rejectedGames.length) {
+                    scoredGames = await evaluateRecommendations(criteria, {
+                        limit: 3,
+                        excludeTitles: state.rejectedGames,
+                        minScore: 40
+                    })
+                }
+
+                const newRecommendations = scoredGames.map((item) => ({
+                    game: item.game,
+                    score: item.score,
+                    breakdown: item.breakdown,
+                    explanation: generateExplanation(item, criteria)
+                }))
+
+                const newlyShown = newRecommendations.map((r) => r.game.title)
+                state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
+                state.lastRecommendedGames = newlyShown
+
+                const reply = `Entendido, descartamos **${targetTitle}**. ¿Qué te gustaría cambiar de esta opción? Mientras tanto, aquí tienes nuevas opciones que encajan con tu búsqueda:\n\n¿Alguna de estas nuevas opciones te llama la atención?`
+
+                return {
+                    reply,
+                    updatedCriteria: criteria,
+                    dialogueState: state,
+                    recommendations: newRecommendations,
+                    suggestedReplies: dynamicReplies.slice(0, 4)
+                }
+            }
+
+            // Sub-caso B: Rechazo CON motivo explícito (Etapa 7, Escenario 1)
             if (!Array.isArray(state.rejectedGames)) state.rejectedGames = []
             if (!state.rejectedGames.includes(targetTitle)) {
                 state.rejectedGames.push(targetTitle)
@@ -651,24 +1492,65 @@ async function handlePostRecommendationTurn({
                 criteria.dislikedGames.push(targetTitle)
             }
 
-            const motives = extractFeedbackMotives(userMessage)
-            if (motives.hasMotives) {
-                if (motives.rejectedFeatures.length > 0) {
-                    for (const f of motives.rejectedFeatures) {
-                        if (!criteria.dislikedFeatures.includes(f)) criteria.dislikedFeatures.push(f)
-                    }
+            const intensity = classifyFeedbackIntensity(userMessage)
+
+            if (motives.rejectedFeatures.includes("combate_accion")) {
+                if (intensity === FEEDBACK_INTENSITIES.STRICT) {
+                    criteria.experiencePreferences.combat = "ninguno"
+                    if (!criteria.dislikedFeatures.includes("combate_accion")) criteria.dislikedFeatures.push("combate_accion")
+                    criteria.preferredGenres = criteria.preferredGenres.filter(g => g !== "Acción")
+                } else {
+                    criteria.experiencePreferences.combat = "bajo"
+                    if (!criteria.dislikedFeatures.includes("combate_accion")) criteria.dislikedFeatures.push("combate_accion")
                 }
-                if (motives.updatedPacing) {
-                    criteria.desiredPacing = motives.updatedPacing
-                    if (motives.updatedPacing === "relajado") {
-                        criteria.emotionalContext = ["relajante"]
-                    }
+                criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            }
+
+            if (motives.rejectedFeatures.includes("combate_dificil")) {
+                criteria.desiredDifficulty = "baja"
+                criteria.isDifficultyStrict = false
+                if (!criteria.dislikedFeatures.includes("combate_dificil")) criteria.dislikedFeatures.push("combate_dificil")
+                criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "desafio_progresion")
+            }
+
+            if (motives.rejectedFeatures.length > 0) {
+                for (const f of motives.rejectedFeatures) {
+                    if (!criteria.dislikedFeatures.includes(f)) criteria.dislikedFeatures.push(f)
                 }
-                if (!Array.isArray(state.feedbackMotives)) state.feedbackMotives = []
-                state.feedbackMotives.push({
-                    game: targetTitle,
-                    type: "rejection",
-                    motiveText: motives.explanationText
+            }
+
+            if (motives.updatedPacing) {
+                criteria.desiredPacing = motives.updatedPacing
+                if (motives.updatedPacing === "relajado") {
+                    criteria.emotionalContext = ["relajante"]
+                }
+            }
+
+            if (!Array.isArray(state.feedbackMotives)) state.feedbackMotives = []
+            state.feedbackMotives.push({
+                game: targetTitle,
+                type: "rejection",
+                motiveText: motives.explanationText
+            })
+
+            recordFeedbackEvent(state.conversationMemory, {
+                gameTitle: targetTitle,
+                type: FEEDBACK_TYPES.GAME_REJECTION,
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: motives.explanationText || "Rechazo con motivo",
+                intensity,
+                turn: state.turnCount
+            })
+
+            for (const f of motives.rejectedFeatures) {
+                recordFeedbackEvent(state.conversationMemory, {
+                    gameTitle: targetTitle,
+                    type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                    feature: f,
+                    sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                    reason: motives.explanationText,
+                    intensity,
+                    turn: state.turnCount
                 })
             }
 
@@ -689,15 +1571,14 @@ async function handlePostRecommendationTurn({
             let scoredGames = await evaluateRecommendations(criteria, {
                 limit: 3,
                 excludeTitles: excludeList,
-                minScore: 45
+                minScore: 40
             })
 
-            // Si se agotan excluyendo todos los mostrados, excluir solo los rechazados explícitamente
             if (scoredGames.length === 0 && excludeList.length > state.rejectedGames.length) {
                 scoredGames = await evaluateRecommendations(criteria, {
                     limit: 3,
                     excludeTitles: state.rejectedGames,
-                    minScore: 45
+                    minScore: 40
                 })
             }
 
@@ -713,6 +1594,7 @@ async function handlePostRecommendationTurn({
                 state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
                 state.lastRecommendedGames = newlyShown
                 state.currentReferencedGame = null
+                state.stage = "recommended"
 
                 if (state.conversationMemory && state.conversationMemory.recommendationFeedback) {
                     state.conversationMemory.recommendationFeedback.lastShownGames = newlyShown
@@ -761,10 +1643,24 @@ async function handlePostRecommendationTurn({
 
     // 4. Solicitud de alternativas generales ("buscar alternativas", "muéstrame otros juegos", "quiero algo diferente")
     const isRequestingAlternatives =
-        /(?:buscar\s+alternativas|mu[eé]strame\s+otros(?:\s+juegos)?|otras\s+opciones|dame\s+otras\s+opciones|m[aá]s\s+alternativas|ver\s+otras\s+opciones|cambiar\s+opciones|algo\s+diferente|quiero\s+algo\s+diferente|diferentes\s+juegos)/i.test(rawClean) ||
+        /(?:dame\s+alternativas|buscar\s+alternativas|alternativas|mu[eé]strame\s+otros(?:\s+juegos)?|otras\s+opciones|dame\s+otras\s+opciones|m[aá]s\s+alternativas|ver\s+otras(?:\s+opciones)?|cambiar\s+opciones|algo\s+diferente|quiero\s+algo\s+diferente|diferentes\s+juegos)/i.test(rawClean) ||
         (analysis.wantsAlternatives && !/(?:no\s+me\s+convencen?\s+(?:estas|las|esas)\s+opciones|ningun(?:o|a)\s+me\s+(?:gusta|llama|convence))/i.test(rawClean))
 
     if (isRequestingAlternatives) {
+        // Soporte para alternativas con motivo implícito (Etapa 7, Escenario 10)
+        if (/menos\s+combate/i.test(rawClean)) {
+            criteria.experiencePreferences.combat = "bajo"
+            criteria.likedFeatures = criteria.likedFeatures.filter(f => f !== "combate_accion")
+            recordFeedbackEvent(state.conversationMemory, {
+                type: FEEDBACK_TYPES.FEATURE_DISLIKE,
+                feature: "combate_accion",
+                sentiment: FEEDBACK_SENTIMENTS.NEGATIVE,
+                reason: "Alternativas con menos combate",
+                intensity: FEEDBACK_INTENSITIES.CLEAR,
+                turn: state.turnCount
+            })
+        }
+
         const excludeList = [...new Set([...(state.shownGameTitles || []), ...(state.rejectedGames || [])])]
         let scoredGames = await evaluateRecommendations(criteria, {
             limit: 3,
@@ -784,6 +1680,7 @@ async function handlePostRecommendationTurn({
             state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
             state.lastRecommendedGames = newlyShown
             state.currentReferencedGame = null
+            state.stage = "recommended"
 
             if (state.conversationMemory && state.conversationMemory.recommendationFeedback) {
                 state.conversationMemory.recommendationFeedback.lastShownGames = newlyShown
@@ -800,9 +1697,9 @@ async function handlePostRecommendationTurn({
                 suggestedReplies: [
                     "Me interesa el primero",
                     newlyShown[0] ? `¿De qué trata ${newlyShown[0]}?` : "Quiero saber más",
-                    "¿Cuál es más tranquilo?",
-                    "Buscar alternativas",
-                    "Nueva búsqueda"
+                    "Quiero algo diferente",
+                    "Algo parecido a mis gustos",
+                    "Muéstrame más alternativas"
                 ]
             }
         } else {
@@ -879,7 +1776,8 @@ async function handlePostRecommendationTurn({
 
         let scoredGames = await evaluateRecommendations(criteria, {
             limit: 3,
-            excludeTitles: state.rejectedGames || []
+            excludeTitles: state.rejectedGames || [],
+            minScore: 40
         })
 
         const newRecommendations = scoredGames.map((item) => ({
@@ -893,6 +1791,7 @@ async function handlePostRecommendationTurn({
         state.shownGameTitles = [...new Set([...(state.shownGameTitles || []), ...newlyShown])]
         state.lastRecommendedGames = newlyShown
         state.currentReferencedGame = null
+        state.stage = "recommended"
 
         const intro = isFlexibilizar
             ? "¡Perfecto! Hemos flexibilizado ese criterio para ampliar el abanico de opciones. Aquí tienes nuevas recomendaciones:"

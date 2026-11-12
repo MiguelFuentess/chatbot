@@ -1,0 +1,292 @@
+[
+    {
+        "title": "Satisfactory",
+        "description": "Un juego de construcción de fábricas en primera persona en un mundo abierto alienígena. Conquista la naturaleza, automatiza líneas de montaje masivas y diseña complejos transportes.",
+        "genres": ["Construcción", "Simulación", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "larga (> 1 hora)",
+        "emotionalTags": ["creativo", "estimulante", "adictivo", "exploracion", "inmersivo"],
+        "experienceHighlights": [
+            "Perspectiva en primera persona que transmite la escala colosal de tus megaconstrucciones",
+            "Mundo alienígena artesanal gigantesco con biomas ricos en recursos y verticalidad",
+            "Redes ferroviarias, tirolinas, propulsores y vehículos para transporte logístico"
+        ],
+        "similarTo": ["Factorio", "Minecraft", "Subnautica"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/526870/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 2,
+            "creativity": 5,
+            "strategy": 4,
+            "combat": 2,
+            "freedom": 5,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Astroneer",
+        "description": "Explora y remodela mundos lejanos durante la era del descubrimiento interplanetario. Deforma el terreno, extrae recursos raros y construye bases modulares solo o con amigos.",
+        "genres": ["Aventura", "Exploración", "Construcción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["relajante", "colorido", "exploracion", "creativo", "amigos"],
+        "experienceHighlights": [
+            "Herramienta de terreno para esculpir el suelo, cavar túneles o construir rampas al cielo",
+            "Siete planetas con gravedad y biomas propios para explorar en cohetes espaciales",
+            "Construcción modular 'snap-on' muy limpia e intuitiva sin menús engorrosos"
+        ],
+        "similarTo": ["Minecraft", "Slime Rancher", "No Man's Sky"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/361420/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 5,
+            "narrative": 1,
+            "creativity": 4,
+            "strategy": 3,
+            "combat": 0,
+            "freedom": 5,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Pentiment",
+        "description": "Un apasionante juego de rol narrativo ambientado en la Baviera del siglo XVI. Investiga una serie de asesinatos a lo largo de 25 años en el estilo visual de manuscritos iluminados.",
+        "genres": ["RPG", "Narrativo", "Misterio", "Histórico"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["buena historia", "profundo", "maduro", "reflexivo", "artistico"],
+        "experienceHighlights": [
+            "Recreación fidedigna del arte de grabado en madera y manuscritos tardomedievales",
+            "Ramificaciones históricas y morales profundas donde nunca sabes la verdad absoluta",
+            "Guion excepcional dirigido por Josh Sawyer (Fallout: New Vegas)"
+        ],
+        "similarTo": ["Disco Elysium - The Final Cut", "Return of the Obra Dinn", "What Remains of Edith Finch"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1205520/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "To the Moon",
+        "description": "Dos médicos recorren hacia atrás los recuerdos de un anciano moribundo para cumplir artificialmente su último deseo antes de fallecer: viajar a la Luna.",
+        "genres": ["Aventura", "Narrativo", "RPG", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["buena historia", "emocionante", "profundo", "reflexivo", "artistico"],
+        "experienceHighlights": [
+            "Una de las bandas sonoras al piano más conmovedoras de la historia del videojuego",
+            "Historia de amor, promesas olvidadas y memoria que emociona hasta las lágrimas",
+            "Experiencia narrativa pura accesible para cualquier tipo de jugador en pocas horas"
+        ],
+        "similarTo": ["Gris", "What Remains of Edith Finch", "Firewatch"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/206440/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 5,
+            "creativity": 0,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 1,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Vampire Survivors",
+        "description": "Sobrevive a mareas interminables de miles de monstruos en un roguelite de acción minimalista donde disparas automáticamente mientras esquivas y evolucionas armas.",
+        "genres": ["Roguelike", "Acción", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adictivo", "adrenalina", "estimulante", "divertido", "rapido"],
+        "experienceHighlights": [
+            "Fórmula hipnótica instantánea: solo controlas el movimiento mientras el daño se desata solo",
+            "Evoluciones de armas secretas y cofres del tesoro con fanfarrias sumamente placenteras",
+            "Sesiones de exactamente 30 minutos de adrenalina creciente y decenas de desbloqueos"
+        ],
+        "similarTo": ["Dead Cells", "Hades", "Brotato"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1794680/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 0,
+            "creativity": 2,
+            "strategy": 3,
+            "combat": 5,
+            "freedom": 2,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Risk of Rain 2",
+        "description": "Escapa de un planeta alienígena hostil combatiendo hordas de monstruos frenéticos con amigos. Combina objetos de manera absurda para dominar el tiempo y la dificultad creciente.",
+        "genres": ["Roguelike", "Acción", "Shooter", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["adrenalina", "amigos", "desafiante", "estimulante", "rapido"],
+        "experienceHighlights": [
+            "Escalado infinito de sinergias de objetos que te transforman en una tormenta destructiva",
+            "Dificultad dinámica que aumenta minuto a minuto obligándote a no perder tiempo",
+            "Docena de supervivientes únicos con estilos de combate radicalmente diferentes"
+        ],
+        "similarTo": ["Deep Rock Galactic", "Dead Cells", "Hades"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 2,
+            "creativity": 2,
+            "strategy": 4,
+            "combat": 5,
+            "freedom": 3,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Katana Zero",
+        "description": "Un elegante juego de acción neo-noir de plataformas a velocidad vertiginosa. Acuchilla, esquiva y manipula el tiempo para desentrañar tu pasado en una ciudad distópica.",
+        "genres": ["Acción", "Plataformas", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adrenalina", "rapido", "desafiante", "buena historia", "estimulante"],
+        "experienceHighlights": [
+            "Combate letal instantáneo de un solo golpe: si te tocan mueres, pero tus cortes son mortales",
+            "Manipulación del tiempo para ralentizar proyectiles y devolverlos con tu katana",
+            "Trama psicológica neo-noir cautivadora con música synthwave espectacular"
+        ],
+        "similarTo": ["Dead Cells", "Celeste", "Hades"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/460950/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 4,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 5,
+            "freedom": 1,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Sekiro: Shadows Die Twice",
+        "description": "En el Japón de la era Sengoku, encarnas al 'Lobo de un solo brazo'. Domina el combate de katanas centrado en el desvío milimétrico y herramientas prostéticas letales.",
+        "genres": ["Acción", "Aventura"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["desafiante", "adrenalina", "estimulante", "inmersivo", "profundo"],
+        "experienceHighlights": [
+            "Ganador del Juego del Año (GOTY) con el sistema de esgrima y parry más afinado del medio",
+            "Mecánica de 'Postura' donde romper la guardia rival es tan crucial como la vitalidad",
+            "Brazo prostético shinobi con gancho de escalada, hacha y shurikens para movilidad total"
+        ],
+        "similarTo": ["Elden Ring", "Hollow Knight", "Doom Eternal"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 4,
+            "creativity": 2,
+            "strategy": 4,
+            "combat": 5,
+            "freedom": 3,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "The Forest",
+        "description": "Como único superviviente de un accidente aéreo, adéntrate en un bosque misterioso para mantenerte con vida contra una sociedad de caníbales mutantes.",
+        "genres": ["Supervivencia", "Terror", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo", "multijugador"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["adrenalina", "inmersivo", "misterio", "atmosferico", "desafiante"],
+        "experienceHighlights": [
+            "IA de caníbales perturbadora que te vigila desde las copas de los árboles antes de atacar",
+            "Tala de árboles realista y construcción modular de defensas, trampas y campamentos",
+            "Profundo sistema de cuevas subterráneas aterradoras donde reside la verdadera trama"
+        ],
+        "similarTo": ["Subnautica", "Minecraft", "Phasmophobia"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/242760/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 3,
+            "creativity": 4,
+            "strategy": 4,
+            "combat": 4,
+            "freedom": 4,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Subnautica: Below Zero",
+        "description": "Regresa al planeta 4546B en una gélida expedición polar marina. Sobrevive a temperaturas bajo cero y sumérgete en biomas submarinos congelados con nueva fauna y tecnología.",
+        "genres": ["Supervivencia", "Exploración", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["exploracion", "inmersivo", "atmosferico", "misterio", "buena historia"],
+        "experienceHighlights": [
+            "Nueva narrativa protagonizada con voz para Robin Ayou buscando respuestas sobre su hermana",
+            "Construcción del Seatruck modular y motos de nieve Seatruck para explorar sobre hielo",
+            "Criaturas polares submarinas espectaculares en arrecifes térmicos y fosas glaciales"
+        ],
+        "similarTo": ["Subnautica", "Outer Wilds", "The Forest"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/848450/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 5,
+            "narrative": 4,
+            "creativity": 4,
+            "strategy": 3,
+            "combat": 1,
+            "freedom": 4,
+            "complexity": 3
+        }
+    }
+]

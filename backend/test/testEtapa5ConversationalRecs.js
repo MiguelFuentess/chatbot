@@ -378,11 +378,16 @@ async function runEtapa5Tests() {
     try {
         console.log("\n[ESCENARIO 12] Alternativas compatibles agotadas")
         // Creamos un estado donde se han mostrado todos los juegos de un nicho muy cerrado
+        const allMatchingNicheGames = [
+            "Portal 2", "It Takes Two", "Overcooked! All You Can Eat", "Deep Rock Galactic", "A Way Out",
+            "Keep Talking and Nobody Explodes", "Human: Fall Flat", "We Were Here Together",
+            "Cuphead", "Shovel Knight: Treasure Trove", "PlateUp!", "Moving Out", "Phasmophobia", "Lethal Company", "Vampire Survivors"
+        ]
         const simulatedState = {
             stage: "recommended",
             turnCount: 5,
-            shownGameTitles: ["Portal 2", "It Takes Two", "Overcooked! All You Can Eat", "Deep Rock Galactic", "A Way Out", "Keep Talking and Nobody Explodes"],
-            rejectedGames: ["Portal 2", "It Takes Two", "Overcooked! All You Can Eat", "Deep Rock Galactic", "A Way Out", "Keep Talking and Nobody Explodes"],
+            shownGameTitles: allMatchingNicheGames,
+            rejectedGames: allMatchingNicheGames,
             lastRecommendedGames: ["Keep Talking and Nobody Explodes"]
         }
         const strictCriteria = {

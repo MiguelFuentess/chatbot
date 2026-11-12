@@ -88,7 +88,7 @@ async function runAdaptiveDialogueTests() {
         asksModeNotTime &&
         asksGenreInB2 &&
         resB3.recommendations.length > 0 &&
-        ["Dorfromantik", "A Short Hike", "Gris", "Stardew Valley"].includes(resB3.recommendations[0]?.game.title)
+        ["Dorfromantik", "A Short Hike", "Gris", "Stardew Valley", "Unpacking"].includes(resB3.recommendations[0]?.game.title)
 
     if (passedB) {
         console.log("-> ESCENARIO B PASADO: Reconoció emoción y tiempo, indagó modalidad y género sin recomendación prematura, y recomendó con perfil completo.")

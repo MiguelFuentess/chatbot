@@ -1,0 +1,901 @@
+[
+    {
+        "title": "Unpacking",
+        "description": "Un relajante juego de puzles zen sobre la placentera y reveladora experiencia de sacar pertenencias de cajas y colocarlas en una nueva habitación a lo largo de varias etapas de la vida.",
+        "genres": ["Puzzle", "Casual", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["relajante", "tranquilo", "cero estres", "sin presion", "desconexion", "reflexivo"],
+        "experienceHighlights": [
+            "Narrativa ambiental sutil contada enteramente a través de los objetos cotidianos",
+            "Atmósfera sumamente apacible con diseño de audio táctil muy satisfactorio",
+            "Sin cronómetros, puntuaciones ni presiones competitivas"
+        ],
+        "similarTo": ["A Short Hike", "Dorfromantik", "Townscaper"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1135690/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 4,
+            "creativity": 3,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Spiritfarer: Farewell Edition",
+        "description": "Un acogedor juego de gestión sobre la muerte. Como barquera de los difuntos, construye tu barco para explorar el mundo, cuida de tus amigos espíritus y aprende a despedirte de ellos.",
+        "genres": ["Aventura", "Gestión", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["relajante", "buena historia", "reflexivo", "emocionante", "profundo", "artistico"],
+        "experienceHighlights": [
+            "Conmovedora narrativa sobre la aceptación, el duelo y el cuidado mutuo",
+            "Preciosa animación tradicional dibujada a mano cuadro por cuadro",
+            "Construcción y personalización continua de tu propia embarcación"
+        ],
+        "similarTo": ["Stardew Valley", "Gris", "A Short Hike"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/972660/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 5,
+            "creativity": 3,
+            "strategy": 2,
+            "combat": 1,
+            "freedom": 4,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Townscaper",
+        "description": "Un constructor instantáneo de pintorescos pueblos costeros. Sin objetivos ni jugabilidad compleja; solo pura creación relajante haciendo aparecer casas, arcos y catedrales sobre el agua.",
+        "genres": ["Casual", "Construcción", "Indie", "Simulación"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["relajante", "tranquilo", "cero estres", "creativo", "colorido", "desconexion"],
+        "experienceHighlights": [
+            "Creación procedural orgánica con un simple clic de ratón",
+            "Algoritmo estético que convierte cada bloque en arquitectura encantadora",
+            "Juguete lúdico meditativo ideal para desestresarse en cualquier momento"
+        ],
+        "similarTo": ["Dorfromantik", "Cities: Skylines", "A Short Hike"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1291340/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 0,
+            "creativity": 5,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 5,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "PowerWash Simulator",
+        "description": "Libera tensiones limpiando con agua a alta presión en un simulador terapéutico donde dejas relucientes patios, vehículos y monumentos al ritmo que prefieras.",
+        "genres": ["Simulación", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["relajante", "cero estres", "sin presion", "tranquilo", "desconexion", "adictivo"],
+        "experienceHighlights": [
+            "Sensación inmediata e hipnótica de satisfacción visual al eliminar suciedad",
+            "Modo cooperativo online para charlar y limpiar relajadamente con amigos",
+            "Múltiples boquillas, extensiones y limpiadores para personalizar tu enfoque"
+        ],
+        "similarTo": ["Slime Rancher", "Dorfromantik", "Stardew Valley"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1290000/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 1,
+            "creativity": 2,
+            "strategy": 2,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Potion Craft: Alchemist Simulator",
+        "description": "Simulador de alquimista donde interactúas físicamente con tus herramientas e ingredientes para elaborar pociones sobre un mapa alquímico medieval y gestionar tu propia botica.",
+        "genres": ["Simulación", "Puzzle", "Gestión", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["relajante", "creativo", "tranquilo", "desconexion", "profundo"],
+        "experienceHighlights": [
+            "Estilo visual único inspirado en manuscritos medievales y tratados botánicos",
+            "Mecánica física de machacar en mortero, remover y calentar el caldero",
+            "Navegación espacial en un mapa de recetas que recompensa la experimentación"
+        ],
+        "similarTo": ["Dorfromantik", "Stardew Valley", "Slime Rancher"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1210320/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 1,
+            "creativity": 4,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 4,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Alba: A Wildlife Adventure",
+        "description": "Acompaña a Alba en unas vacaciones en una idílica isla mediterránea mientras rescata animales, limpia la costa y moviliza a los vecinos para salvar una reserva natural.",
+        "genres": ["Aventura", "Exploración", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["relajante", "colorido", "tranquilo", "cero estres", "buena historia"],
+        "experienceHighlights": [
+            "Ambiente veraniego mediterráneo cálido, alegre y positivo",
+            "Mecánica de fotografiar aves y fauna local reconfortante y educativa",
+            "Mensaje esperanzador sobre el cuidado de la naturaleza y la comunidad"
+        ],
+        "similarTo": ["A Short Hike", "Slime Rancher", "Gris"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1337010/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 3,
+            "creativity": 1,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 4,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Tiny Glade",
+        "description": "Un relajante juego de construcción sin cuadrícula para crear castillos, muros de piedra y cabañas en claros boscosos con física táctil y física procedimental acogedora.",
+        "genres": ["Casual", "Construcción", "Indie", "Simulación"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["relajante", "creativo", "tranquilo", "cero estres", "colorido"],
+        "experienceHighlights": [
+            "Sin cronómetros, gestión de recursos ni combate; pura satisfacción creativa",
+            "Adaptación procedural inteligente de puertas, ventanas y chimeneas",
+            "Efectos de iluminación diurna y detalles vivos de fauna y vegetación"
+        ],
+        "similarTo": ["Townscaper", "Dorfromantik", "A Short Hike"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2198150/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 0,
+            "creativity": 5,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 5,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Dave the Diver",
+        "description": "Un fascinante híbrido de aventura submarina y gestión donde pescas y exploras el misterioso Pozo Azul de día, y gestionas un concurrido restaurante de sushi de noche.",
+        "genres": ["Aventura", "RPG", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["divertido", "adictivo", "exploracion", "colorido", "inmersivo"],
+        "experienceHighlights": [
+            "Bucle jugable doble perfectamente equilibrado entre buceo y hostelería",
+            "Personajes cómicos entrañables y cinemáticas con pixel art de lujo",
+            "Progresión rica con minijuegos variados y mejoras constantes de equipo"
+        ],
+        "similarTo": ["Stardew Valley", "Subnautica", "Slime Rancher"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1868140/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 3,
+            "creativity": 3,
+            "strategy": 3,
+            "combat": 3,
+            "freedom": 4,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Journey",
+        "description": "Un viaje poético y visualmente sublime a través de un inmenso desierto hacia una montaña lejana. Una experiencia emocionalmente arrebatadora sin diálogos ni textos.",
+        "genres": ["Aventura", "Exploración", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "multijugador"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["artistico", "atmosferico", "inmersivo", "emocionante", "profundo", "reflexivo"],
+        "experienceHighlights": [
+            "Banda sonora orquestal histórica nominada a los premios Grammy",
+            "Mecánica de deslizamiento sobre dunas doradas de extrema fluidez",
+            "Multijugador anónimo cooperativo espontáneo basado en melodías tonales"
+        ],
+        "similarTo": ["Gris", "A Short Hike", "Outer Wilds"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/638230/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 4,
+            "creativity": 0,
+            "strategy": 0,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "ABZÛ",
+        "description": "Una hermosa aventura marina que sumerge al jugador en el corazón del océano, interactuando con cientos de especies marinas reales y desentrañando secretos ancestrales sumergidos.",
+        "genres": ["Aventura", "Exploración", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["artistico", "atmosferico", "relajante", "inmersivo", "colorido"],
+        "experienceHighlights": [
+            "Control de natación acrobático fluido y reconfortante",
+            "Ecosistemas submarinos vibrantes con comportamientos de cardúmenes realistas",
+            "Modos de meditación contemplativa para observar la vida marina con calma"
+        ],
+        "similarTo": ["Journey", "Subnautica", "Gris"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/384190/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 3,
+            "creativity": 0,
+            "strategy": 0,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Sable",
+        "description": "Un rito de iniciación a través de extensos desiertos sobre una moto aerodeslizadora personalizable, escalando ruinas monumentales y conociendo tribus nómadas sin combate.",
+        "genres": ["Aventura", "Exploración", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["exploracion", "atmosferico", "relajante", "artistico", "reflexivo"],
+        "experienceHighlights": [
+            "Estilo visual cel-shading inspirado en el arte de Moebius y cómic europeo",
+            "Banda sonora atmosférica intimista compuesta por Japanese Breakfast",
+            "Libertad total de desplazamiento sin barras de daño ni presiones de muerte"
+        ],
+        "similarTo": ["A Short Hike", "Journey", "Outer Wilds"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/757310/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 5,
+            "narrative": 3,
+            "creativity": 2,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 5,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "The Pathless",
+        "description": "Una mística aventura de acción donde encarnas a una cazadora arquera y su águila compañera para disipar una niebla oscura en una vasta isla mística a gran velocidad.",
+        "genres": ["Acción", "Aventura", "Exploración", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["adrenalina", "atmosferico", "emocionante", "exploracion", "estimulante"],
+        "experienceHighlights": [
+            "Mecánica de arquería rítmica para ganar aceleración y planear con el águila",
+            "Mundo abierto fluido sin mapa convencional que estimula la orientación visual",
+            "Combates épicos contra bestias colosales corrompidas de gran dinamismo"
+        ],
+        "similarTo": ["ABZÛ", "Journey", "Elden Ring"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1492680/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 3,
+            "creativity": 1,
+            "strategy": 2,
+            "combat": 4,
+            "freedom": 4,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Tunic",
+        "description": "Explora una tierra llena de leyendas perdidas, monstruos y poderes antiguos en una aventura isométrica de un pequeño zorro que reconstruye el manual del juego.",
+        "genres": ["Aventura", "Acción", "Puzzle", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "desafiante", "exploracion", "profundo", "inmersivo"],
+        "experienceHighlights": [
+            "Reconstrucción física del manual retro con pistas ocultas y misterios profundos",
+            "Combate técnico y preciso inspirado en clásicos de aventuras y soulslikes",
+            "Sensación constante de revelación al descubrir mecánicas que siempre estuvieron ahí"
+        ],
+        "similarTo": ["Hollow Knight", "Outer Wilds", "Elden Ring"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/553420/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 5,
+            "narrative": 4,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 4,
+            "freedom": 4,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Return of the Obra Dinn",
+        "description": "Aventura de deducción y misterio en 1-bit. Como perito de seguros de la Compañía de las Indias Orientales, investiga el destino de las 60 almas a bordo de un barco fantasma.",
+        "genres": ["Puzzle", "Misterio", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "profundo", "desafiante", "inmersivo", "buena historia"],
+        "experienceHighlights": [
+            "Uso del reloj de bolsillo 'Memento Mortem' para congelar el instante de cada muerte",
+            "Deducción lógica pura donde relacionas identidades, acentos y pistas visuales",
+            "Estilo gráfico monocromático 1-bit evocador de los primeros ordenadores Macintosh"
+        ],
+        "similarTo": ["Outer Wilds", "Disco Elysium - The Final Cut", "Portal 2"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/653530/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 5,
+            "creativity": 0,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "Chants of Sennaar",
+        "description": "Inspirado en el mito de Babel, viaja por los niveles de una inmensa torre como viajero que debe descifrar alfabetos perdidos para restablecer el diálogo entre sus pueblos.",
+        "genres": ["Puzzle", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "reflexivo", "profundo", "inmersivo", "artistico"],
+        "experienceHighlights": [
+            "Mecánica central de descifrado lingüístico asociando glifos con observaciones del entorno",
+            "Arquitectura monumental y paleta cromática inspirada en cómics francobelgas",
+            "Temática optimista y humanista sobre la comunicación y la empatía cultural"
+        ],
+        "similarTo": ["Return of the Obra Dinn", "Outer Wilds", "The Witness"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1931770/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 4,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 1,
+            "freedom": 2,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "What Remains of Edith Finch",
+        "description": "Una aclamada colección de relatos breves sobre una familia maldita en el estado de Washington, explorando la colosal casa familiar y viviendo el último día de cada pariente.",
+        "genres": ["Aventura", "Narrativo", "Misterio", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["buena historia", "reflexivo", "profundo", "artistico", "atmosferico"],
+        "experienceHighlights": [
+            "Cada viñeta familiar cuenta con una mecánica jugable única e inolvidable",
+            "Diseño de escenarios surrealistas y detallados que narran visualmente",
+            "Experiencia concisa y conmovedora perfecta para una tarde de juego"
+        ],
+        "similarTo": ["Firewatch", "Gris", "The Stanley Parable: Ultra Deluxe"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/501300/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 0,
+            "strategy": 0,
+            "combat": 0,
+            "freedom": 1,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Life is Strange",
+        "description": "Sigue la historia de Max Caulfield, una estudiante de fotografía que descubre que puede retroceder en el tiempo mientras salva a su mejor amiga Chloe en Arcadia Bay.",
+        "genres": ["Aventura", "Narrativo", "Misterio"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["buena historia", "emocionante", "profundo", "maduro", "reflexivo"],
+        "experienceHighlights": [
+            "Mecánica de rebobinado temporal para explorar múltiples consecuencias de diálogo",
+            "Banda sonora indie acústica inolvidable y atmósfera otoñal melancólica",
+            "Decisiones morales desgarradoras con desenlaces imborrables"
+        ],
+        "similarTo": ["Firewatch", "What Remains of Edith Finch", "Disco Elysium - The Final Cut"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/319630/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 1,
+            "strategy": 2,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Oxenfree",
+        "description": "Un thriller sobrenatural sobre un grupo de amigos que abren involuntariamente una grieta fantasmal en una isla militar abandonada, comunicándose con un sistema de radio.",
+        "genres": ["Aventura", "Narrativo", "Misterio", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "buena historia", "atmosferico", "inmersivo", "profundo"],
+        "experienceHighlights": [
+            "Sistema de diálogo fluido y natural sin pausar el movimiento del personaje",
+            "Mecánica de sintonización de frecuencias de radio para interactuar con apariciones",
+            "Atmósfera nostálgica adolescente teñida de tensión paranormal"
+        ],
+        "similarTo": ["Firewatch", "Life is Strange", "What Remains of Edith Finch"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/388880/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 0,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Coffee Talk",
+        "description": "Una novela visual sobre escuchar los problemas de los clientes y reconfortarlos sirviéndoles bebidas calientes en una versión fantástica y nocturna de Seattle.",
+        "genres": ["Casual", "Narrativo", "Simulación", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["relajante", "tranquilo", "buena historia", "cero estres", "reflexivo"],
+        "experienceHighlights": [
+            "Música lo-fi relajante y sonidos reconfortantes de lluvia y cafetería",
+            "Personajes de fantasía urbana (orcos, elfos, vampiros) con dilemas humanos reales",
+            "Mecánica de preparación de café e infusiones con arte latte incluido"
+        ],
+        "similarTo": ["Unpacking", "Firewatch", "A Short Hike"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/914800/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 1,
+            "narrative": 5,
+            "creativity": 2,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Night in the Woods",
+        "description": "Mae Borowski regresa a su pueblo natal decadente tras dejar la universidad para reunirse con sus amigos, mientras descubre un oscuro misterio en el bosque.",
+        "genres": ["Aventura", "Narrativo", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["buena historia", "profundo", "reflexivo", "atmosferico", "maduro"],
+        "experienceHighlights": [
+            "Brillante retrato de la juventud, la crisis económica y la salud mental",
+            "Diálogos mordaces, humor agudo y relaciones entre amigos creíbles",
+            "Minijuegos musicales de bajo eléctrico y exploración urbana sobre tejados"
+        ],
+        "similarTo": ["Oxenfree", "Life is Strange", "Disco Elysium - The Final Cut"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/480490/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 5,
+            "creativity": 1,
+            "strategy": 0,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "The Stanley Parable: Ultra Deluxe",
+        "description": "Una comedia interactiva en primera persona que disecciona el diseño de videojuegos, el libre albedrío y la relación entre el jugador y un narrador omnisciente.",
+        "genres": ["Aventura", "Narrativo", "Casual", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "baja",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["divertido", "buena historia", "reflexivo", "cero estres"],
+        "experienceHighlights": [
+            "Humor metanarrativo genial con decenas de finales disparatados",
+            "Interpretación de voz legendaria del narrador Kevan Brighting",
+            "Una sátira brillante sobre las expectativas y convenciones de los videojuegos"
+        ],
+        "similarTo": ["Portal 2", "What Remains of Edith Finch", "Firewatch"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1703340/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 5,
+            "creativity": 0,
+            "strategy": 1,
+            "combat": 0,
+            "freedom": 4,
+            "complexity": 1
+        }
+    },
+    {
+        "title": "Baba Is You",
+        "description": "Un revolucionario juego de puzles donde las reglas con las que juegas están presentes como bloques de palabras que puedes empujar y reescribir físicamente.",
+        "genres": ["Puzzle", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["desafiante", "estimulante", "creativo", "profundo"],
+        "experienceHighlights": [
+            "Permite transformar el agua en lava, la meta en una roca o convertirte en el suelo",
+            "Ingenio lógico deslumbrante que desafía las convenciones del pensamiento lateral",
+            "Más de 200 niveles con soluciones creativas e inesperadas"
+        ],
+        "similarTo": ["Portal 2", "The Witness", "Into the Breach"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/736260/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 0,
+            "creativity": 4,
+            "strategy": 5,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "The Witness",
+        "description": "Despiertas solo en una enigmática isla llena de puzles de paneles interconectados que desafiarán tu percepción y comprensión de la naturaleza circundante.",
+        "genres": ["Puzzle", "Exploración", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["misterio", "desafiante", "atmosferico", "profundo", "reflexivo"],
+        "experienceHighlights": [
+            "Mundo abierto sin barreras artificiales donde el conocimiento del jugador es la llave",
+            "Puzles ambientales que integran sombras, reflejos y perspectiva espacial",
+            "Diseño sonoro orgánico y una atmósfera visual deslumbrante y pacífica"
+        ],
+        "similarTo": ["Outer Wilds", "Portal 2", "The Talos Principle"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/210970/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "libre",
+        "experienceAttributes": {
+            "exploration": 5,
+            "narrative": 2,
+            "creativity": 0,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 5,
+            "complexity": 5
+        }
+    },
+    {
+        "title": "The Talos Principle",
+        "description": "Un filosófico juego de puzles en primera persona donde una inteligencia artificial despierta en un mundo de ruinas antiguas y tecnología avanzada bajo la voz de Elohim.",
+        "genres": ["Puzzle", "Aventura", "Ciencia Ficción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["profundo", "reflexivo", "buena historia", "desafiante", "atmosferico"],
+        "experienceHighlights": [
+            "Puzles inteligentes de láseres, clones temporales, conectores y bloqueadores",
+            "Debates filosóficos profundos sobre la conciencia, la humanidad y el libre albedrío",
+            "Mundo sereno y misterioso con escenarios grecorromanos y medievales"
+        ],
+        "similarTo": ["Portal 2", "The Witness", "Outer Wilds"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257510/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 5,
+            "creativity": 1,
+            "strategy": 4,
+            "combat": 0,
+            "freedom": 3,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Superliminal",
+        "description": "Un juego de puzles en primera persona basado en la perspectiva forzada y las ilusiones ópticas en una terapia de sueños donde lo que ves se convierte en realidad.",
+        "genres": ["Puzzle", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["reflexivo", "divertido", "misterio", "cero estres"],
+        "experienceHighlights": [
+            "Mecánica óptica asombrosa: un objeto sostenido cerca parece gigante y cambia de tamaño real",
+            "Narrativa motivacional constructiva con tono irónico sobre el cambio de perspectiva",
+            "Duración compacta de 2 a 3 horas muy dinámica y llena de sorpresas"
+        ],
+        "similarTo": ["Portal 2", "The Stanley Parable: Ultra Deluxe", "The Talos Principle"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1049410/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 4,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 0,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Cocoon",
+        "description": "Del diseñador principal de LIMBO e INSIDE, una fascinante aventura de puzles cósmica donde cargas mundos enteros dentro de orbes a tu espalda para saltar entre dimensiones.",
+        "genres": ["Puzzle", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "relajado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["atmosferico", "inmersivo", "artistico", "misterio", "estimulante"],
+        "experienceHighlights": [
+            "Mecánica brillante de transportar mundos dentro de otros mundos sin tiempos de carga",
+            "Diseño de puzles orgánico sin textos ni tutoriales intrusivos",
+            "Arte alienígena biomecánico y música sintética envolvente"
+        ],
+        "similarTo": ["Portal 2", "Inside", "Gris"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1497440/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 3,
+            "creativity": 0,
+            "strategy": 3,
+            "combat": 2,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Ori and the Blind Forest: Definitive Edition",
+        "description": "Una conmovedora fábula de plataformas y acción visualmente deslumbrante sobre un joven huérfano destinado a salvar el bosque de Nibel con agilidad sobrehumana.",
+        "genres": ["Metroidvania", "Plataformas", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["emocionante", "buena historia", "artistico", "desafiante", "atmosferico"],
+        "experienceHighlights": [
+            "Dirección artística pictórica y banda sonora orquestal de nivel cinematográfico",
+            "Mecánica de golpe acrobático ('Bash') que permite propulsarse con proyectiles enemigos",
+            "Secuencias de escape de inundación y fuego de pura adrenalina y precisión"
+        ],
+        "similarTo": ["Hollow Knight", "Celeste", "Gris"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/387290/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "mixto",
+        "experienceAttributes": {
+            "exploration": 4,
+            "narrative": 4,
+            "creativity": 1,
+            "strategy": 2,
+            "combat": 3,
+            "freedom": 3,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Cuphead",
+        "description": "Juego de acción clásico 'run and gun' centrado en combates contra jefes, inspirado en los dibujos animados de los años 30 con animación tradicional hecha a mano y jazz en vivo.",
+        "genres": ["Acción", "Plataformas", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["desafiante", "adrenalina", "artistico", "colorido", "estimulante"],
+        "experienceHighlights": [
+            "Animación en acetato dibujada a mano a 24 fps con fondos en acuarela reales",
+            "Banda sonora original de big band y jazz grabada por músicos profesionales",
+            "Dificultad exigente con patrones de jefes inolvidables y cooperativo local"
+        ],
+        "similarTo": ["Hollow Knight", "Celeste", "Dead Cells"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/268910/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 2,
+            "creativity": 1,
+            "strategy": 3,
+            "combat": 5,
+            "freedom": 2,
+            "complexity": 4
+        }
+    },
+    {
+        "title": "Shovel Knight: Treasure Trove",
+        "description": "La aclamada aventura de acción retro de plataformas en 8 bits donde empuñas la pala justiciera para derrotar a la Orden sin Cuartel y rescatar a tu compañera Shield Knight.",
+        "genres": ["Plataformas", "Acción", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual", "cooperativo"],
+        "pacing": "intenso",
+        "difficulty": "media",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["divertido", "desafiante", "estimulante", "colorido", "adictivo"],
+        "experienceHighlights": [
+            "Mecánica de salto sobre pala sumamente satisfactoria y precisa",
+            "Banda sonora chiptune estelar compuesta por Jake Kaufman y Manami Matsumae",
+            "Incluye 4 campañas completas independientes con personajes y estilos únicos"
+        ],
+        "similarTo": ["Celeste", "Hollow Knight", "Dead Cells"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/250760/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 3,
+            "creativity": 1,
+            "strategy": 2,
+            "combat": 4,
+            "freedom": 2,
+            "complexity": 3
+        }
+    },
+    {
+        "title": "Inside",
+        "description": "Un niño solitario y perseguido se encuentra en el centro de un oscuro proyecto en este juego de plataformas y puzles con una narrativa ambiental perturbadora.",
+        "genres": ["Plataformas", "Puzzle", "Aventura", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "moderado",
+        "difficulty": "media",
+        "sessionDuration": "media (30-60 min)",
+        "emotionalTags": ["atmosferico", "misterio", "profundo", "inmersivo", "maduro"],
+        "experienceHighlights": [
+            "Animaciones fotorrealistas y física corporal con un nivel de pulido supremo",
+            "Mundo distópico opresivo que fascina e inquieta a partes iguales sin diálogos",
+            "Tramo final inolvidable que subvierte radicalmente las mecánicas de juego"
+        ],
+        "similarTo": ["Gris", "Cocoon", "Little Nightmares"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/304430/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 2,
+            "narrative": 4,
+            "creativity": 0,
+            "strategy": 2,
+            "combat": 0,
+            "freedom": 1,
+            "complexity": 2
+        }
+    },
+    {
+        "title": "Pizza Tower",
+        "description": "Un vertiginoso juego de plataformas en 2D inspirado en Wario Land, donde Peppino Spaghetti corre a velocidades supersónicas destruyendo todo a su paso para salvar su pizzería.",
+        "genres": ["Plataformas", "Acción", "Indie"],
+        "platforms": ["PC"],
+        "gameModes": ["individual"],
+        "pacing": "intenso",
+        "difficulty": "alta",
+        "sessionDuration": "corta (< 30 min)",
+        "emotionalTags": ["adrenalina", "divertido", "rapido", "desafiante", "estimulante"],
+        "experienceHighlights": [
+            "Velocidad de movimiento frenética con combos acrobáticos y embestidas demoledoras",
+            "Estilo visual cartoon noventero irreverente y altamente expresivo",
+            "Banda sonora funk y breakbeat desbordante de ritmo y energía"
+        ],
+        "similarTo": ["Celeste", "Dead Cells", "Cuphead"],
+        "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2231450/header.jpg",
+        "priceCondition": "De pago",
+        "objectiveStyle": "guiado",
+        "experienceAttributes": {
+            "exploration": 3,
+            "narrative": 1,
+            "creativity": 0,
+            "strategy": 2,
+            "combat": 4,
+            "freedom": 2,
+            "complexity": 3
+        }
+    }
+]

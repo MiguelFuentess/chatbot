@@ -487,11 +487,13 @@ function selectNextQuestion({
             (featId === "desafio_progresion" && (/desafi|reto|dificil|superar/i.test(rawTextLower) || (criteria.emotionalContext && criteria.emotionalContext.includes("desafiante"))))
 
         if (isFeatureInCriteria || isMentionedInMessage) {
-            // Verificar si el usuario ya respondió implícitamente a este matiz
-            if (featId === "exploracion" && (criteria.desiredPacing || (criteria.emotionalContext && criteria.emotionalContext.length > 0))) continue
-            if (featId === "estrategia_planificacion" && (dialogueState.strategyPacingAnswered || criteria.desiredPacing)) continue
-            if (featId === "cooperacion" && (/amigos|mi pareja|mi novio|mi novia|con alguien/i.test(rawTextLower) || dialogueState.coopGoalAnswered)) continue
-            if (featId === "desafio_progresion" && ((criteria.emotionalContext && criteria.emotionalContext.length > 0 && criteria.preferredGenres?.length > 0) || criteria.availableTime)) continue
+            // Verificar si el usuario ya respondió implícitamente a este matiz específico (Etapa 3 & 4)
+            if (featId === "exploracion" && (criteria.objectiveStylePreference || /abierto|lineal|guiad|pasillero/i.test(rawTextLower))) continue
+            if (featId === "narrativa_historia" && (/emotiv|misteri|decision|eleccion/i.test(rawTextLower) || dialogueState.narrativeTypeAnswered)) continue
+            if (featId === "construccion_creatividad" && (criteria.objectiveStylePreference || /libre|guiad|objetivo|mision/i.test(rawTextLower))) continue
+            if (featId === "estrategia_planificacion" && (dialogueState.strategyPacingAnswered || /turno|tiempo real|pausa|calma|presion/i.test(rawTextLower))) continue
+            if (featId === "cooperacion" && (/amigos|pareja|novi|compet|colabor|versus|pvp/i.test(rawTextLower) || dialogueState.coopGoalAnswered)) continue
+            if (featId === "desafio_progresion" && (/habilidad|reflejo|acertijo|puzzle|estrateg/i.test(rawTextLower) || dialogueState.challengeTypeAnswered)) continue
 
             targetFeatureFollowup = {
                 key: questionKey,

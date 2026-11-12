@@ -19,7 +19,7 @@ const FALLBACK_SVG =
         '</svg>'
     )
 
-const GameCard = ({ recommendation, onAction }) => {
+const GameCard = ({ recommendation, onAction, onCompare, isSelectedForCompare = false }) => {
     const [imageError, setImageError] = useState(false)
 
     if (!recommendation || !recommendation.game) return null
@@ -119,6 +119,18 @@ const GameCard = ({ recommendation, onAction }) => {
                                 close
                             </span>
                             <span>Descartar</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className={`rg-card-btn rg-btn-compare ${isSelectedForCompare ? "is-selected" : ""}`}
+                            onClick={() => (onCompare ? onCompare(game) : onAction(`Comparar ${game.title}`))}
+                            title={isSelectedForCompare ? "Seleccionado para comparar" : `Comparar ${game.title} con otro juego`}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                compare_arrows
+                            </span>
+                            <span>{isSelectedForCompare ? "Seleccionado" : "Comparar"}</span>
                         </button>
                     </div>
                 )}
