@@ -33,7 +33,7 @@ const DISLIKE_TRIGGERS = [
 
 // Diccionario de estados emocionales expresados voluntariamente
 const EMOTIONAL_TRIGGERS = [
-    { tag: "relajante", patterns: ["quiero relajarme", "relajarme", "relajar", "tranquilo", "relajante", "cansado", "agotado", "estresado", "desconectar", "paz", "despejar la mente", "cero estres", "sin presion", "chill"] },
+    { tag: "relajante", patterns: ["quiero relajarme", "relajarme", "relajar", "tranquilo", "relajante", "relajado", "cansado", "agotado", "estresado", "desconectar", "paz", "despejar la mente", "cero estres", "sin presion", "chill"] },
     { tag: "desafiante", patterns: ["quiero un desafio", "un desafio", "desafiante", "desafio", "reto", "dificil", "complejo", "probar mi habilidad", "hardcore", "exigente", "sufrir", "mas desafiante"] },
     { tag: "emocionante", patterns: ["busco algo emocionante", "emocionante", "adrenalina", "rapido", "estimulante", "intenso", "accion rapida", "aburrido", "algo divertido", "no aburrirme"] },
     { tag: "buena historia", patterns: ["explorar una buena historia", "buena historia", "buena trama", "historia profunda", "historia atrapante", "narrativo", "emotivo", "lore"] },
@@ -931,7 +931,7 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
         criteria.desiredDifficulty = "alta"
     } else if (/(?:cambia(?:r)?\s+(?:la\s+)?dificultad\s+a\s+baja|ahora\s+quiero\s+algo\s+f[aá]cil)/i.test(text)) {
         criteria.desiredDifficulty = "baja"
-    } else if (/(?:experiencia\s+f[aá]cil|juego\s+f[aá]cil|dificultad\s+baja|dificultad\s+relajada|relajada|sin\s+frustraci[oó]n|no\s+quiero\s+frustrarme|relajado\s+y\s+f[aá]cil|accesible|tranquil[ao]\s+sin\s+estr[eé]s)/i.test(text)) {
+    } else if (/(?:experiencia\s+f[aá]cil|juego\s+f[aá]cil|dificultad\s+baja|dificultad\s+relajada|relajada|sin\s+frustraci[oó]n|no\s+quiero\s+frustrarme|relajado\s+y\s+f[aá]cil|accesible|tranquil[ao]\s+sin\s+estr[eé]s|juego\s+sencillo|algo\s+sencillo|sencillo|simple)/i.test(text)) {
         criteria.desiredDifficulty = "baja"
     } else if (/(?:experiencia\s+dif[ií]cil|reto\s+dif[ií]cil|dificultad\s+alta|dificultad\s+desafiante|muy\s+desafiante|hardcore|exigente)/i.test(text)) {
         criteria.desiredDifficulty = "alta"
@@ -942,7 +942,7 @@ function parseUserMessage(userMessage = "", previousCriteria = {}, dialogueState
     }
 
     // --- E. Condición de Precio (pricePreference & isPriceStrict) ---
-    if (/(?:solo\s+(?:juegos?\s+)?(?:gratuitos?|gratis)|[uú]nicamente\s+gratuitos?|solo\s+quiero\s+juegos?\s+gratis|sin\s+pagar\s+nada|solo\s+gratis)/i.test(text)) {
+    if (/(?:solo\s+(?:busco\s+|quiero\s+)?(?:juegos?\s+)?(?:gratuitos?|gratis)|[uú]nicamente\s+(?:juegos?\s+)?gratuitos?|sin\s+pagar\s+nada|no\s+quiero\s+pagar\s+nada|solo\s+gratis)/i.test(text)) {
         criteria.pricePreference = "gratuito"
         criteria.isPriceStrict = true
     } else if (/(?:juegos?\s+gratuitos?|gratis|free\s+to\s+play|f2p|prefiero\s+juegos?\s+gratuitos?|no\s+quiero\s+pagar)/i.test(text)) {

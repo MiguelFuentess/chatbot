@@ -25,7 +25,8 @@
     "test:etapa5-profile": "node test/testEtapa5PlayerProfile.js",
     "test:etapa6-comparison": "node test/testEtapa6GameComparison.js",
     "test:etapa7-feedback": "node test/testEtapa7IntelligentFeedback.js",
-    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js && node test/testPhase5Validation.js && node test/testEtapa1RecommendationReadiness.js && node test/testEtapa2PlayerExperiences.js && node test/testEtapa3EmpatheticResponses.js && node test/testEtapa4AdaptiveQuestions.js && node test/testEtapa5ConversationalRecs.js && node test/testEtapa6ConversationMemory.js && node test/testEtapa1MetadataEvolution.js && node test/testEtapa2CatalogExpansion.js && node test/testEtapa3PreferenceAffinity.js && node test/testEtapa4DiversityDiscovery.js && node test/testEtapa5PlayerProfile.js && node test/testEtapa6GameComparison.js && node test/testEtapa7IntelligentFeedback.js"
+    "test:etapa8-validation": "node test/testEtapa8IntegralValidation.js",
+    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js && node test/testPhase5Validation.js && node test/testEtapa1RecommendationReadiness.js && node test/testEtapa2PlayerExperiences.js && node test/testEtapa3EmpatheticResponses.js && node test/testEtapa4AdaptiveQuestions.js && node test/testEtapa5ConversationalRecs.js && node test/testEtapa6ConversationMemory.js && node test/testEtapa1MetadataEvolution.js && node test/testEtapa2CatalogExpansion.js && node test/testEtapa3PreferenceAffinity.js && node test/testEtapa4DiversityDiscovery.js && node test/testEtapa5PlayerProfile.js && node test/testEtapa6GameComparison.js && node test/testEtapa7IntelligentFeedback.js && node test/testEtapa8IntegralValidation.js"
   },
   "keywords": [
     "chatbot",
