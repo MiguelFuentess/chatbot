@@ -12,7 +12,13 @@
     "test:dialogue": "node test/testAdaptiveDialogue.js",
     "test:phase4": "node test/testPhase4AdvancedChat.js",
     "test:validation": "node test/testPhase5Validation.js",
-    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js && node test/testPhase5Validation.js"
+    "test:etapa1": "node test/testEtapa1RecommendationReadiness.js",
+    "test:etapa2": "node test/testEtapa2PlayerExperiences.js",
+    "test:etapa3": "node test/testEtapa3EmpatheticResponses.js",
+    "test:etapa4": "node test/testEtapa4AdaptiveQuestions.js",
+    "test:etapa5": "node test/testEtapa5ConversationalRecs.js",
+    "test:etapa6": "node test/testEtapa6ConversationMemory.js",
+    "test": "node test/testRecommendations.js && node test/testNLPAndChat.js && node test/testAdaptiveDialogue.js && node test/testPhase4AdvancedChat.js && node test/testPhase5Validation.js && node test/testEtapa1RecommendationReadiness.js && node test/testEtapa2PlayerExperiences.js && node test/testEtapa3EmpatheticResponses.js && node test/testEtapa4AdaptiveQuestions.js && node test/testEtapa5ConversationalRecs.js && node test/testEtapa6ConversationMemory.js"
   },
   "keywords": [
     "chatbot",

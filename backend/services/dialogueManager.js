@@ -7,6 +7,36 @@
 const { parseUserMessage } = require("./nlpService")
 const { evaluateRecommendations } = require("./recommendationEngine")
 const { generateExplanation } = require("./explanationService")
+const {
+    composeTurnReply,
+    composeRecommendationIntro,
+    composeClarificationReply,
+    createAcknowledgment,
+    GAME_FOLLOWUP_PROMPTS,
+    getGenericGameFollowup,
+    getDislikedGameFollowup,
+    DISCOVERY_PROMPT
+} = require("./responseComposer")
+const {
+    selectNextQuestion,
+    initQuestionTracker,
+    markQuestionStatus,
+    isQuestionResolved,
+    FEATURE_FOLLOWUP_CONFIG
+} = require("./questionSelector")
+const {
+    handlePostRecommendationTurn,
+    resolveGameReference,
+    getGameDetails
+} = require("./feedbackManager")
+const {
+    createInitialMemory,
+    initConversationMemory,
+    handleMemoryQuery,
+    syncMemoryFromTurn,
+    buildActiveCriteria,
+    detectMemoryCorrectionOrDeletion
+} = require("./conversationMemoryService")
 
 const QUESTIONS_CONFIG = {
     experience: {
@@ -56,112 +86,214 @@ const QUESTIONS_CONFIG = {
 }
 
 /**
- * Genera un breve reconocimiento empático sobre lo que el usuario acaba de expresar.
+ * Wrapper de compatibilidad para la síntesis e introducción de recomendaciones (Etapa 3).
  */
-function createAcknowledgment(analysis, previousCriteria = {}) {
-    const acks = []
-    const prevEmoCount = previousCriteria.emotionalContext?.length || 0
-    const prevDislikesCount = previousCriteria.dislikedGenres?.length || 0
-
-    // Reconocimiento de referencia al contexto anterior
-    if (analysis.referencesPrevious) {
-        acks.push("¡Por supuesto! Recordamos lo que me indicaste anteriormente.")
-    }
-
-    // Reconocimiento de cambio o corrección de género
-    if (analysis.isChangingGenre && analysis.criteria.preferredGenres.length > 0) {
-        acks.push(`Actualizamos tu preferencia al género ${analysis.criteria.preferredGenres.join(" y ")}.`)
-    }
-
-    // Reconocimiento de modificación de tiempo
-    if (analysis.isTimeModified && previousCriteria.availableTime && previousCriteria.availableTime !== analysis.criteria.availableTime) {
-        acks.push(`Ajustamos el tiempo de sesión a ${analysis.criteria.availableTime}.`)
-    }
-
-    // Reconocimiento de modificación de modalidad
-    if (analysis.isModeModified && previousCriteria.gameMode && previousCriteria.gameMode !== analysis.criteria.gameMode) {
-        acks.push(`Cambiamos la modalidad de juego a ${analysis.criteria.gameMode}.`)
-    }
-
-    // Reconocimiento de emoción o experiencia
-    if (analysis.isSurpriseMe) {
-        acks.push("¡Genial, vamos a descubrir opciones interesantes!")
-    } else if (analysis.criteria.emotionalContext.length > prevEmoCount || analysis.criteria.emotionalContext.length > 0) {
-        const emo = analysis.criteria.emotionalContext[analysis.criteria.emotionalContext.length - 1]
-        if (emo === "relajante") acks.push("Entendido, una experiencia tranquila para relajarte y desconectar.")
-        else if (emo === "desafiante") acks.push("¡Excelente! Un buen reto estimulante para poner a prueba tu habilidad.")
-        else if (emo === "emocionante") acks.push("¡De acuerdo! Algo dinámico y emocionante con mucha acción.")
-        else if (emo === "buena historia") acks.push("Una gran elección: una aventura inmersiva con una buena historia.")
-        else if (emo === "creativo") acks.push("Perfecto, libertad para crear y construir a tu propio ritmo.")
-    }
-
-    // Reconocimiento de tiempo si se acaba de proporcionar
-    if (analysis.criteria.availableTime && !previousCriteria.availableTime) {
-        if (analysis.criteria.availableTime.includes("corta")) {
-            acks.push("Perfecto para una partida rápida de menos de 30 minutos.")
-        } else if (analysis.criteria.availableTime.includes("media")) {
-            acks.push("Excelente, sesiones de entre 30 y 60 minutos.")
-        } else if (analysis.criteria.availableTime.includes("larga")) {
-            acks.push("Buenísimo, con tiempo suficiente para profundizar.")
-        }
-    }
-
-    // Reconocimiento de modo si se acaba de proporcionar
-    if (analysis.criteria.gameMode && !previousCriteria.gameMode) {
-        if (analysis.criteria.gameMode === "cooperativo") {
-            acks.push("Títulos cooperativos pensados para coordinar con amigos.")
-        } else if (analysis.criteria.gameMode === "individual") {
-            acks.push("Diseñado para disfrutar en solitario.")
-        }
-    } else if (analysis.isModeIndifferent) {
-        acks.push("Sin restricción de modalidad.")
-    }
-
-    // Reconocimiento de géneros preferidos si se acaban de proporcionar
-    if (analysis.criteria.preferredGenres.length > (previousCriteria.preferredGenres?.length || 0)) {
-        const newGenres = analysis.criteria.preferredGenres.join(" y ")
-        acks.push(`Genial, enfocado en el género ${newGenres}.`)
-    }
-
-    // Reconocimiento de exclusiones (dislikes)
-    if (analysis.criteria.dislikedGenres.length > prevDislikesCount) {
-        acks.push(`Anotado, evitaremos los títulos de ${analysis.criteria.dislikedGenres.join(" y ")}.`)
-    }
-
-    return acks.length > 0 ? acks.join(" ") : ""
+function createRecommendationIntro(criteria = {}, dialogueState = {}, analysis = {}, gameRejectedTitle = null) {
+    return composeRecommendationIntro(criteria, dialogueState, analysis, gameRejectedTitle)
 }
 
 /**
- * Genera la introducción conversacional cuando se presentan las recomendaciones finales.
+ * Evalúa si el asistente dispone de suficiente información y si resulta útil continuar preguntando
+ * antes de generar recomendaciones, de acuerdo con las políticas de la Etapa 1.
+ *
+ * Responsabilidad:
+ * - Qué información conoce el asistente (knownDimensions).
+ * - Qué dimensiones continúan sin resolverse (unresolvedDimensions).
+ * - Si las preferencias disponibles son suficientemente claras.
+ * - Si una pregunta adicional podría mejorar la recomendación (canAskMore, unaskedDimensions).
+ * - Si el usuario solicitó explícitamente recibir recomendaciones (explicitRequest).
+ * - Si el sistema debe continuar conversando o recomendar (readyToRecommend, reason).
+ *
+ * @param {Object} params
+ * @param {Object} params.criteria Criterios acumulados del usuario
+ * @param {Object} params.dialogueState Estado conversacional actual
+ * @param {Object} params.analysis Análisis NLP del mensaje actual
+ * @returns {Object} Diagnóstico de suficiencia y decisión explicable
  */
-function createRecommendationIntro(criteria = {}) {
-    const details = []
+function evaluateRecommendationReadiness({ criteria = {}, dialogueState = {}, analysis = {} }) {
+    const knownDimensions = []
+    const unresolvedDimensions = []
 
-    if (criteria.emotionalContext && criteria.emotionalContext.length > 0) {
-        details.push(`una experiencia enfocada en ${criteria.emotionalContext.join(", ")}`)
+    // 1. Experiencia deseada o contexto emocional expresado voluntariamente
+    const hasEmotion = Array.isArray(criteria.emotionalContext) && criteria.emotionalContext.length > 0
+    const hasPacing = criteria.desiredPacing != null
+    const isSurprise = !!dialogueState.isSurpriseMe
+    const hasGameExperience = criteria.discoveryPreference != null && (criteria.likedGames?.length > 0 || criteria.similarTo?.length > 0)
+
+    const hasExperience = hasEmotion || hasPacing || isSurprise || hasGameExperience
+    if (hasExperience) {
+        knownDimensions.push({
+            id: "experience",
+            name: "Experiencia o emoción",
+            value: hasEmotion
+                ? criteria.emotionalContext
+                : isSurprise
+                ? "sorpréndeme"
+                : hasGameExperience
+                ? `similar a ${criteria.likedGames?.[0] || criteria.similarTo?.[0]}`
+                : criteria.desiredPacing,
+            type: isSurprise ? "indifference" : "preference"
+        })
+    } else {
+        unresolvedDimensions.push("experience")
     }
 
-    if (criteria.availableTime) {
-        details.push(`para sesiones de ${criteria.availableTime}`)
+    // 2. Tiempo disponible
+    const hasTimeValue = criteria.availableTime != null
+    const isTimeIndiff = !!dialogueState.timeIndifferent
+    const hasTime = hasTimeValue || isTimeIndiff
+    if (hasTime) {
+        knownDimensions.push({
+            id: "time",
+            name: "Tiempo disponible",
+            value: hasTimeValue ? criteria.availableTime : "indiferente",
+            type: isTimeIndiff ? "indifference" : "preference"
+        })
+    } else {
+        unresolvedDimensions.push("time")
     }
 
-    if (criteria.gameMode) {
-        details.push(`en modalidad ${criteria.gameMode}`)
+    // 3. Modalidad de juego
+    const hasModeValue = criteria.gameMode != null
+    const isModeIndiff = !!dialogueState.modeIndifferent
+    const hasMode = hasModeValue || isModeIndiff
+    if (hasMode) {
+        knownDimensions.push({
+            id: "mode",
+            name: "Modalidad de juego",
+            value: hasModeValue ? criteria.gameMode : "indiferente",
+            type: isModeIndiff ? "indifference" : "preference"
+        })
+    } else {
+        unresolvedDimensions.push("mode")
     }
 
-    if (criteria.preferredGenres && criteria.preferredGenres.length > 0) {
-        details.push(`del género ${criteria.preferredGenres.join(" / ")}`)
+    // 4. Géneros preferidos o rechazados
+    const hasPreferredGenres = Array.isArray(criteria.preferredGenres) && criteria.preferredGenres.length > 0
+    const hasDislikedGenres = Array.isArray(criteria.dislikedGenres) && criteria.dislikedGenres.length > 0
+    const isGenreIndiff = !!dialogueState.genreIndifferent
+    const hasGenre = hasPreferredGenres || hasDislikedGenres || isGenreIndiff
+    if (hasGenre) {
+        knownDimensions.push({
+            id: "genres",
+            name: "Géneros o exclusiones",
+            value: {
+                preferred: criteria.preferredGenres || [],
+                disliked: criteria.dislikedGenres || [],
+                indifferent: isGenreIndiff
+            },
+            type: isGenreIndiff ? "indifference" : "preference"
+        })
+    } else {
+        unresolvedDimensions.push("genres")
     }
 
-    if (criteria.dislikedGenres && criteria.dislikedGenres.length > 0) {
-        details.push(`evitando ${criteria.dislikedGenres.join(" y ")}`)
+    // 5. Videojuegos disfrutados o rechazados y características (Etapa 2)
+    if (Array.isArray(criteria.likedGames) && criteria.likedGames.length > 0) {
+        knownDimensions.push({
+            id: "likedGames",
+            name: "Juegos disfrutados",
+            value: criteria.likedGames,
+            type: "preference"
+        })
+    }
+    if (Array.isArray(criteria.dislikedGames) && criteria.dislikedGames.length > 0) {
+        knownDimensions.push({
+            id: "dislikedGames",
+            name: "Juegos rechazados",
+            value: criteria.dislikedGames,
+            type: "preference"
+        })
+    }
+    if (Array.isArray(criteria.likedFeatures) && criteria.likedFeatures.length > 0) {
+        knownDimensions.push({
+            id: "likedFeatures",
+            name: "Características disfrutadas",
+            value: criteria.likedFeatures,
+            type: "preference"
+        })
+    }
+    if (Array.isArray(criteria.dislikedFeatures) && criteria.dislikedFeatures.length > 0) {
+        knownDimensions.push({
+            id: "dislikedFeatures",
+            name: "Características evitadas",
+            value: criteria.dislikedFeatures,
+            type: "preference"
+        })
+    }
+    if (criteria.discoveryPreference != null) {
+        knownDimensions.push({
+            id: "discoveryPreference",
+            name: "Preferencia de descubrimiento",
+            value: criteria.discoveryPreference,
+            type: criteria.discoveryPreference === "indistinto" ? "indifference" : "preference"
+        })
     }
 
-    if (details.length > 0) {
-        return `¡Perfecto! Teniendo en cuenta que buscas ${details.join(" y ")}, he seleccionado estas 3 recomendaciones para ti:`
+    // Dimensiones pendientes que aún no se han formulado
+    const questionsAsked = Array.isArray(dialogueState.questionsAsked) ? dialogueState.questionsAsked : []
+    const unaskedDimensions = unresolvedDimensions.filter((dim) => !questionsAsked.includes(dim))
+    const canAskMore = unaskedDimensions.length > 0
+
+    // Solicitud explícita de recomendaciones (Regla D)
+    const explicitRequest = !!analysis.wantsRecommendationsNow
+
+    // Interacciones post-recomendación (Regla F)
+    const isPostRecommendation =
+        dialogueState.stage === "recommended" &&
+        (analysis.genreModified ||
+            analysis.isTimeModified ||
+            analysis.isModeModified ||
+            analysis.isEmotionModified ||
+            analysis.wantsRecommendationsNow ||
+            analysis.wantsAlternatives ||
+            !!analysis.rejectedGame)
+
+    const isAlternativesOrRejection = !!analysis.wantsAlternatives || !!analysis.rejectedGame
+
+    // Decisión de recomendación explicable
+    let readyToRecommend = false
+    let reason = ""
+
+    if (isAlternativesOrRejection) {
+        readyToRecommend = true
+        reason = analysis.wantsAlternatives
+            ? "El usuario solicitó alternativas diferentes; se recalculan recomendaciones excluyendo títulos previos."
+            : "El usuario descartó una recomendación previa; se recalculan opciones respetando el descarte."
+    } else if (isPostRecommendation) {
+        readyToRecommend = true
+        reason = "El usuario ajustó sus preferencias tras la recomendación inicial; se actualiza el lote de juegos."
+    } else if (explicitRequest) {
+        readyToRecommend = true
+        reason = knownDimensions.length > 0
+            ? `El usuario solicitó recomendaciones explícitamente; se procede con las preferencias conocidas (${knownDimensions.map((d) => d.name).join(", ")}).`
+            : "El usuario solicitó recomendaciones explícitamente sin criterios previos; se ofrecen títulos variados y destacados del catálogo general."
+    } else if (unresolvedDimensions.length === 0) {
+        readyToRecommend = true
+        reason = "Información completa: se resolvieron las 4 dimensiones evaluadas (experiencia, tiempo, modalidad y género)."
+    } else if (!canAskMore) {
+        readyToRecommend = true
+        reason = `No quedan preguntas relevantes sin formular para las dimensiones faltantes (${unresolvedDimensions.join(", ")}). Se recomienda con las ${knownDimensions.length} dimensiones conocidas para evitar redundancia o fatiga.`
+    } else {
+        readyToRecommend = false
+        const nextTarget = unaskedDimensions[0]
+        reason = `Información insuficiente: existen ${unresolvedDimensions.length} dimensión(es) sin resolver (${unresolvedDimensions.join(", ")}). Formular una pregunta sobre '${nextTarget}' mejorará sustancialmente la recomendación.`
     }
 
-    return "He evaluado tus preferencias y encontré estas 3 opciones que se adaptan a lo que buscas:"
+    return {
+        readyToRecommend,
+        reason,
+        knownDimensions,
+        unresolvedDimensions,
+        unaskedDimensions,
+        dimensionsCount: knownDimensions.length,
+        hasExperience,
+        hasTime,
+        hasMode,
+        hasGenre,
+        explicitRequest,
+        canAskMore
+    }
 }
 
 /**
@@ -184,10 +316,31 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         turnCount: (safeDialogueState.turnCount || 0) + 1,
         modeIndifferent: !!safeDialogueState.modeIndifferent,
         genreIndifferent: !!safeDialogueState.genreIndifferent,
+        timeIndifferent: !!safeDialogueState.timeIndifferent,
         isSurpriseMe: !!safeDialogueState.isSurpriseMe,
+        discoveryAsked: !!safeDialogueState.discoveryAsked,
+        pastGamesSkipped: !!safeDialogueState.pastGamesSkipped,
+        followupGameTarget: safeDialogueState.followupGameTarget || null,
+        followupDislikedTarget: safeDialogueState.followupDislikedTarget || null,
         shownGameTitles: Array.isArray(safeDialogueState.shownGameTitles) ? [...safeDialogueState.shownGameTitles] : [],
-        rejectedGames: Array.isArray(safeDialogueState.rejectedGames) ? [...safeDialogueState.rejectedGames] : []
+        lastRecommendedGames: Array.isArray(safeDialogueState.lastRecommendedGames) ? [...safeDialogueState.lastRecommendedGames] : [],
+        currentReferencedGame: safeDialogueState.currentReferencedGame || null,
+        interestedGames: Array.isArray(safeDialogueState.interestedGames) ? [...safeDialogueState.interestedGames] : [],
+        rejectedGames: Array.isArray(safeDialogueState.rejectedGames) ? [...safeDialogueState.rejectedGames] : [],
+        feedbackMotives: Array.isArray(safeDialogueState.feedbackMotives) ? [...safeDialogueState.feedbackMotives] : [],
+        clarifiedStages: Array.isArray(safeDialogueState.clarifiedStages) ? [...safeDialogueState.clarifiedStages] : [],
+        recentOpeners: Array.isArray(safeDialogueState.recentOpeners) ? [...safeDialogueState.recentOpeners] : [],
+        questionTracker: safeDialogueState.questionTracker ? JSON.parse(JSON.stringify(safeDialogueState.questionTracker)) : {}
     }
+    initQuestionTracker(state)
+
+    // 1b. Inicializar y normalizar memoria conversacional estructurada (Etapa 6)
+    const conversationMemory = initConversationMemory(
+        safeDialogueState.conversationMemory,
+        safeCriteria,
+        safeDialogueState
+    )
+    state.conversationMemory = conversationMemory
 
     // 2. Procesar el texto mediante el servicio NLP
     const analysis = parseUserMessage(userMessage, safeCriteria, state)
@@ -196,6 +349,7 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
     if (analysis.isSurpriseMe) state.isSurpriseMe = true
     if (analysis.isModeIndifferent) state.modeIndifferent = true
     if (analysis.isGenreIndifferent) state.genreIndifferent = true
+    if (analysis.isTimeIndifferent) state.timeIndifferent = true
 
     // Manejo de rechazo de videojuego específico
     let gameRejectedTitle = null
@@ -213,7 +367,57 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         }
     }
 
-    // 3. Caso especial: Saludo puro inicial sin criterios
+    // 3. Caso especial: Reinicio explícito de conversación
+    const isResetIntent = /^(reiniciar|nueva b[uú]squeda|empezar de nuevo|reset|comenzar de nuevo)$/i.test(userMessage.trim())
+    if (isResetIntent) {
+        return {
+            reply: "¡Hola! Bienvenido. Soy tu asistente de videojuegos. Estoy aquí para ayudarte a encontrar un juego que se adapte a lo que buscas hoy.\n\nPara empezar, ¿qué tipo de experiencia te gustaría tener?",
+            updatedCriteria: {
+                preferredGenres: [],
+                dislikedGenres: [],
+                emotionalContext: [],
+                availableTime: null,
+                gameMode: null,
+                desiredPacing: null,
+                similarTo: [],
+                likedGames: [],
+                dislikedGames: [],
+                unverifiedGames: [],
+                likedFeatures: [],
+                dislikedFeatures: [],
+                discoveryPreference: null,
+                habitualTastes: []
+            },
+            dialogueState: {
+                stage: "experience",
+                questionsAsked: ["experience"],
+                turnCount: 1,
+                modeIndifferent: false,
+                genreIndifferent: false,
+                timeIndifferent: false,
+                isSurpriseMe: false,
+                discoveryAsked: false,
+                pastGamesSkipped: false,
+                followupGameTarget: null,
+                followupDislikedTarget: null,
+                shownGameTitles: [],
+                lastRecommendedGames: [],
+                currentReferencedGame: null,
+                interestedGames: [],
+                rejectedGames: [],
+                feedbackMotives: [],
+                clarifiedStages: [],
+                recentOpeners: [],
+                questionTracker: initQuestionTracker({}),
+                conversationMemory: createInitialMemory()
+            },
+            conversationMemory: createInitialMemory(),
+            recommendations: [],
+            suggestedReplies: QUESTIONS_CONFIG.experience.options
+        }
+    }
+
+    // 4. Caso especial: Saludo puro inicial sin criterios
     if (analysis.intent === "greeting" && state.turnCount === 1) {
         return {
             reply: "¡Hola! Bienvenido. Soy tu asistente de videojuegos. Estoy aquí para ayudarte a encontrar un juego que se adapte a lo que buscas hoy.\n\nPara empezar, ¿qué tipo de experiencia te gustaría tener?",
@@ -221,65 +425,244 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
             dialogueState: {
                 ...state,
                 stage: "experience",
-                questionsAsked: ["experience"]
+                questionsAsked: ["experience"],
+                conversationMemory
             },
+            conversationMemory,
             recommendations: [],
             suggestedReplies: QUESTIONS_CONFIG.experience.options
         }
     }
 
-    // 4. Evaluar dimensiones conocidas
-    const hasExperience = criteria.emotionalContext.length > 0 || criteria.desiredPacing != null || state.isSurpriseMe
-    const hasTime = criteria.availableTime != null
-    const hasMode = criteria.gameMode != null || state.modeIndifferent
-    const hasGenre = criteria.preferredGenres.length > 0 || criteria.dislikedGenres.length > 0 || state.genreIndifferent
+    // 4a. Consultas directas a la memoria conversacional (Etapa 6 - Requisito 5)
+    const memoryQueryResult = handleMemoryQuery({
+        memory: conversationMemory,
+        userMessage,
+        dialogueState: state
+    })
+    if (memoryQueryResult && memoryQueryResult.handled) {
+        state.conversationMemory = conversationMemory
+        return {
+            reply: memoryQueryResult.reply,
+            updatedCriteria: criteria,
+            dialogueState: {
+                ...state,
+                conversationMemory
+            },
+            conversationMemory,
+            recommendations: [],
+            suggestedReplies: memoryQueryResult.suggestedReplies || [
+                "Recomiéndame según lo hablado",
+                "Buscar alternativas",
+                "Nueva búsqueda"
+            ]
+        }
+    }
 
-    const dimensionsCount =
-        (hasExperience ? 1 : 0) +
-        (hasTime ? 1 : 0) +
-        (hasMode ? 1 : 0) +
-        (hasGenre ? 1 : 0)
+    // 4b. Eliminaciones o modificaciones explícitas de preferencias ("Olvida que...", etc. - Requisito 6)
+    const memMod = detectMemoryCorrectionOrDeletion(userMessage, conversationMemory)
+    if (memMod) {
+        if (memMod.type === "delete_preference") {
+            syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+            const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+            Object.assign(criteria, activeCriteria)
+            state.conversationMemory = conversationMemory
 
-    // 5. Decidir si estamos listos para recomendar
-    let readyToRecommend = false
+            return {
+                reply: `De acuerdo, he eliminado "${memMod.value}" de tus preferencias para esta búsqueda. ¿Qué otro género o estilo te gustaría explorar?`,
+                updatedCriteria: criteria,
+                dialogueState: {
+                    ...state,
+                    stage: "genres",
+                    conversationMemory
+                },
+                conversationMemory,
+                recommendations: [],
+                suggestedReplies: QUESTIONS_CONFIG.genres.options
+            }
+        } else if (memMod.type === "correct_mode_temporary") {
+            syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+            const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+            Object.assign(criteria, activeCriteria)
+            state.conversationMemory = conversationMemory
 
-    const isPostRecommendationModification =
-        state.stage === "recommended" &&
-        (analysis.genreModified ||
-            analysis.isTimeModified ||
-            analysis.isModeModified ||
-            analysis.isEmotionModified ||
-            analysis.wantsRecommendationsNow ||
-            analysis.wantsAlternatives ||
-            !!gameRejectedTitle)
+            return {
+                reply: "Entendido, para la sesión de hoy nos enfocaremos en jugar en solitario (modo individual), conservando tus preferencias anteriores. ¿Deseas que busquemos recomendaciones ahora o hay algún género específico que prefieras?",
+                updatedCriteria: criteria,
+                dialogueState: {
+                    ...state,
+                    conversationMemory
+                },
+                conversationMemory,
+                recommendations: [],
+                suggestedReplies: ["Recomiéndame ya", ...QUESTIONS_CONFIG.genres.options.slice(0, 4)]
+            }
+        }
+    }
 
-    // A: Solicitud de alternativas o rechazo de recomendación
-    if (analysis.wantsAlternatives || !!gameRejectedTitle || isPostRecommendationModification) {
-        readyToRecommend = true
+    // Sincronizar memoria conversacional con la intervención actual (Etapa 6)
+    syncMemoryFromTurn({ memory: conversationMemory, userMessage, analysis, criteria, dialogueState: state })
+    const activeCriteria = buildActiveCriteria(conversationMemory, criteria)
+    Object.assign(criteria, activeCriteria)
+    state.conversationMemory = conversationMemory
+
+    // Prevenir preguntas redundantes sobre dimensiones ya conocidas en memoria (Requisito 9 & Escenario 14)
+    if (conversationMemory.currentNeeds.availableTime && !isQuestionResolved(state, "time")) {
+        markQuestionStatus(state, "time", "resolved")
     }
-    // B: Solicitud explícita de recomendaciones teniendo al menos 1 dimensión
-    else if (analysis.wantsRecommendationsNow && dimensionsCount >= 1) {
-        readyToRecommend = true
+    if (conversationMemory.currentNeeds.gameMode && !isQuestionResolved(state, "mode")) {
+        markQuestionStatus(state, "mode", "resolved")
     }
-    // C: Mensaje rico en una sola frase que aportó 3 dimensiones (ej. "Aventura cooperativa de 1 hora con amigos")
-    else if (dimensionsCount >= 3) {
-        readyToRecommend = true
+    if ((conversationMemory.currentNeeds.preferredGenres.length > 0 || conversationMemory.habitualPreferences.genres.length > 0) && !isQuestionResolved(state, "genres")) {
+        markQuestionStatus(state, "genres", "resolved")
     }
-    // D: Si ya tenemos experiencia + tiempo + modo
-    else if (hasExperience && hasTime && hasMode) {
-        readyToRecommend = true
+    if ((conversationMemory.currentNeeds.emotion.length > 0 || conversationMemory.habitualPreferences.experiences.length > 0) && !isQuestionResolved(state, "experience")) {
+        markQuestionStatus(state, "experience", "resolved")
     }
-    // E: Si ya se hicieron al menos 2 preguntas y contamos con al menos 2 dimensiones sólidas
-    else if (state.questionsAsked.length >= 2 && dimensionsCount >= 2) {
-        readyToRecommend = true
+
+    // 4. Manejo de respuestas ambiguas o inciertas a preguntas previas (Escenario 7)
+    const isUncertainOrAmbiguousAnswer =
+        analysis.isUncertain ||
+        (analysis.isAmbiguous && !analysis.wantsRecommendationsNow && !analysis.wantsAlternatives && !analysis.isGreeting)
+
+    if (isUncertainOrAmbiguousAnswer && state.stage !== "recommended" && state.stage !== "initial") {
+        const currentStage = state.stage
+        const alreadyClarified = state.clarifiedStages.includes(currentStage)
+
+        if (!alreadyClarified) {
+            state.clarifiedStages.push(currentStage)
+            const clarification = composeClarificationReply(currentStage, state)
+
+            return {
+                reply: clarification.prompt,
+                updatedCriteria: criteria,
+                dialogueState: state,
+                recommendations: [],
+                suggestedReplies: clarification.options
+            }
+        } else {
+            // Protección contra ciclos (Regla E): marcar flexible/indiferente si vuelve a responder de forma ambigua
+            if (currentStage === "experience") state.isSurpriseMe = true
+            else if (currentStage === "time") state.timeIndifferent = true
+            else if (currentStage === "mode") state.modeIndifferent = true
+            else if (currentStage === "genres") state.genreIndifferent = true
+            markQuestionStatus(state, currentStage, "resolved_flexible")
+        }
     }
-    // F: Límite superior de preguntas formuladas (evitar fatiga de diálogo)
-    else if (state.questionsAsked.length >= 3 && dimensionsCount >= 1) {
-        readyToRecommend = true
+
+    // 4b. Manejo de retroalimentación e interacciones conversacionales post-recomendación (Etapa 5)
+    if (safeDialogueState.stage === "recommended") {
+        const postRecResult = await handlePostRecommendationTurn({
+            userMessage,
+            criteria,
+            dialogueState: state,
+            analysis
+        })
+        if (postRecResult) {
+            return postRecResult
+        }
     }
+
+    // 5. Actualización del rastreador de preguntas según lo respondido en este turno
+    const prevStage = safeDialogueState.stage
+    if (prevStage && prevStage !== "initial" && prevStage !== "recommended") {
+        if (prevStage === "experience") {
+            if (analysis.isSurpriseMe || state.isSurpriseMe) {
+                markQuestionStatus(state, "experience", "resolved_flexible")
+            } else if (analysis.emotionalContext?.length > 0 || analysis.desiredPacing) {
+                markQuestionStatus(state, "experience", "resolved")
+            }
+        } else if (prevStage === "time") {
+            if (analysis.isTimeIndifferent || state.timeIndifferent) {
+                markQuestionStatus(state, "time", "resolved_flexible")
+            } else if (analysis.availableTime) {
+                markQuestionStatus(state, "time", "resolved")
+            }
+        } else if (prevStage === "mode") {
+            if (analysis.isModeIndifferent || state.modeIndifferent) {
+                markQuestionStatus(state, "mode", "resolved_flexible")
+            } else if (analysis.gameMode) {
+                markQuestionStatus(state, "mode", "resolved")
+            }
+        } else if (prevStage === "genres") {
+            if (analysis.isGenreIndifferent || state.genreIndifferent) {
+                markQuestionStatus(state, "genres", "resolved_flexible")
+            } else if (analysis.preferredGenres?.length > 0 || analysis.dislikedGenres?.length > 0) {
+                markQuestionStatus(state, "genres", "resolved")
+            }
+        } else if (prevStage === "followup_game") {
+            if (analysis.isSkippingPastGames) {
+                markQuestionStatus(state, "followup_game", "skipped")
+            } else {
+                markQuestionStatus(state, "followup_game", "resolved")
+            }
+        } else if (prevStage === "followup_disliked") {
+            if (analysis.isSkippingPastGames) {
+                markQuestionStatus(state, "followup_disliked", "skipped")
+            } else {
+                markQuestionStatus(state, "followup_disliked", "resolved")
+            }
+        } else if (prevStage === "discovery_pref") {
+            if (analysis.isSkippingPastGames) {
+                markQuestionStatus(state, "discovery_pref", "skipped")
+            } else if (criteria.discoveryPreference != null) {
+                markQuestionStatus(state, "discovery_pref", "resolved")
+            }
+        } else if (prevStage.startsWith("feature_")) {
+            if (analysis.isSkippingPastGames) {
+                markQuestionStatus(state, prevStage, "skipped")
+            } else {
+                markQuestionStatus(state, prevStage, "resolved")
+            }
+        }
+    }
+
+    // Registrar dimensiones resueltas espontáneamente
+    if (criteria.emotionalContext?.length > 0 || criteria.desiredPacing || state.isSurpriseMe) {
+        if (!isQuestionResolved(state, "experience")) {
+            markQuestionStatus(state, "experience", state.isSurpriseMe ? "resolved_flexible" : "resolved")
+        }
+    }
+    if (criteria.availableTime || state.timeIndifferent) {
+        if (!isQuestionResolved(state, "time")) {
+            markQuestionStatus(state, "time", state.timeIndifferent ? "resolved_flexible" : "resolved")
+        }
+    }
+    if (criteria.gameMode || state.modeIndifferent) {
+        if (!isQuestionResolved(state, "mode")) {
+            markQuestionStatus(state, "mode", state.modeIndifferent ? "resolved_flexible" : "resolved")
+        }
+    }
+    if (criteria.preferredGenres?.length > 0 || criteria.dislikedGenres?.length > 0 || state.genreIndifferent) {
+        if (!isQuestionResolved(state, "genres")) {
+            markQuestionStatus(state, "genres", state.genreIndifferent ? "resolved_flexible" : "resolved")
+        }
+    }
+
+    if (analysis.isSkippingPastGames) {
+        state.pastGamesSkipped = true
+    }
+
+    // 6. Evaluar la decisión de recomendación mediante la lógica de la Etapa 1
+    const readiness = evaluateRecommendationReadiness({
+        criteria,
+        dialogueState: state,
+        analysis
+    })
+    state.readiness = readiness
+
+    // 7. Seleccionar la siguiente acción o pregunta adaptativa mediante el selector centralizado (Etapa 4)
+    const decision = selectNextQuestion({
+        criteria,
+        dialogueState: state,
+        analysis,
+        readiness,
+        userMessage
+    })
+    state.selectedReason = decision.reason
 
     // --- RAMA 1: LISTO PARA RECOMENDAR ---
-    if (readyToRecommend) {
+    if (decision.action === "recommend" || readiness.readyToRecommend) {
         const excludeList = analysis.wantsAlternatives || !!gameRejectedTitle
             ? state.shownGameTitles
             : state.rejectedGames
@@ -307,122 +690,124 @@ async function processDialogueTurn({ userMessage = "", accumulatedCriteria = {},
         // Registrar los títulos mostrados para evitar repeticiones al pedir alternativas
         const newlyShown = recommendations.map((r) => r.game.title)
         state.shownGameTitles = [...new Set([...state.shownGameTitles, ...newlyShown])]
+        state.lastRecommendedGames = newlyShown
+        state.currentReferencedGame = null
+
+        if (conversationMemory && conversationMemory.recommendationFeedback) {
+            conversationMemory.recommendationFeedback.lastShownGames = newlyShown
+            conversationMemory.recommendationFeedback.shownHistory = state.shownGameTitles
+        }
+        state.conversationMemory = conversationMemory
 
         let replyIntro = ""
         if (recommendations.length === 0) {
             replyIntro = "No se encontraron videojuegos que coincidan con todos los filtros y restricciones indicadas. Puedes probar relajando algún criterio o iniciando una nueva búsqueda."
-        } else if (gameRejectedTitle) {
-            replyIntro = `Entendido, descartamos "${gameRejectedTitle}" de las recomendaciones. Conservando tus demás preferencias, aquí tienes nuevas opciones que encajan con tu perfil:`
-        } else if (analysis.wantsAlternatives) {
-            replyIntro = "¡De acuerdo! Buscando alternativas diferentes para ti. Excluyendo las que ya revisamos, aquí tienes otras opciones que se adaptan a lo que buscas:"
-        } else if (analysis.genreModified && analysis.isChangingGenre) {
-            replyIntro = `Perfecto, actualizamos tu preferencia al género ${criteria.preferredGenres.join(" y ")} manteniendo tu contexto de juego. Aquí tienes las nuevas recomendaciones:`
-        } else if (analysis.isTimeModified && state.stage === "recommended") {
-            replyIntro = `Entendido, adaptamos el tiempo disponible a ${criteria.availableTime} conservando tus demás criterios. Aquí tienes las opciones actualizadas:`
-        } else if (analysis.isModeModified && state.stage === "recommended") {
-            replyIntro = `Anotado, cambiamos la modalidad a ${criteria.gameMode} manteniendo tus gustos. Aquí tienes las recomendaciones para ti:`
-        } else if (analysis.isEmotionModified && state.stage === "recommended") {
-            replyIntro = `Entendido, enfocamos las recomendaciones en una experiencia ${criteria.emotionalContext.join(" / ")}. Aquí tienes las opciones adaptadas:`
         } else {
-            replyIntro = createRecommendationIntro(criteria)
+            replyIntro = composeRecommendationIntro(criteria, state, analysis, gameRejectedTitle)
+            if (!replyIntro.includes("¿Alguna") && !replyIntro.includes("¿Qué te parecen") && !replyIntro.includes("¿Te llama")) {
+                replyIntro += "\n\nEstas son algunas opciones que podrían encajar con lo que buscas. ¿Alguna te llamó especialmente la atención o quieres explorar alternativas?"
+            }
         }
 
+        const topGame = newlyShown[0]
         return {
             reply: replyIntro,
             updatedCriteria: criteria,
             dialogueState: {
                 ...state,
                 stage: "recommended",
-                readyToRecommend: true
+                readyToRecommend: true,
+                conversationMemory
             },
+            conversationMemory,
             recommendations,
             suggestedReplies: [
-                "Muéstrame otros juegos",
-                "Quiero algo más corto",
-                "Prefiero jugar con amigos",
-                "Cambiar a algo más desafiante",
+                "Me interesa el primero",
+                topGame ? `¿De qué trata ${topGame}?` : "Quiero saber más",
+                "¿Cuál es más tranquilo?",
+                "Buscar alternativas",
                 "Nueva búsqueda"
             ]
         }
     }
 
-    // --- RAMA 2: CONTINUAR DIÁLOGO ADAPTATIVO (PREGUNTAS PROGRESIVAS) ---
-    // Determinar la siguiente pregunta faltante más relevante
-    let nextQuestionKey = null
+    // --- RAMA 2: CONTINUAR DIÁLOGO ADAPTATIVO (PREGUNTA SELECCIONADA POR questionSelector) ---
+    const nextKey = decision.questionKey
+    state.stage = nextKey
+    markQuestionStatus(state, nextKey, "asked", { config: decision.config })
+    state.conversationMemory = conversationMemory
 
-    // Si no sabemos ni experiencia ni género, preguntar experiencia
-    if (!hasExperience && !hasGenre && !state.questionsAsked.includes("experience")) {
-        nextQuestionKey = "experience"
-    }
-    // Si ya tenemos experiencia o género, priorizar tiempo
-    else if (!hasTime && !state.questionsAsked.includes("time")) {
-        nextQuestionKey = "time"
-    }
-    // Luego priorizar modo de juego
-    else if (!hasMode && !state.questionsAsked.includes("mode")) {
-        nextQuestionKey = "mode"
-    }
-    // Luego indagar géneros si no se conocen
-    else if (!hasGenre && !state.questionsAsked.includes("genres")) {
-        nextQuestionKey = "genres"
-    }
-    // Si aún falta experiencia
-    else if (!hasExperience && !state.questionsAsked.includes("experience")) {
-        nextQuestionKey = "experience"
-    } else {
-        // Recomendar con lo disponible
-        const scoredGames = await evaluateRecommendations(criteria, {
-            limit: 3,
-            excludeTitles: state.rejectedGames
-        })
-        const recommendations = scoredGames.map((item) => ({
-            game: item.game,
-            score: item.score,
-            breakdown: item.breakdown,
-            explanation: generateExplanation(item, criteria)
-        }))
-
-        const newlyShown = recommendations.map((r) => r.game.title)
-        state.shownGameTitles = [...new Set([...state.shownGameTitles, ...newlyShown])]
-
+    if (nextKey === "followup_game") {
+        state.followupGameTarget = decision.target
         return {
-            reply: createRecommendationIntro(criteria),
+            reply: decision.config.question,
             updatedCriteria: criteria,
-            dialogueState: {
-                ...state,
-                stage: "recommended",
-                readyToRecommend: true
-            },
-            recommendations,
-            suggestedReplies: [
-                "Muéstrame otros juegos",
-                "Quiero algo más corto",
-                "Prefiero jugar con amigos",
-                "Cambiar a algo más desafiante",
-                "Nueva búsqueda"
-            ]
+            dialogueState: state,
+            conversationMemory,
+            recommendations: [],
+            suggestedReplies: decision.config.options
         }
     }
 
-    const nextConfig = QUESTIONS_CONFIG[nextQuestionKey]
-    state.questionsAsked.push(nextQuestionKey)
-    state.stage = nextQuestionKey
+    if (nextKey === "followup_disliked") {
+        state.followupDislikedTarget = decision.target
+        return {
+            reply: decision.config.question,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            conversationMemory,
+            recommendations: [],
+            suggestedReplies: decision.config.options
+        }
+    }
 
-    const ack = createAcknowledgment(analysis, accumulatedCriteria)
-    const combinedReply = ack ? `${ack} ${nextConfig.question}` : nextConfig.question
+    if (nextKey === "discovery_pref") {
+        state.discoveryAsked = true
+        const ack = createAcknowledgment(analysis, safeCriteria)
+        const reply = ack ? `${ack} ${decision.config.question}` : decision.config.question
+        return {
+            reply,
+            updatedCriteria: criteria,
+            dialogueState: state,
+            conversationMemory,
+            recommendations: [],
+            suggestedReplies: decision.config.options
+        }
+    }
+
+    // Preguntas sobre características preferidas o dimensiones principales
+    const turnReply = composeTurnReply({
+        analysis,
+        criteria,
+        previousCriteria: safeCriteria,
+        dialogueState: state,
+        nextQuestionKey: nextKey
+    })
 
     return {
-        reply: combinedReply,
+        reply: turnReply,
         updatedCriteria: criteria,
         dialogueState: state,
+        conversationMemory,
         recommendations: [],
-        suggestedReplies: nextConfig.options
+        suggestedReplies: decision.config.options
     }
 }
 
 module.exports = {
     processDialogueTurn,
+    evaluateRecommendationReadiness,
     QUESTIONS_CONFIG,
+    GAME_FOLLOWUP_PROMPTS,
+    FEATURE_FOLLOWUP_CONFIG,
+    DISCOVERY_PROMPT,
     createAcknowledgment,
-    createRecommendationIntro
+    createRecommendationIntro,
+    selectNextQuestion,
+    initQuestionTracker,
+    markQuestionStatus,
+    isQuestionResolved,
+    handlePostRecommendationTurn,
+    resolveGameReference,
+    getGameDetails
 }

@@ -71,13 +71,64 @@ function generateExplanation(scoredItem, criteria = {}) {
         }
     }
 
-    // 5. Similitud
-    if (matchFactors.matchedSimilar && matchFactors.matchedSimilar.length > 0) {
+    // 5. Características disfrutadas concretas (Etapa 2)
+    if (matchFactors.matchedFeatures && matchFactors.matchedFeatures.length > 0) {
+        const featurePhrases = {
+            exploracion: "disfrutas de la exploración y descubrir nuevos mundos",
+            construccion_creatividad: "te gusta la libertad de construir y crear",
+            narrativa_historia: "valoras una narrativa profunda y buena historia",
+            combate_accion: "te atrae el combate dinámico y la acción",
+            estrategia_planificacion: "te apasiona la estrategia y la gestión",
+            puzzles_acertijos: "disfrutas resolver acertijos y puzzles de ingenio",
+            libertad_sandbox: "prefieres jugar con libertad a tu propio ritmo",
+            cooperacion: "buscas coordinar y colaborar en equipo",
+            competencia: "te motiva la competencia contra otros jugadores",
+            supervivencia: "te interesa la supervivencia y la gestión de recursos",
+            desafio_progresion: "buscas un reto que ponga a prueba tu habilidad"
+        }
+
+        const featureReasons = {
+            exploracion: "Brinda un mundo fascinante para explorar y descubrir a tu propio ritmo.",
+            construccion_creatividad: "Destaca por sus amplias opciones de construcción y creatividad.",
+            narrativa_historia: "Ofrece una historia memorable con una narrativa inmersiva.",
+            combate_accion: "Presenta mecánicas de combate y acción sumamente satisfactorias.",
+            estrategia_planificacion: "Requiere planificación táctica y toma de decisiones estratégicas.",
+            puzzles_acertijos: "Contiene acertijos y desafíos de lógica ingeniosamente diseñados.",
+            libertad_sandbox: "Proporciona total libertad de juego sin presiones.",
+            cooperacion: "Ideal para disfrutar en cooperación y sincronía.",
+            competencia: "Excelente para medir tu nivel competitivo.",
+            supervivencia: "Ofrece una experiencia inmersiva de supervivencia y superación.",
+            desafio_progresion: "Brinda una curva de aprendizaje desafiante y gratificante."
+        }
+
+        for (const feat of matchFactors.matchedFeatures) {
+            if (featurePhrases[feat]) {
+                userClause.push(featurePhrases[feat])
+            }
+            if (featureReasons[feat]) {
+                reasons.push(featureReasons[feat])
+            }
+        }
+    }
+
+    // 6. Similitud, juegos disfrutados y preferencia de descubrimiento (Etapa 2)
+    if (criteria.discoveryPreference === "diferente" && criteria.likedGames && criteria.likedGames.length > 0) {
+        userClause.push(`buscas una experiencia diferente a los juegos que sueles jugar (${criteria.likedGames.join(", ")})`)
+        reasons.push(`Te brinda un cambio de aires fresco y diferente respecto a ${criteria.likedGames.join(", ")}, explorando nuevas dinámicas.`)
+    } else if (matchFactors.matchedLikedGames && matchFactors.matchedLikedGames.length > 0) {
+        userClause.push(`has disfrutado de ${matchFactors.matchedLikedGames.join(", ")}`)
+        reasons.push(`Comparte mecánicas y sensaciones que te gustaron en ${matchFactors.matchedLikedGames.join(", ")}.`)
+    } else if (matchFactors.matchedSimilar && matchFactors.matchedSimilar.length > 0) {
         userClause.push(`te gustan títulos similares a ${matchFactors.matchedSimilar.join(", ")}`)
         reasons.push(`Comparte elementos y mecánicas que recuerdan a ${matchFactors.matchedSimilar.join(", ")}.`)
     }
 
-    // 6. Aspecto clave destacado del juego
+    // 7. Respeto a características evitadas
+    if (criteria.dislikedFeatures && criteria.dislikedFeatures.includes("combate_dificil")) {
+        reasons.push("No incluye combates frustrantes ni dificultad excesiva, respetando tu preferencia.")
+    }
+
+    // 8. Aspecto clave destacado del juego
     if (game.experienceHighlights && game.experienceHighlights.length > 0) {
         reasons.push(`Aspecto clave: "${game.experienceHighlights[0]}".`)
     }

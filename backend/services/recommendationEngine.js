@@ -63,6 +63,114 @@ function calculateTimeScore(gameDuration, requestedTime) {
 }
 
 /**
+ * Evalúa las características concretas del juego frente a las preferencias (likedFeatures y dislikedFeatures)
+ * correspondientes a las 11 categorías de la Etapa 2.
+ */
+function evaluateGameFeatures(game, likedFeatures = [], dislikedFeatures = []) {
+    const textCorpus = [
+        game.title,
+        game.description,
+        ...(game.genres || []),
+        ...(game.emotionalTags || []),
+        ...(game.gameModes || []),
+        game.difficulty || "",
+        game.pacing || "",
+        ...(game.experienceHighlights || []),
+        ...(game.similarTo || [])
+    ].join(" ").toLowerCase()
+
+    const matchedLiked = []
+    for (const featId of likedFeatures) {
+        let isMatch = false
+        switch (featId) {
+            case "exploracion":
+                isMatch = /explor|mundo abierto|aventura|descubrir|inmersivo|atmosferico/.test(textCorpus)
+                break
+            case "construccion_creatividad":
+                isMatch = /constru|creativ|sandbox|baldosa|crafteo|crafting/.test(textCorpus)
+                break
+            case "narrativa_historia":
+                isMatch = /historia|narrativ|trama|lore|guion|rpg/.test(textCorpus) ||
+                          (game.emotionalTags || []).some((t) => t.toLowerCase().includes("historia") || t.toLowerCase().includes("narrativo"))
+                break
+            case "combate_accion":
+                isMatch = /combate|accion|pelea|dispar|lucha|fps|hack and slash|boss|jefe/.test(textCorpus)
+                break
+            case "estrategia_planificacion":
+                isMatch = /estrategia|planific|gestion|tactico|tower defense|por turnos/.test(textCorpus)
+                break
+            case "puzzles_acertijos":
+                isMatch = /puzzle|acertijo|rompecabezas|logica/.test(textCorpus)
+                break
+            case "libertad_sandbox":
+                isMatch = /sandbox|libertad|a tu propio ritmo|mundo abierto|sin presiones/.test(textCorpus)
+                break
+            case "cooperacion":
+                isMatch = (game.gameModes || []).some((m) => m.toLowerCase().includes("coop")) || /cooperativ|amigos/.test(textCorpus)
+                break
+            case "competencia":
+                isMatch = (game.gameModes || []).some((m) => m.toLowerCase().includes("competitiv")) || /competitiv|versus|pvp|battle royale/.test(textCorpus)
+                break
+            case "supervivencia":
+                isMatch = /supervivencia|sobrevivir|recursos|hambre/.test(textCorpus)
+                break
+            case "desafio_progresion":
+                isMatch = game.difficulty === "alta" || /desafiante|reto|superacion|dificultad|derrota/.test(textCorpus)
+                break
+            default:
+                break
+        }
+        if (isMatch) {
+            matchedLiked.push(featId)
+        }
+    }
+
+    const matchedDisliked = []
+    let isSevereConflict = false
+
+    for (const featId of dislikedFeatures) {
+        if (featId === "combate_dificil") {
+            const hasHardCombat = (game.difficulty === "alta" || /desafiante|reto/.test(textCorpus)) &&
+                                  /combate|accion|lucha|boss|hack and slash|soulslike|roguelike/.test(textCorpus)
+            if (hasHardCombat) {
+                matchedDisliked.push(featId)
+                isSevereConflict = true
+            }
+        } else if (featId === "combate_accion") {
+            if (/combate|accion|pelea|dispar|lucha|fps|hack and slash/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        } else if (featId === "construccion_creatividad") {
+            if (/constru|creativ|sandbox|baldosa|crafteo/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        } else if (featId === "estrategia_planificacion") {
+            if (/estrategia|planific|gestion|tactico/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        } else if (featId === "puzzles_acertijos") {
+            if (/puzzle|acertijo|rompecabezas|logica/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        } else if (featId === "supervivencia") {
+            if (/supervivencia|sobrevivir|recursos/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        } else if (featId === "desafio_progresion") {
+            if (game.difficulty === "alta" || /desafiante|dificil/.test(textCorpus)) {
+                matchedDisliked.push(featId)
+            }
+        }
+    }
+
+    return {
+        matchedLiked,
+        matchedDisliked,
+        isSevereConflict
+    }
+}
+
+/**
  * Motor de recomendación multicriterio con normalización dinámica de pesos.
  *
  * @param {Object} criteria Criterios de preferencia del usuario
@@ -78,7 +186,12 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
         gameMode = null,
         desiredPacing = null,
         desiredDifficulty = null,
-        similarTo = []
+        similarTo = [],
+        likedGames = [],
+        dislikedGames = [],
+        likedFeatures = [],
+        dislikedFeatures = [],
+        discoveryPreference = null
     } = criteria
 
     const baseWeights = {
@@ -87,6 +200,7 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
         timeWeight: options.timeWeight ?? 0.15,
         modeWeight: options.modeWeight ?? 0.15,
         pacingWeight: options.pacingWeight ?? 0.10,
+        featureWeight: options.featureWeight ?? 0.20,
         similarBonus: options.similarBonus ?? 0.15,
         ...options.weights
     }
@@ -99,6 +213,7 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
     const hasTime = !!availableTime
     const hasMode = !!gameMode
     const hasPacing = !!desiredPacing
+    const hasFeatures = likedFeatures.length > 0
 
     // Calcular suma de pesos activos para normalización
     let activeWeightSum = 0
@@ -107,6 +222,7 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
     if (hasTime) activeWeightSum += baseWeights.timeWeight
     if (hasMode) activeWeightSum += baseWeights.modeWeight
     if (hasPacing) activeWeightSum += baseWeights.pacingWeight
+    if (hasFeatures) activeWeightSum += baseWeights.featureWeight
 
     // Si no especificó criterios o son 0, usar pesos base
     if (activeWeightSum === 0) activeWeightSum = 1.0
@@ -116,11 +232,18 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
         emotion: hasEmotion ? baseWeights.emotionWeight / activeWeightSum : 0,
         time: hasTime ? baseWeights.timeWeight / activeWeightSum : 0,
         mode: hasMode ? baseWeights.modeWeight / activeWeightSum : 0,
-        pacing: hasPacing ? baseWeights.pacingWeight / activeWeightSum : 0
+        pacing: hasPacing ? baseWeights.pacingWeight / activeWeightSum : 0,
+        feature: hasFeatures ? baseWeights.featureWeight / activeWeightSum : 0
     }
 
     // Obtener catálogo completo
-    const allGames = await Game.find({})
+    let allGames = []
+    try {
+        allGames = await Game.find({})
+    } catch (e) {}
+    if (!allGames || allGames.length === 0) {
+        allGames = require("../data/seedGames.json")
+    }
     const expandedEmotions = expandEmotionalTerms(emotionalContext)
     const excludeTitles = [
         ...(options.excludeTitles || []),
@@ -135,6 +258,18 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
             continue
         }
 
+        // --- 0b. EXCLUSIÓN DE JUEGOS RECHAZADOS POR EL JUGADOR (Regla 8.1 - dislikedGames) ---
+        const isDislikedGame = dislikedGames.some((d) => game.title.toLowerCase().trim() === d.toLowerCase().trim())
+        if (isDislikedGame) {
+            continue
+        }
+
+        // --- 0c. EXCLUSIÓN DE JUEGOS DISFRUTADOS PREVIAMENTE (Regla 8.2 - likedGames) ---
+        const isAlreadyLiked = likedGames.some((l) => game.title.toLowerCase().trim() === l.toLowerCase().trim())
+        if (isAlreadyLiked && (discoveryPreference === "diferente" || options.excludeLikedGames !== false)) {
+            continue
+        }
+
         // --- 1. FILTRO DE EXCLUSIÓN ESTRICTO (Disliked Genres) ---
         const matchesDisliked = dislikedGenres.some((disliked) =>
             game.genres.some((g) => g.toLowerCase().includes(disliked.toLowerCase()))
@@ -142,6 +277,12 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
 
         if (matchesDisliked) {
             continue // Se descarta por completo
+        }
+
+        // --- 1b. EVALUACIÓN DE CARACTERÍSTICAS (Regla 8.3 - likedFeatures / dislikedFeatures) ---
+        const featureEval = evaluateGameFeatures(game, likedFeatures, dislikedFeatures)
+        if (featureEval.isSevereConflict) {
+            continue // Descartar títulos en conflicto severo (ej. combate difícil cuando fue rechazado)
         }
 
         // --- 2. EVALUACIÓN DE MODO DE JUEGO ---
@@ -196,14 +337,30 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
             pacingScore = game.pacing.toLowerCase() === desiredPacing.toLowerCase() ? 1.0 : 0.2
         }
 
-        // --- 7. BONUS POR JUEGOS SIMILARES ---
+        // --- 7. EVALUACIÓN DE CARACTERÍSTICAS DISFRUTADAS (Feature Score) ---
+        let featureScore = 1.0
+        if (hasFeatures) {
+            featureScore = featureEval.matchedLiked.length / likedFeatures.length
+            if (featureScore > 1) featureScore = 1.0
+        }
+
+        // --- 8. EVALUACIÓN DE SIMILITUD Y PREFERENCIA DE DESCUBRIMIENTO (Reglas 8.2 y 8.4) ---
         let similarScore = 0
         const matchedSimilar = []
-        if (similarTo.length > 0) {
-            for (const sim of similarTo) {
-                const found = game.similarTo.find((s) => s.toLowerCase().includes(sim.toLowerCase()))
+        const matchedLikedGames = []
+
+        const referenceTitles = [...new Set([...similarTo, ...likedGames])]
+
+        if (referenceTitles.length > 0) {
+            for (const ref of referenceTitles) {
+                const found = game.similarTo.find(
+                    (s) => s.toLowerCase().includes(ref.toLowerCase()) || ref.toLowerCase().includes(s.toLowerCase())
+                )
                 if (found) {
                     matchedSimilar.push(found)
+                    if (likedGames.some((l) => l.toLowerCase() === ref.toLowerCase())) {
+                        matchedLikedGames.push(ref)
+                    }
                     similarScore = 1.0
                 }
             }
@@ -215,14 +372,31 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
             normalizedWeights.emotion * emotionScore +
             normalizedWeights.time * timeScore +
             normalizedWeights.mode * modeScore +
-            normalizedWeights.pacing * pacingScore
+            normalizedWeights.pacing * pacingScore +
+            normalizedWeights.feature * featureScore
 
-        if (similarScore > 0) {
-            finalScore += baseWeights.similarBonus
+        // Ajustes por preferencia de descubrimiento
+        if (discoveryPreference === "diferente") {
+            if (similarScore > 0) {
+                finalScore -= 0.15 // Despriorizar similares a juegos ya conocidos
+            }
+        } else if (discoveryPreference === "similar") {
+            if (similarScore > 0) {
+                finalScore += (baseWeights.similarBonus + 0.05) // Mayor impulso cuando busca parecido
+            }
+        } else {
+            if (similarScore > 0) {
+                finalScore += baseWeights.similarBonus
+            }
+        }
+
+        // Penalización por características evitadas leves
+        if (featureEval.matchedDisliked.length > 0) {
+            finalScore -= 0.20 * featureEval.matchedDisliked.length
         }
 
         // Normalizar a escala 0 - 100
-        const normalizedScore = Math.min(Math.round(finalScore * 100), 100)
+        const normalizedScore = Math.min(Math.max(Math.round(finalScore * 100), 0), 100)
 
         scoredGames.push({
             game,
@@ -233,12 +407,17 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
                 timeScore: Math.round(timeScore * 100),
                 modeScore: Math.round(modeScore * 100),
                 pacingScore: Math.round(pacingScore * 100),
-                similarBonus: similarScore > 0
+                featureScore: Math.round(featureScore * 100),
+                similarBonus: similarScore > 0 && discoveryPreference !== "diferente"
             },
             matchFactors: {
                 matchedGenres,
                 matchedEmotions,
                 matchedSimilar,
+                matchedLikedGames,
+                matchedFeatures: featureEval.matchedLiked,
+                matchedDislikedFeatures: featureEval.matchedDisliked,
+                discoveryPreference,
                 sessionDuration: game.sessionDuration,
                 pacing: game.pacing,
                 gameModes: game.gameModes
@@ -249,11 +428,17 @@ async function evaluateRecommendations(criteria = {}, options = {}) {
     // Ordenar descendente por afinidad
     scoredGames.sort((a, b) => b.score - a.score)
 
-    return scoredGames.slice(0, limit)
+    let results = scoredGames
+    if (typeof options.minScore === "number") {
+        results = results.filter((item) => item.score >= options.minScore)
+    }
+
+    return results.slice(0, limit)
 }
 
 module.exports = {
     evaluateRecommendations,
     calculateTimeScore,
-    expandEmotionalTerms
+    expandEmotionalTerms,
+    evaluateGameFeatures
 }

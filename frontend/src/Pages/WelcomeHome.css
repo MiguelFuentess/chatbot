@@ -1,0 +1,1489 @@
+/* ==========================================================================
+   RECOGAMES — PANTALLA DE BIENVENIDA (ESTILO EDITORIAL ARCADE / STITCH)
+   ========================================================================== */
+
+:root {
+  /* Paleta Oficial RecoGames / Stitch Editorial Arcade */
+  --rg-surface: #f4fce8;
+  --rg-surface-bright: #f4fce8;
+  --rg-surface-low: #eff7e2;
+  --rg-surface-container: #e9f1dd;
+  --rg-surface-high: #e3ebd7;
+  --rg-surface-highest: #dde5d2;
+  --rg-surface-lowest: #ffffff;
+  
+  --rg-primary: #002247;
+  --rg-primary-container: #05386b;
+  --rg-secondary: #006b5b;
+  --rg-secondary-container: #98f4dd;
+  --rg-secondary-fixed: #98f4dd;
+  --rg-secondary-fixed-dim: #7cd7c2;
+  
+  --rg-on-surface: #171e12;
+  --rg-on-surface-variant: #43474f;
+  --rg-on-primary: #ffffff;
+  --rg-on-primary-container: #7ea3dc;
+  
+  --rg-mint-light: #8ee4af;
+  --rg-mint-accent: #5cdb95;
+  --rg-cream: #edf5e1;
+
+  /* Tipografías */
+  --rg-font-headline: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --rg-font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Sombras Planas Serigráficas (Hard Shadows) */
+  --rg-shadow-btn-nav: 2px 2px 0px #006b5b;
+  --rg-shadow-btn-hero: 4px 4px 0px #006b5b;
+  --rg-shadow-btn-cta: 4px 4px 0px #ffffff;
+  --rg-shadow-card-navy: 4px 4px 0px #05386b;
+  --rg-shadow-card-teal: 4px 4px 0px #006b5b;
+  --rg-shadow-card-hero: 8px 8px 0px #05386b;
+  --rg-shadow-banner-cta: 8px 8px 0px #006b5b;
+  --rg-shadow-bubble-user: 3px 3px 0px #006b5b;
+  --rg-shadow-bubble-bot: 3px 3px 0px #98f4dd;
+  --rg-shadow-island: 4px 4px 0px #006b5b;
+  --rg-shadow-elem: 2px 2px 0px #002247;
+}
+
+/* --------------------------------------------------------------------------
+   Contenedor Base
+   -------------------------------------------------------------------------- */
+.rg-welcome-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--rg-surface);
+  color: var(--rg-on-surface);
+  font-family: var(--rg-font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.rg-welcome-page * {
+  box-sizing: border-box;
+}
+
+/* Iconos de Material Symbols */
+.rg-icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.rg-icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado Fijo (Navbar)
+   -------------------------------------------------------------------------- */
+.rg-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  z-index: 100;
+  background-color: rgba(244, 252, 232, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(5, 56, 107, 0.08);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.03);
+}
+
+.rg-header-inner {
+  max-width: 1280px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.rg-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.rg-brand-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: var(--rg-primary-container);
+  color: var(--rg-secondary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.rg-brand:hover .rg-brand-icon {
+  transform: scale(1.06);
+}
+
+.rg-brand-name {
+  font-family: var(--rg-font-headline);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--rg-primary);
+  letter-spacing: -0.02em;
+}
+
+.rg-brand-badge {
+  font-family: var(--rg-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--rg-secondary);
+  background-color: var(--rg-secondary-container);
+  padding: 2px 6px;
+  border-radius: 9999px;
+  margin-left: -2px;
+}
+
+.rg-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 4px;
+  border-radius: 12px;
+  background-color: var(--rg-surface-low);
+}
+
+.rg-nav-link {
+  font-family: var(--rg-font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--rg-on-surface-variant);
+  text-decoration: none;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.rg-nav-link:hover {
+  color: var(--rg-on-surface);
+  background-color: var(--rg-surface-high);
+}
+
+.rg-nav-link.active {
+  color: var(--rg-on-surface);
+  background-color: var(--rg-surface-high);
+}
+
+.rg-header-cta {
+  display: flex;
+  align-items: center;
+}
+
+.rg-btn-nav {
+  font-family: var(--rg-font-headline);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--rg-on-primary);
+  background-color: var(--rg-primary);
+  padding: 0.55rem 1.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: var(--rg-shadow-btn-nav);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rg-btn-nav:hover {
+  background-color: var(--rg-primary-container);
+}
+
+.rg-btn-nav:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Sección 1: Hero Principal (Póster Serigráfico)
+   -------------------------------------------------------------------------- */
+.rg-hero {
+  position: relative;
+  width: 100%;
+  padding-top: calc(80px + 3rem);
+  padding-bottom: 5rem;
+  background-color: var(--rg-surface-bright);
+  overflow: hidden;
+}
+
+/* Puntos serigráficos flotantes decorativos */
+.rg-decor-dot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rg-dot-1 {
+  top: 6rem;
+  left: 3rem;
+  width: 10px;
+  height: 10px;
+  background-color: var(--rg-secondary);
+  opacity: 0.4;
+}
+
+.rg-dot-2 {
+  top: 36%;
+  left: 2rem;
+  width: 6px;
+  height: 6px;
+  background-color: var(--rg-primary);
+  opacity: 0.3;
+}
+
+.rg-dot-3 {
+  bottom: 5rem;
+  left: 22%;
+  width: 12px;
+  height: 12px;
+  background-color: var(--rg-secondary-fixed);
+  opacity: 0.7;
+}
+
+.rg-dot-4 {
+  top: 7rem;
+  right: 30%;
+  width: 8px;
+  height: 8px;
+  background-color: var(--rg-secondary);
+  opacity: 0.35;
+}
+
+.rg-dot-5 {
+  bottom: 7rem;
+  right: 4rem;
+  width: 14px;
+  height: 14px;
+  background-color: var(--rg-primary);
+  opacity: 0.25;
+}
+
+.rg-hero-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Columna Izquierda del Hero */
+.rg-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rg-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.3rem 1rem;
+  border-radius: 9999px;
+  background-color: var(--rg-secondary-container);
+  color: var(--rg-primary);
+  font-family: var(--rg-font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.rg-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--rg-secondary);
+  animation: rg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes rg-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.rg-hero-title {
+  font-family: var(--rg-font-headline);
+  font-size: 3.4rem;
+  font-weight: 800;
+  color: var(--rg-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.rg-hero-title .rg-highlight {
+  color: var(--rg-secondary);
+  font-style: italic;
+  font-weight: 800;
+}
+
+.rg-hero-desc {
+  font-family: var(--rg-font-body);
+  font-size: 1.15rem;
+  color: var(--rg-on-surface-variant);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 580px;
+}
+
+.rg-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+}
+
+.rg-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  background-color: var(--rg-primary-container);
+  color: var(--rg-surface-bright);
+  font-family: var(--rg-font-headline);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--rg-shadow-btn-hero);
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.rg-btn-primary:hover {
+  background-color: var(--rg-primary);
+}
+
+.rg-btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.rg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.6rem;
+  border-radius: 12px;
+  background-color: var(--rg-surface-high);
+  color: var(--rg-primary);
+  font-family: var(--rg-font-headline);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.rg-btn-secondary:hover {
+  background-color: var(--rg-secondary-fixed);
+}
+
+.rg-hero-microtext {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--rg-on-surface-variant);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding-top: 0.25rem;
+}
+
+.rg-hero-microtext .rg-icon {
+  color: var(--rg-secondary);
+  font-size: 1.2rem;
+}
+
+/* Columna Derecha del Hero (Ilustración Poster Zine) */
+.rg-hero-graphic-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.rg-poster-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 4 / 5;
+  background-color: rgba(152, 244, 221, 0.45);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: var(--rg-shadow-card-hero);
+  border: 1px solid rgba(5, 56, 107, 0.12);
+}
+
+.rg-poster-svg-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Bocadillo flotante 1: Usuario */
+.rg-speech-bubble-user {
+  position: relative;
+  z-index: 10;
+  align-self: flex-start;
+  max-width: 86%;
+  background-color: var(--rg-surface-lowest);
+  color: var(--rg-primary);
+  padding: 0.9rem 1.1rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  box-shadow: var(--rg-shadow-bubble-user);
+}
+
+.rg-bubble-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+  font-family: var(--rg-font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rg-secondary);
+}
+
+.rg-bubble-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0;
+  color: var(--rg-primary);
+}
+
+/* Isla isométrica y monitor */
+.rg-poster-center-island {
+  position: relative;
+  z-index: 10;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rg-island-platform {
+  position: relative;
+  width: 250px;
+  height: 90px;
+  background-color: var(--rg-primary-container);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--rg-shadow-island);
+}
+
+.rg-console-cluster {
+  position: absolute;
+  top: -46px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.rg-mini-monitor {
+  width: 90px;
+  height: 60px;
+  background-color: var(--rg-surface-lowest);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--rg-shadow-elem);
+}
+
+.rg-monitor-screen {
+  width: 100%;
+  height: 32px;
+  background-color: var(--rg-secondary-fixed);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rg-primary);
+}
+
+.rg-monitor-stand {
+  width: 36px;
+  height: 6px;
+  background-color: rgba(0, 34, 71, 0.35);
+  border-radius: 9999px;
+  margin: 0 auto;
+}
+
+.rg-mini-gamepad {
+  width: 52px;
+  height: 34px;
+  background-color: var(--rg-secondary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 5px;
+  color: var(--rg-surface-bright);
+  box-shadow: var(--rg-shadow-elem);
+}
+
+.rg-gamepad-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--rg-secondary-fixed);
+}
+
+.rg-island-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--rg-secondary-fixed);
+  font-family: var(--rg-font-headline);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.rg-island-stem {
+  width: 14px;
+  height: 40px;
+  background-color: var(--rg-primary);
+}
+
+/* Bocadillo flotante 2: Asistente */
+.rg-speech-bubble-bot {
+  position: relative;
+  z-index: 10;
+  align-self: flex-end;
+  max-width: 86%;
+  background-color: var(--rg-primary);
+  color: var(--rg-surface-bright);
+  padding: 0.9rem 1.1rem;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  box-shadow: var(--rg-shadow-bubble-bot);
+}
+
+.rg-speech-bubble-bot .rg-bubble-tag {
+  color: var(--rg-secondary-fixed);
+}
+
+.rg-speech-bubble-bot .rg-bubble-text {
+  color: var(--rg-surface-bright);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Sección 2: ¿Qué puede hacer por ti? (Propósito y Utilidad)
+   -------------------------------------------------------------------------- */
+.rg-features-section {
+  width: 100%;
+  background-color: var(--rg-surface);
+  padding: 5rem 0;
+}
+
+.rg-features-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.rg-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rg-section-header-split {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+}
+
+.rg-kicker {
+  font-family: var(--rg-font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rg-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.rg-section-title {
+  font-family: var(--rg-font-headline);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--rg-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.rg-section-desc {
+  font-family: var(--rg-font-body);
+  font-size: 1.05rem;
+  color: var(--rg-on-surface-variant);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0;
+}
+
+.rg-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.rg-feature-card {
+  border-radius: 1.25rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease;
+}
+
+.rg-feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.rg-card-style-1 {
+  background-color: var(--rg-surface-low);
+  box-shadow: var(--rg-shadow-card-navy);
+}
+
+.rg-card-style-2 {
+  background-color: rgba(152, 244, 221, 0.4);
+  box-shadow: var(--rg-shadow-card-teal);
+}
+
+.rg-card-style-3 {
+  background-color: var(--rg-surface-high);
+  box-shadow: var(--rg-shadow-card-navy);
+}
+
+.rg-feature-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+.rg-icon-box-1 {
+  background-color: var(--rg-secondary-container);
+  color: var(--rg-primary);
+}
+
+.rg-icon-box-2 {
+  background-color: var(--rg-primary);
+  color: var(--rg-secondary-fixed);
+}
+
+.rg-icon-box-3 {
+  background-color: var(--rg-secondary);
+  color: var(--rg-surface-bright);
+}
+
+.rg-feature-title {
+  font-family: var(--rg-font-headline);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--rg-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.rg-feature-text {
+  font-family: var(--rg-font-body);
+  font-size: 0.98rem;
+  color: var(--rg-on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rg-feature-footer {
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--rg-font-headline);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--rg-secondary);
+}
+
+.rg-feature-footer.rg-accent-navy {
+  color: var(--rg-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Sección 3: Así Funciona (Paso a Paso Editorial)
+   -------------------------------------------------------------------------- */
+.rg-steps-section {
+  width: 100%;
+  background-color: var(--rg-surface-low);
+  padding: 6rem 0;
+}
+
+.rg-steps-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.rg-steps-header-center {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rg-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  position: relative;
+}
+
+/* Línea conectora serigráfica */
+.rg-steps-connector-line {
+  position: absolute;
+  top: 48px;
+  left: 15%;
+  right: 15%;
+  height: 2px;
+  background-color: rgba(0, 107, 91, 0.25);
+  border-top: 2px dashed rgba(0, 107, 91, 0.4);
+  z-index: 1;
+}
+
+.rg-step-card {
+  position: relative;
+  z-index: 5;
+  background-color: var(--rg-surface-bright);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rg-step-card-1 {
+  box-shadow: var(--rg-shadow-card-navy);
+}
+
+.rg-step-card-2 {
+  box-shadow: var(--rg-shadow-card-teal);
+}
+
+.rg-step-card-3 {
+  box-shadow: var(--rg-shadow-card-navy);
+}
+
+.rg-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rg-step-num-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--rg-font-headline);
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.rg-step-num-1 {
+  background-color: var(--rg-primary);
+  color: var(--rg-surface-bright);
+}
+
+.rg-step-num-2 {
+  background-color: var(--rg-secondary);
+  color: var(--rg-surface-bright);
+}
+
+.rg-step-num-3 {
+  background-color: var(--rg-secondary-fixed);
+  color: var(--rg-primary);
+}
+
+.rg-step-icon {
+  color: var(--rg-secondary);
+  font-size: 1.75rem;
+}
+
+.rg-step-title {
+  font-family: var(--rg-font-headline);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--rg-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.rg-step-text {
+  font-family: var(--rg-font-body);
+  font-size: 0.95rem;
+  color: var(--rg-on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rg-step-callout {
+  background-color: rgba(227, 235, 215, 0.65);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: auto;
+}
+
+.rg-callout-tag {
+  display: block;
+  font-family: var(--rg-font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rg-on-surface-variant);
+  margin-bottom: 0.35rem;
+}
+
+.rg-callout-content {
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--rg-primary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Sección 4: Manifiesto / Enfoque Sensible (Bloque Menta)
+   -------------------------------------------------------------------------- */
+.rg-manifesto-section {
+  width: 100%;
+  background-color: var(--rg-secondary-fixed);
+  color: var(--rg-primary);
+  padding: 6rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.rg-decor-circle-1 {
+  position: absolute;
+  right: -4rem;
+  bottom: -4rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  background-color: var(--rg-secondary-container);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.rg-decor-circle-2 {
+  position: absolute;
+  left: -5rem;
+  top: -5rem;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  background-color: var(--rg-surface-bright);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.rg-manifesto-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.rg-manifesto-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rg-pill-manifesto {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.25rem 0.9rem;
+  border-radius: 9999px;
+  background-color: var(--rg-primary);
+  color: var(--rg-surface-bright);
+  font-family: var(--rg-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rg-manifesto-title {
+  font-family: var(--rg-font-headline);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--rg-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.rg-manifesto-lead {
+  font-family: var(--rg-font-body);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: rgba(0, 34, 71, 0.95);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rg-manifesto-body {
+  font-family: var(--rg-font-body);
+  font-size: 1rem;
+  color: rgba(0, 34, 71, 0.82);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.rg-manifesto-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rg-quote-card {
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  transition: transform 0.2s ease;
+}
+
+.rg-quote-card:hover {
+  transform: translateX(-4px);
+}
+
+.rg-quote-1 {
+  background-color: var(--rg-surface-bright);
+  box-shadow: 4px 4px 0px #002247;
+}
+
+.rg-quote-2 {
+  background-color: var(--rg-surface-high);
+  box-shadow: 4px 4px 0px #002247;
+  margin-left: 1.5rem;
+}
+
+.rg-quote-3 {
+  background-color: var(--rg-primary);
+  color: var(--rg-surface-bright);
+  box-shadow: 4px 4px 0px #006b5b;
+}
+
+.rg-quote-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--rg-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rg-secondary);
+}
+
+.rg-quote-3 .rg-quote-header {
+  color: var(--rg-secondary-fixed);
+}
+
+.rg-quote-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0;
+  color: var(--rg-primary);
+}
+
+.rg-quote-3 .rg-quote-text {
+  color: var(--rg-surface-bright);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Sección 5: Banner de Llamado Final (Póster de Alto Impacto)
+   -------------------------------------------------------------------------- */
+.rg-cta-section {
+  width: 100%;
+  background-color: var(--rg-surface-bright);
+  padding: 5rem 0 6rem 0;
+}
+
+.rg-cta-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.rg-cta-card {
+  position: relative;
+  background-color: var(--rg-primary-container);
+  color: var(--rg-surface-bright);
+  border-radius: 1.75rem;
+  padding: 4.5rem 2.5rem;
+  overflow: hidden;
+  box-shadow: var(--rg-shadow-banner-cta);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.rg-cta-circle-1 {
+  position: absolute;
+  top: -3rem;
+  left: -3rem;
+  width: 12rem;
+  height: 12rem;
+  border-radius: 50%;
+  background-color: var(--rg-secondary);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.rg-cta-circle-2 {
+  position: absolute;
+  bottom: -4rem;
+  right: -4rem;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  background-color: var(--rg-secondary-fixed);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.rg-pill-cta {
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 1rem;
+  border-radius: 9999px;
+  background-color: var(--rg-secondary);
+  color: var(--rg-surface-bright);
+  font-family: var(--rg-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rg-cta-title {
+  position: relative;
+  z-index: 10;
+  font-family: var(--rg-font-headline);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--rg-surface-bright);
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  max-width: 680px;
+  margin: 0;
+}
+
+.rg-cta-desc {
+  position: relative;
+  z-index: 10;
+  font-family: var(--rg-font-body);
+  font-size: 1.15rem;
+  color: var(--rg-secondary-container);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0;
+}
+
+.rg-btn-cta-big {
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 2.75rem;
+  border-radius: 1rem;
+  background-color: var(--rg-secondary-fixed);
+  color: var(--rg-primary);
+  font-family: var(--rg-font-headline);
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--rg-shadow-btn-cta);
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.rg-btn-cta-big:hover {
+  background-color: var(--rg-surface-bright);
+}
+
+.rg-btn-cta-big:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.rg-cta-note {
+  position: relative;
+  z-index: 10;
+  font-family: var(--rg-font-body);
+  font-size: 0.85rem;
+  color: var(--rg-on-primary-container);
+  letter-spacing: 0.02em;
+}
+
+/* --------------------------------------------------------------------------
+   Pie de Página (Footer)
+   -------------------------------------------------------------------------- */
+.rg-footer {
+  width: 100%;
+  background-color: var(--rg-surface-low);
+  padding: 4rem 0 2rem 0;
+  border-top: 1px solid rgba(5, 56, 107, 0.08);
+}
+
+.rg-footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.rg-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.rg-footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rg-footer-desc {
+  font-family: var(--rg-font-body);
+  font-size: 0.9rem;
+  color: var(--rg-on-surface-variant);
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0;
+}
+
+.rg-footer-nav-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rg-footer-heading {
+  font-family: var(--rg-font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--rg-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+
+.rg-footer-link {
+  font-family: var(--rg-font-body);
+  font-size: 0.9rem;
+  color: var(--rg-on-surface-variant);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rg-footer-link:hover {
+  color: var(--rg-primary);
+}
+
+.rg-footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: rgba(233, 241, 221, 0.65);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+}
+
+.rg-footer-bottom-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--rg-on-surface-variant);
+}
+
+.rg-footer-bottom-left .rg-icon {
+  color: var(--rg-secondary);
+  font-size: 1.15rem;
+}
+
+.rg-footer-bottom-right {
+  font-size: 0.8rem;
+  color: var(--rg-on-surface-variant);
+}
+
+/* --------------------------------------------------------------------------
+   Accesibilidad y Estados de Foco
+   -------------------------------------------------------------------------- */
+.rg-welcome-page a:focus-visible,
+.rg-welcome-page button:focus-visible {
+  outline: 3px solid var(--rg-secondary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rg-welcome-page *,
+  .rg-pulse-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Adaptabilidad Responsive (Tablets y Móviles)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .rg-hero-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .rg-hero-content {
+    text-align: center;
+    align-items: center;
+  }
+
+  .rg-pill-badge {
+    align-self: center;
+  }
+
+  .rg-hero-actions {
+    justify-content: center;
+  }
+
+  .rg-manifesto-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .rg-quote-2 {
+    margin-left: 0;
+  }
+
+  .rg-features-grid,
+  .rg-steps-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rg-steps-connector-line {
+    display: none;
+  }
+
+  .rg-footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .rg-header-inner {
+    padding: 0 1.25rem;
+  }
+
+  .rg-nav-center {
+    display: none; /* Ocultar enlaces secundarios en móvil manteniendo acceso directo a Comenzar */
+  }
+
+  .rg-hero {
+    padding-top: calc(80px + 1.5rem);
+    padding-bottom: 3.5rem;
+  }
+
+  .rg-hero-container {
+    padding: 0 1.25rem;
+  }
+
+  .rg-hero-title {
+    font-size: 2.25rem;
+    line-height: 1.15;
+  }
+
+  .rg-hero-desc {
+    font-size: 1rem;
+  }
+
+  .rg-hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .rg-btn-primary,
+  .rg-btn-secondary {
+    width: 100%;
+  }
+
+  .rg-poster-card {
+    max-width: 100%;
+    aspect-ratio: auto;
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .rg-section-header-split {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .rg-section-title {
+    font-size: 1.85rem;
+  }
+
+  .rg-features-section,
+  .rg-steps-section,
+  .rg-manifesto-section,
+  .rg-cta-section {
+    padding: 3.5rem 0;
+  }
+
+  .rg-features-container,
+  .rg-steps-container,
+  .rg-manifesto-container,
+  .rg-cta-container,
+  .rg-footer-container {
+    padding: 0 1.25rem;
+  }
+
+  .rg-features-grid,
+  .rg-steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rg-manifesto-title {
+    font-size: 1.95rem;
+  }
+
+  .rg-cta-card {
+    padding: 3rem 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .rg-cta-title {
+    font-size: 1.85rem;
+  }
+
+  .rg-btn-cta-big {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    justify-content: center;
+  }
+
+  .rg-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .rg-footer-bottom-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+}

@@ -224,24 +224,32 @@ async function runPhase4Tests() {
         accumulatedCriteria: {},
         dialogueState: { stage: "experience", questionsAsked: ["experience"], turnCount: 1 }
     })
-    // Turno 9B
+    // Turno 9B: Texto libre con tiempo y modalidad
+    // NOTA ETAPA 1: No recomienda prematuramente en 9B porque falta género; indaga géneros.
     const res9B = await processDialogueTurn({
         userMessage: "Solo tengo media hora libre para jugar en mi PC sin nadie más",
         accumulatedCriteria: res9A.updatedCriteria,
         dialogueState: res9A.dialogueState
     })
-
     const c9B = res9B.updatedCriteria
-    const naturalUnderstood = c9B.emotionalContext.includes("relajante") &&
+    const naturalUnderstood9B = c9B.emotionalContext.includes("relajante") &&
         c9B.availableTime.includes("corta") &&
         c9B.gameMode === "individual" &&
-        res9B.recommendations.length > 0
+        res9B.dialogueState.stage === "genres" &&
+        res9B.recommendations.length === 0
 
-    if (naturalUnderstood) {
-        console.log(`✓ ESCENARIO 9 PASADO: Diálogo 100% en texto libre comprendido e interpretado con exactitud (Top 1: ${res9B.recommendations[0].game.title}).`)
+    // Turno 9C: Texto libre completando dimensión de género
+    const res9C = await processDialogueTurn({
+        userMessage: "No tengo ninguna preferencia de género",
+        accumulatedCriteria: res9B.updatedCriteria,
+        dialogueState: res9B.dialogueState
+    })
+
+    if (naturalUnderstood9B && res9C.recommendations.length > 0) {
+        console.log(`✓ ESCENARIO 9 PASADO: Diálogo 100% en texto libre comprendido e interpretado con exactitud sin recomendación prematura (Top 1: ${res9C.recommendations[0].game.title}).`)
         passedScenarios++
     } else {
-        console.error("✗ ESCENARIO 9 FALLIDO:", { c9B, recs: res9B.recommendations.length })
+        console.error("✗ ESCENARIO 9 FALLIDO:", { c9B, recs9B: res9B.recommendations.length, recs9C: res9C.recommendations.length })
     }
 
     // =========================================================================
@@ -255,23 +263,31 @@ async function runPhase4Tests() {
         dialogueState: { stage: "experience", questionsAsked: ["experience"], turnCount: 1 }
     })
     // Turno 10B: Texto libre detallado
+    // NOTA ETAPA 1: No recomienda prematuramente en 10B; indaga género faltante.
     const res10B = await processDialogueTurn({
         userMessage: "Tengo unos 45 minutos y quiero jugar con mi pareja",
         accumulatedCriteria: res10A.updatedCriteria,
         dialogueState: res10A.dialogueState
     })
-
     const c10B = res10B.updatedCriteria
-    const hybridUnderstood = c10B.emotionalContext.includes("relajante") &&
+    const hybridUnderstood10B = c10B.emotionalContext.includes("relajante") &&
         c10B.availableTime.includes("media") &&
         c10B.gameMode === "cooperativo" &&
-        res10B.recommendations.length > 0
+        res10B.dialogueState.stage === "genres" &&
+        res10B.recommendations.length === 0
 
-    if (hybridUnderstood) {
-        console.log(`✓ ESCENARIO 10 PASADO: Fusión exitosa de clic rápido ('Quiero relajarme') y texto libre ('45 min con mi pareja'). Top 1: ${res10B.recommendations[0].game.title}.`)
+    // Turno 10C: Opción rápida de género
+    const res10C = await processDialogueTurn({
+        userMessage: "Aventura",
+        accumulatedCriteria: res10B.updatedCriteria,
+        dialogueState: res10B.dialogueState
+    })
+
+    if (hybridUnderstood10B && res10C.recommendations.length > 0) {
+        console.log(`✓ ESCENARIO 10 PASADO: Fusión exitosa de clic rápido ('Quiero relajarme') y texto libre ('45 min con mi pareja') sin recomendación prematura. Top 1: ${res10C.recommendations[0].game.title}.`)
         passedScenarios++
     } else {
-        console.error("✗ ESCENARIO 10 FALLIDO:", { c10B, recs: res10B.recommendations.length })
+        console.error("✗ ESCENARIO 10 FALLIDO:", { c10B, recs10B: res10B.recommendations.length, recs10C: res10C.recommendations.length })
     }
 
     console.log(`\n========================================`)

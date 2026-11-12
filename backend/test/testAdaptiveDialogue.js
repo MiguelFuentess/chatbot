@@ -60,22 +60,38 @@ async function runAdaptiveDialogueTests() {
         cleanReplyB1.includes("como prefieres jugar")
 
     // Turno 2: Responde la modalidad
+    // NOTA ETAPA 1: Con la nueva política, el asistente no recomienda prematuramente con solo 3 dimensiones;
+    // indaga el género faltante en T2 y avanza a recomendaciones en T3 al resolver las preferencias.
     const resB2 = await processDialogueTurn({
         userMessage: "Prefiero jugar solo",
         accumulatedCriteria: resB1.updatedCriteria,
         dialogueState: resB1.dialogueState
     })
-    console.log(`Respuesta final B2: "${resB2.reply}"`)
-    console.log(`Recomendaciones B2: ${resB2.recommendations.length} juegos (Top 1: ${resB2.recommendations[0]?.game.title})`)
+    console.log(`Pregunta T2 (indaga género): "${resB2.reply}"`)
+    console.log(`Recomendaciones B2 (debe ser 0, no recomendar prematuramente): ${resB2.recommendations.length}`)
+
+    const asksGenreInB2 =
+        resB2.dialogueState.stage === "genres" &&
+        resB2.recommendations.length === 0
+
+    // Turno 3: Responde preferencia de género
+    const resB3 = await processDialogueTurn({
+        userMessage: "Me gustan los juegos de puzzle o simulación",
+        accumulatedCriteria: resB2.updatedCriteria,
+        dialogueState: resB2.dialogueState
+    })
+    console.log(`Respuesta final B3: "${resB3.reply}"`)
+    console.log(`Recomendaciones B3: ${resB3.recommendations.length} juegos (Top 1: ${resB3.recommendations[0]?.game.title})`)
 
     const passedB =
         knowsEmotionAndTime &&
         asksModeNotTime &&
-        resB2.recommendations.length > 0 &&
-        ["Dorfromantik", "A Short Hike", "Gris"].includes(resB2.recommendations[0]?.game.title)
+        asksGenreInB2 &&
+        resB3.recommendations.length > 0 &&
+        ["Dorfromantik", "A Short Hike", "Gris", "Stardew Valley"].includes(resB3.recommendations[0]?.game.title)
 
     if (passedB) {
-        console.log("-> ESCENARIO B PASADO: Reconoció emoción y tiempo, preguntó solo la modalidad y recomendó con precisión.")
+        console.log("-> ESCENARIO B PASADO: Reconoció emoción y tiempo, indagó modalidad y género sin recomendación prematura, y recomendó con perfil completo.")
         passed++
     } else {
         console.error("-> ESCENARIO B FALLIDO.")
@@ -98,21 +114,37 @@ async function runAdaptiveDialogueTests() {
         resC1.updatedCriteria.gameMode === "cooperativo"
     const asksTime = resC1.dialogueState.stage === "time"
 
+    // Turno C2: Indica tiempo disponible
+    // NOTA ETAPA 1: Falta aún la experiencia deseada; el asistente indaga experiencia en lugar de recomendar prematuramente.
     const resC2 = await processDialogueTurn({
         userMessage: "Entre 30 y 60 minutos",
         accumulatedCriteria: resC1.updatedCriteria,
         dialogueState: resC1.dialogueState
     })
-    console.log(`Recomendaciones C2 (Top 1: ${resC2.recommendations[0]?.game.title})`)
+    console.log(`Pregunta C2 (indaga experiencia): "${resC2.reply}"`)
+    console.log(`Recomendaciones C2 (debe ser 0, indaga experiencia): ${resC2.recommendations.length}`)
+
+    const asksExperienceInC2 =
+        resC2.dialogueState.stage === "experience" &&
+        resC2.recommendations.length === 0
+
+    // Turno C3: Responde tipo de experiencia
+    const resC3 = await processDialogueTurn({
+        userMessage: "Busco algo emocionante",
+        accumulatedCriteria: resC2.updatedCriteria,
+        dialogueState: resC2.dialogueState
+    })
+    console.log(`Recomendaciones C3 (Top 1: ${resC3.recommendations[0]?.game.title})`)
 
     const passedC =
         knowsGenreAndMode &&
         asksTime &&
-        resC2.recommendations.length > 0 &&
-        resC2.recommendations.every((r) => r.game.gameModes.includes("cooperativo"))
+        asksExperienceInC2 &&
+        resC3.recommendations.length > 0 &&
+        resC3.recommendations.every((r) => r.game.gameModes.includes("cooperativo"))
 
     if (passedC) {
-        console.log("-> ESCENARIO C PASADO: Aprovechó género y modo cooperativo, indagó tiempo y generó opciones cooperativas.")
+        console.log("-> ESCENARIO C PASADO: Aprovechó género y modo cooperativo, indagó tiempo y experiencia sin recomendación prematura, y generó opciones cooperativas completas.")
         passed++
     } else {
         console.error("-> ESCENARIO C FALLIDO.")
@@ -131,19 +163,32 @@ async function runAdaptiveDialogueTests() {
 
     const hasDislikeShooter = resD1.updatedCriteria.dislikedGenres.includes("FPS")
 
+    // Turno D2: Aporta modalidad y tiempo
+    // NOTA ETAPA 1: Con género, modo y tiempo resueltos, aún falta la experiencia;
+    // el sistema no recomienda prematuramente en T2 e indaga la experiencia.
     const resD2 = await processDialogueTurn({
         userMessage: "Quiero jugar con amigos durante 1 hora",
         accumulatedCriteria: resD1.updatedCriteria,
         dialogueState: resD1.dialogueState
     })
+    console.log(`Pregunta D2 (indaga experiencia): "${resD2.reply}"`)
+    console.log(`Recomendaciones D2 (debe ser 0): ${resD2.recommendations.length}`)
 
-    const noShooterRecommended = resD2.recommendations.every(
+    // Turno D3: Aporta la experiencia deseada
+    const resD3 = await processDialogueTurn({
+        userMessage: "Explorar una buena historia",
+        accumulatedCriteria: resD2.updatedCriteria,
+        dialogueState: resD2.dialogueState
+    })
+    console.log(`Recomendaciones D3 (Top 1: ${resD3.recommendations[0]?.game.title})`)
+
+    const noShooterRecommended = resD3.recommendations.every(
         (r) => !r.game.genres.includes("FPS") && !r.game.genres.includes("Shooter")
     )
 
-    const passedD = hasDislikeShooter && noShooterRecommended && resD2.recommendations.length > 0
+    const passedD = hasDislikeShooter && noShooterRecommended && resD3.recommendations.length > 0
     if (passedD) {
-        console.log("-> ESCENARIO D PASADO: Conservó la exclusión estricta y ningún shooter fue recomendado.")
+        console.log("-> ESCENARIO D PASADO: Conservó la exclusión estricta, indagó experiencia sin recomendación prematura y ningún shooter fue recomendado.")
         passed++
     } else {
         console.error("-> ESCENARIO D FALLIDO.")
@@ -162,10 +207,11 @@ async function runAdaptiveDialogueTests() {
         dislikedGenres: [],
         similarTo: []
     }
+    // NOTA ETAPA 1: Modificación de opinión tras haber recibido recomendaciones (stage: recommended)
     const baseStateE = {
-        stage: "mode",
-        questionsAsked: ["experience", "time", "mode"],
-        turnCount: 3
+        stage: "recommended",
+        questionsAsked: ["experience", "time", "mode", "genres"],
+        turnCount: 4
     }
 
     const resE = await processDialogueTurn({

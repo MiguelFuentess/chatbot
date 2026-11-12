@@ -1,25 +1,25 @@
 import React, { useState } from "react"
 import "./GameCard.css"
 
-// Fallback neutro SVG autocontenido (evita fotos genéricas de stock de terceros)
+// Fallback neutro SVG autocontenido con estética editorial
 const FALLBACK_SVG =
     "data:image/svg+xml;charset=utf-8," +
     encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="280" viewBox="0 0 600 280">' +
         '<defs>' +
         '<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">' +
-        '<stop offset="0%" stop-color="#1e293b"/>' +
-        '<stop offset="100%" stop-color="#0f172a"/>' +
+        '<stop offset="0%" stop-color="#002247"/>' +
+        '<stop offset="100%" stop-color="#05386b"/>' +
         '</linearGradient>' +
         '</defs>' +
         '<rect width="100%" height="100%" fill="url(#bg)"/>' +
-        '<circle cx="230" cy="85" r="32" fill="#334155"/>' +
-        '<text x="230" y="94" font-size="28" text-anchor="middle">🎮</text>' +
-        '<text x="230" y="142" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">Arte oficial no disponible</text>' +
+        '<circle cx="300" cy="110" r="38" fill="#006b5b"/>' +
+        '<text x="300" y="122" font-size="34" text-anchor="middle">🎮</text>' +
+        '<text x="300" y="185" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#98f4dd" letter-spacing="0.05em" text-anchor="middle">ARTE OFICIAL NO DISPONIBLE</text>' +
         '</svg>'
     )
 
-const GameCard = ({ recommendation }) => {
+const GameCard = ({ recommendation, onAction }) => {
     const [imageError, setImageError] = useState(false)
 
     if (!recommendation || !recommendation.game) return null
@@ -27,55 +27,103 @@ const GameCard = ({ recommendation }) => {
     const { game, score, explanation } = recommendation
     const displayImage = !imageError && game.imageUrl ? game.imageUrl : FALLBACK_SVG
 
+    const genreText = Array.isArray(game.genres) && game.genres.length > 0
+        ? game.genres.slice(0, 3).join(" & ")
+        : "Videojuego de PC"
+
+    const durationText = game.sessionDuration || null
+    const modeText = Array.isArray(game.gameModes) && game.gameModes.length > 0
+        ? game.gameModes.join(", ")
+        : null
+
+    const metaParts = [genreText, durationText, modeText].filter(Boolean)
+    const metaString = metaParts.join(" • ")
+
     return (
-        <div className="game-card">
-            <div className="game-card-image-container">
+        <article className="rg-game-card" aria-label={`Recomendación: ${game.title}`}>
+            {/* Banner de Imagen con Cabecera Integrada */}
+            <div className="rg-game-card-banner">
                 <img
                     src={displayImage}
-                    alt={game.title}
-                    className={`game-card-image ${imageError ? "is-fallback" : ""}`}
+                    alt={`Portada oficial de ${game.title}`}
+                    className={`rg-game-card-img ${imageError ? "is-fallback" : ""}`}
                     loading="lazy"
-                    onError={() => {
-                        setImageError(true)
-                    }}
+                    onError={() => setImageError(true)}
                 />
-                <div className="game-card-score-badge">
-                    <span>★ {score}% de afinidad</span>
+                <div className="rg-game-card-gradient" aria-hidden="true" />
+
+                {/* Badge Flotante Superior */}
+                <div className="rg-game-card-badge">
+                    <span className="material-symbols-outlined" aria-hidden="true">stars</span>
+                    <span>RECOMENDACIÓN RECIENTE • {score}% AFINIDAD</span>
                 </div>
-                <div className="game-card-price-badge">
-                    <span>{game.priceCondition || "PC"}</span>
+
+                {/* Título y Metadatos sobre el Banner */}
+                <div className="rg-game-card-header-overlay">
+                    <h3 className="rg-game-card-title">{game.title}</h3>
+                    <p className="rg-game-card-meta">{metaString}</p>
                 </div>
             </div>
 
-            <div className="game-card-content">
-                <h4 className="game-card-title">{game.title}</h4>
-                <p className="game-card-description">{game.description}</p>
+            {/* Cuerpo de la Tarjeta */}
+            <div className="rg-game-card-body">
+                <p className="rg-game-card-desc">{game.description}</p>
 
-                <div className="game-card-tags">
-                    {game.genres &&
-                        game.genres.slice(0, 3).map((genre, idx) => (
-                            <span key={idx} className="game-badge badge-genre">
-                                {genre}
-                            </span>
-                        ))}
-                    {game.sessionDuration && (
-                        <span className="game-badge badge-duration">⏱️ {game.sessionDuration}</span>
-                    )}
-                    {game.gameModes && (
-                        <span className="game-badge badge-mode">👥 {game.gameModes.join(", ")}</span>
-                    )}
-                </div>
-
+                {/* Bloque: Por qué encaja contigo */}
                 {explanation && explanation.summaryText && (
-                    <div className="game-card-explanation">
-                        <div className="explanation-header">
-                            <span>💡 ¿Por qué te lo recomendamos?</span>
+                    <div className="rg-game-card-callout">
+                        <span className="material-symbols-outlined rg-callout-icon" aria-hidden="true">
+                            psychology
+                        </span>
+                        <div className="rg-callout-content">
+                            <span className="rg-callout-label">Por qué encaja contigo</span>
+                            <p className="rg-callout-text">{explanation.summaryText}</p>
                         </div>
-                        <p className="explanation-text">{explanation.summaryText}</p>
+                    </div>
+                )}
+
+                {/* Botones de Acción Interactiva (Etapa 5) */}
+                {onAction && (
+                    <div className="rg-game-card-actions">
+                        <button
+                            type="button"
+                            className="rg-card-btn rg-btn-more"
+                            onClick={() => onAction(`Quiero saber más sobre ${game.title}`)}
+                            title={`Preguntar más detalles sobre ${game.title}`}
+                        >
+                            <span>Cuéntame más</span>
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                arrow_forward
+                            </span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="rg-card-btn rg-btn-interest"
+                            onClick={() => onAction(`Me interesa ${game.title}`)}
+                            title={`Indicar interés por ${game.title}`}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                star
+                            </span>
+                            <span>Me interesa</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="rg-card-btn rg-btn-discard"
+                            onClick={() => onAction(`No me convence ${game.title}`)}
+                            title={`Descartar ${game.title}`}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "16px" }} aria-hidden="true">
+                                close
+                            </span>
+                            <span>Descartar</span>
+                        </button>
                     </div>
                 )}
             </div>
-        </div>
+        </article>
     )
 }
 
